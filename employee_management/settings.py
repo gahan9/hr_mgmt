@@ -134,3 +134,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 STATIC_ROOT = '/assets/'
 STATIC_ROOT_DIR = os.path.join(BASE_DIR, 'assets')
+
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # in bytes
