@@ -6,6 +6,6 @@ from . import views
 
 urlpatterns = [
     url(r'^login/', django_login, {'template_name': 'login.html', 'authentication_form': LoginForm}, name='login'),
-    url(r'^logout/', django_logout, {'next_page': '/'}, name='logout'),
+    url(r'^logout/', django_logout, {'next_page': '/login/'}, name='logout'),
     url(r'^$', views.HomePageView.as_view(), name="home"),
 ]

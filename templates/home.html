@@ -1,7 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'common.html' %}
+{% block includes %}
+    {% include 'common_nav.html' %}
+{% endblock %}
 
-{% block body %}
-<div class="alert-info card-header-pills">
-    <h2 class="text-center text-success">Welcome, {{ user.username }}</h2>
-</div>
+{% block content %}
+<section>
+    <div class="card-header-pills">
+        <h2 class="text-center text-success">Welcome, {{ user.username }}</h2>
+    </div>
+</section>
 {% endblock %}
