@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import *
+
+
+class FileUploadAdmin(admin.ModelAdmin):
+    search_fields = ['file']
+    list_display = ('id', 'file')
+
+
+admin.site.register(FileUpload, FileUploadAdmin)

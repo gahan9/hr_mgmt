@@ -1,0 +1,29 @@
+{% extends 'common.html' %}
+{% block title %} <title>Upload file </title> {% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <section>
+        <div class="container-fluid">
+            {% if form.non_field_errors %}
+                <div class="row">
+                    <ul class='form-errors'>
+                        {% for error in form.non_field_errors %}
+                            <li class="text-danger">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                <div class="row alert-success">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="container center-block col-md-5">
+                {% crispy form form.helper %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

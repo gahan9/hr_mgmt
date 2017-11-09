@@ -1,0 +1,29 @@
+{% extends 'common.html' %}
+{% block content %}
+<section>
+<div class="container">
+    <div class="row">
+        <div class="list-group col-md-3">
+            <a class="list-group-item" href="{% url 'file_upload' %}">
+                <h4 class="list-group-item-heading">Upload Data</h4>
+            </a>
+        </div>
+        <div class="list-group col-md-3">
+            <a class="list-group-item" href="{% url 'view_file' %}">
+                <h4 class="list-group-item-heading">View Data</h4>
+            </a>
+        </div>
+        <div class="list-group col-md-3">
+            <a class="list-group-item" href="#">
+                <h4 class="list-group-item-heading">Transfer Data</h4>
+            </a>
+        </div>
+        <div class="list-group col-md-3">
+            <a class="list-group-item" href="#">
+                <h4 class="list-group-item-heading">Tips & Tricks</h4>
+            </a>
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}

@@ -8,5 +8,27 @@
     <div class="card-header-pills">
         <h2 class="text-center text-success">Welcome, {{ user.username }}</h2>
     </div>
+    <div class="container">
+        <div class="row">
+            <div class="list-group col-md-4">
+                <a class="list-group-item" href="{% url 'employee_data' %}">
+                    <h4 class="list-group-item-heading">Employee Data</h4>
+                    <p class="list-group-item-text">manage data</p>
+                </a>
+            </div>
+            <div class="list-group col-md-4">
+                <a class="list-group-item" href="{% url 'field_rate' %}">
+                    <h4 class="list-group-item-heading">Field Rate</h4>
+                    <p class="list-group-item-text">Field Rate</p>
+                </a>
+            </div>
+            <div class="list-group col-md-4">
+                <a class="list-group-item" href="{% url 'home' %}">
+                    <h4 class="list-group-item-heading">Settings</h4>
+                    <p class="list-group-item-text">settings</p>
+                </a>
+            </div>
+        </div>
+    </div>
 </section>
 {% endblock %}

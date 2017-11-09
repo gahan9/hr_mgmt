@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Field Rate</title>
+    {% block title %}<title>Field Rate</title> {% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content=""/>
@@ -20,7 +20,9 @@
 </head>
 <body>
 
-{% block includes %} {% endblock %}
+{% block includes %}
+    {% include 'common_nav.html' %}
+{% endblock %}
 
 {% block content %} {% endblock %}
 {% include 'footer.html' %}
@@ -40,9 +42,7 @@
     <script src="http://127.0.0.1:8889/static/login/js/masonry.pkgd.min.js"></script>
     <script src="http://127.0.0.1:8889/static/login/js/imagesloaded.js"></script>
     <script src="http://127.0.0.1:8889/static/login/js/jquery.nicescroll.min.js"></script>
-    <script src="https://maps.google.com/maps/api/js?sensor=true"></script>
     <script src="http://127.0.0.1:8889/static/login/js/modernizr.custom.js"></script>
-    <script src="http://127.0.0.1:8889/static/login/js/custom.js"></script>
 {% endblock %}
 {% block extrajs %} {% endblock %}
 </body>
