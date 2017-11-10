@@ -1,9 +1,15 @@
+import os
+import csv
+import codecs
+from datetime import datetime
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http.response import FileResponse
+from django.template import Context, loader
 from django.views.generic import TemplateView, FormView, ListView
 from django.urls import reverse_lazy
 from django_tables2.views import MultiTableMixin
@@ -11,7 +17,7 @@ from django_tables2.views import MultiTableMixin
 from forms.common import FileUploadForm
 from main.models import FileUpload, EmployeeData
 from main.tables import EmployeeDataTable
-import csv
+from employee_management.settings import BASE_DIR
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -42,11 +48,21 @@ class FileUploadView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('file_upload')
     template_name = "file_upload.html"
 
+    def server_dump_setup(self):
+        # setup directory for error handling
+        dump_dir = os.path.join(BASE_DIR, "server_dump")
+        if not os.path.exists(dump_dir):
+            os.mkdir(dump_dir)
+        timestamp = datetime.utcnow().strftime("%Y_%m_%d_%H:%M:%S")
+        file_name = "failure_{}.csv".format(timestamp)
+        file_location = os.path.join(dump_dir, file_name)
+        return file_location
+
     def post(self, request, *args, **kwargs):
-        import codecs
         x = self.request.FILES['file']
         csv_read = csv.DictReader(codecs.iterdecode(x, 'utf-8'))
-        failure_list = []
+        failure_store_location = self.server_dump_setup()
+
         for row in csv_read:
             password = row['first_name'] + "@" + row['mobile']
             try:
@@ -59,11 +75,16 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 )
                 EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
             except IntegrityError:
-                failure_list.append(row['email'])
-        if failure_list:
-            string_lis = ', '.join(failure_list)
-            msg = "Error: Employee with email(s): {} already exist".format(string_lis)
+                with open(failure_store_location, 'a') as csvfile:
+                    fieldnames = ['first_name', 'last_name', "mobile", "email"]
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                    writer.writeheader()
+                    writer.writerow(row)
+        if failure_store_location:
+            resp = FileResponse(open(failure_store_location, "rb"))
+            msg = "Error: Employee with email(s) already exist".format("")
             messages.error(self.request, msg)
+            return HttpResponse(resp, content_type='text/csv')
         return super(FileUploadView, self).post(request, *args, **kwargs)
 
 
