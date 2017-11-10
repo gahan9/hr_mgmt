@@ -1,6 +1,7 @@
 {% extends 'common.html' %}
 {% block title %} <title>Upload file </title> {% endblock %}
 {% load crispy_forms_tags %}
+{% load custom_tags %}
 {% block content %}
     <section>
         <div class="container-fluid">
@@ -15,9 +16,11 @@
             {% endif %}
 
             {% if messages %}
-                <div class="row alert-success">
+                <div class="row">
                     {% for message in messages %}
-                        {{ message }}
+                        <div class="{{ message|message_filter }}">
+                            {{ message }}
+                        </div>
                     {% endfor %}
                 </div>
             {% endif %}

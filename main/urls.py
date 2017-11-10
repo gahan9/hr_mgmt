@@ -13,5 +13,5 @@ urlpatterns = [
     url(r'^employee-data/', views.EmployeeDataView.as_view(), name="employee_data"),
     url(r'^field-rate/', views.FieldRateView.as_view(), name="field_rate"),
     url(r'^upload_file/', views.FileUploadView.as_view(), name="file_upload"),
-    url(r'^view_file/', views.FileListView.as_view(), name="view_file"),
+    url(r'^view_file/', views.EmployeeDataList.as_view(), name="view_file"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
