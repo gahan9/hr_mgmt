@@ -56,13 +56,16 @@ class FileUploadView(LoginRequiredMixin, FormView):
         timestamp = datetime.utcnow().strftime("%Y_%m_%d_%H:%M:%S")
         file_name = "failure_{}.csv".format(timestamp)
         file_location = os.path.join(dump_dir, file_name)
-        return file_location
+        return file_location, file_name
 
     def post(self, request, *args, **kwargs):
         x = self.request.FILES['file']
         csv_read = csv.DictReader(codecs.iterdecode(x, 'utf-8'))
-        failure_store_location = self.server_dump_setup()
-
+        failure_store_location, file_name = self.server_dump_setup()
+        csv_file = open(failure_store_location, 'w')
+        fieldnames = ['first_name', 'last_name', "mobile", "email"]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
         for row in csv_read:
             password = row['first_name'] + "@" + row['mobile']
             try:
@@ -75,16 +78,16 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 )
                 EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
             except IntegrityError:
-                with open(failure_store_location, 'a') as csvfile:
-                    fieldnames = ['first_name', 'last_name', "mobile", "email"]
-                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                    writer.writeheader()
-                    writer.writerow(row)
+                writer.writerow(row)
+        csv_file.close()
         if failure_store_location:
-            resp = FileResponse(open(failure_store_location, "rb"))
-            msg = "Error: Employee with email(s) already exist".format("")
-            messages.error(self.request, msg)
-            return HttpResponse(resp, content_type='text/csv')
+            # msg = "Error: Employee with email(s) already exist".format("")
+            # messages.error(self.request, msg)
+            response = HttpResponse(open(failure_store_location, "rb"), content_type='text/csv')
+            response['Content-Disposition'] = "attachment; filename={filename}".format(
+                filename=file_name
+            )
+            return response
         return super(FileUploadView, self).post(request, *args, **kwargs)
 
 
