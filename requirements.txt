@@ -6,3 +6,5 @@ pymysql
 configparser
 django-tables2
 django-crispy-forms
+django-bootstrap3
+django-filters

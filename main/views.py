@@ -76,7 +76,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 )
                 EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
             except IntegrityError:
-                row['error_reason'] = "Duplicate Email: User with the same email already exist"
+                row['error_reason'] = "Unable to add employee because User with the same email already exist"
                 writer.writerow(row)
             except Exception as e:
                 row['error_reason'] = e

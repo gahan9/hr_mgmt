@@ -24,8 +24,14 @@ class EmployeeDataAdmin(admin.ModelAdmin):
         return obj.user.email
 
 
+class QuestionDBAdmin(admin.ModelAdmin):
+    search_fields = ['question']
+    list_display = ('question', 'answer_type')
+
+
 admin.site.register(FileUpload, FileUploadAdmin)
 admin.site.register(EmployeeData, EmployeeDataAdmin)
+admin.site.register(QuestionDB, QuestionDBAdmin)
 
 admin.site.site_header = 'FieldRate administration'
 admin.site.site_title = 'FieldRate administration'
