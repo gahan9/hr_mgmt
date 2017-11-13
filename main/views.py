@@ -7,15 +7,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from django.contrib import messages
-from django.http.response import FileResponse
-from django.template import Context, loader
-from django.views.generic import TemplateView, FormView, ListView
+from django.views.generic import TemplateView, FormView
 from django.urls import reverse_lazy
-from django_tables2.views import MultiTableMixin
+from django_filters.views import FilterView
+from django_tables2.views import MultiTableMixin, SingleTableMixin
 
 from forms.common import FileUploadForm
-from main.models import FileUpload, EmployeeData
+from main.models import FileUpload, EmployeeData, EmployeeDataFilter
 from main.tables import EmployeeDataTable
 from employee_management.settings import BASE_DIR
 
@@ -63,7 +61,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
         csv_read = csv.DictReader(codecs.iterdecode(x, 'utf-8'))
         failure_store_location, file_name = self.server_dump_setup()
         csv_file = open(failure_store_location, 'w')
-        fieldnames = ['first_name', 'last_name', "mobile", "email"]
+        fieldnames = ['first_name', 'last_name', "mobile", "email", "error_reason"]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         for row in csv_read:
@@ -78,11 +76,13 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 )
                 EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
             except IntegrityError:
+                row['error_reason'] = "Duplicate Email: User with the same email already exist"
+                writer.writerow(row)
+            except Exception as e:
+                row['error_reason'] = e
                 writer.writerow(row)
         csv_file.close()
         if failure_store_location:
-            # msg = "Error: Employee with email(s) already exist".format("")
-            # messages.error(self.request, msg)
             response = HttpResponse(open(failure_store_location, "rb"), content_type='text/csv')
             response['Content-Disposition'] = "attachment; filename={filename}".format(
                 filename=file_name
@@ -91,11 +91,11 @@ class FileUploadView(LoginRequiredMixin, FormView):
         return super(FileUploadView, self).post(request, *args, **kwargs)
 
 
-class EmployeeDataList(LoginRequiredMixin, MultiTableMixin, ListView):
+class EmployeeDataList(LoginRequiredMixin, MultiTableMixin, FilterView):
     login_url = reverse_lazy('login')
-    queryset = EmployeeData.objects.order_by('-id')
-    template_name = "table_show.html"
-    tables = [EmployeeDataTable(EmployeeData.objects.all())]
-    table_pagination = {'per_page': 6}
     model = EmployeeData
+    template_name = "table_show.html"
+    tables = [EmployeeDataTable(EmployeeData.objects.all().order_by('-id'))]
+    table_pagination = {'per_page': 6}
+    filterset_class = EmployeeDataFilter
     # context_object_name = "files"
