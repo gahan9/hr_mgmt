@@ -2,6 +2,7 @@ import os
 import csv
 import codecs
 from datetime import datetime
+from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -10,10 +11,13 @@ from django.db.models.fields import DateTimeField
 from django.db.utils import IntegrityError
 from django.forms.models import ModelForm
 from django.http import HttpResponse
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import render
 from django.views.generic import TemplateView, FormView, CreateView
 from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 import django_tables2 as tables
+from django_tables2.tables import Table
 from django_tables2.views import MultiTableMixin, SingleTableView
 from django import forms
 from forms.common import FileUploadForm
@@ -61,38 +65,44 @@ class FileUploadView(LoginRequiredMixin, FormView):
         return file_location, file_name
 
     def post(self, request, *args, **kwargs):
-        x = self.request.FILES['file']
-        csv_read = csv.DictReader(codecs.iterdecode(x, 'utf-8'))
-        failure_store_location, file_name = self.server_dump_setup()
-        csv_file = open(failure_store_location, 'w')
-        fieldnames = ['first_name', 'last_name', "mobile", "email", "error_reason"]
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for row in csv_read:
-            password = row['first_name'] + "@" + row['mobile']
-            try:
-                user_obj = User.objects.create(
-                    username=row['email'],
-                    password=make_password(password),
-                    email=row['email'],
-                    first_name=row['first_name'],
-                    last_name=row['last_name']
+        user_file = self.request.FILES['file']
+        try:
+            csv_read = csv.DictReader(codecs.iterdecode(user_file, 'utf-8'))
+            failure_store_location, file_name = self.server_dump_setup()
+            csv_file = open(failure_store_location, 'w')
+            fieldnames = ['first_name', 'last_name', "mobile", "email", "error_reason"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in csv_read:
+                password = row['first_name'] + "@" + row['mobile']
+                try:
+                    user_obj = User.objects.create(
+                        username=row['email'],
+                        password=make_password(password),
+                        email=row['email'],
+                        first_name=row['first_name'],
+                        last_name=row['last_name']
+                    )
+                    EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
+                except IntegrityError as duplicate_error:
+                    row['error_reason'] = "Unable to add employee because User with the same email already exist"
+                    writer.writerow(row)
+                except Exception as unknown_exception:
+                    row['error_reason'] = unknown_exception
+                    writer.writerow(row)
+            csv_file.close()
+            if failure_store_location:
+                messages.error(request, "Error: Some of the user failed to create")
+                response = HttpResponse(open(failure_store_location, "rb"), content_type='text/csv')
+                response['Content-Disposition'] = "attachment; filename={filename}".format(
+                    filename=file_name
                 )
-                EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
-            except IntegrityError:
-                row['error_reason'] = "Unable to add employee because User with the same email already exist"
-                writer.writerow(row)
-            except Exception as e:
-                row['error_reason'] = e
-                writer.writerow(row)
-        csv_file.close()
-        if failure_store_location:
-            response = HttpResponse(open(failure_store_location, "rb"), content_type='text/csv')
-            response['Content-Disposition'] = "attachment; filename={filename}".format(
-                filename=file_name
-            )
-            return response
-        return super(FileUploadView, self).post(request, *args, **kwargs)
+                response['Content-Length'] = open(failure_store_location, "rb").tell()
+                return response
+            return super(FileUploadView, self).post(request, *args, **kwargs)
+        except Exception as file_error:
+            messages.error(request, "Error: Invalid file type or header : '{}' . Please upload valid csv file".format(user_file))
+            return HttpResponseRedirect(file_error)
 
 
 class AddFormMixin(object, ):

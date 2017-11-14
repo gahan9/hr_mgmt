@@ -11,10 +11,12 @@
         <li class="breadcrumb-item active">View Data</li>
     </ol>
     <div class="container-fluid">
-        <form action="" method="get" class="form form-inline">
-            {% bootstrap_form form layout='inline' %}
-            {% bootstrap_button 'Search' %}
-        </form>
+        {% if form %}
+            <form action="" method="get" class="form form-inline">
+                {% bootstrap_form form layout='inline' %}
+                {% bootstrap_button 'Search' %}
+            </form>
+        {% endif %}
         {% render_table table %}
     </div>
 </section>
