@@ -4,17 +4,21 @@ import codecs
 from datetime import datetime
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Q
+from django.db.models.fields import DateTimeField
 from django.db.utils import IntegrityError
+from django.forms.models import ModelForm
 from django.http import HttpResponse
-from django.contrib.auth.models import User
-from django.views.generic import TemplateView, FormView
+from django.views.generic import TemplateView, FormView, CreateView
 from django.urls import reverse_lazy
-from django_filters.views import FilterView
-from django_tables2.views import MultiTableMixin, SingleTableMixin
-
+from django.views.generic.list import ListView
+import django_tables2 as tables
+from django_tables2.views import MultiTableMixin, SingleTableView
+from django import forms
 from forms.common import FileUploadForm
-from main.models import FileUpload, EmployeeData, EmployeeDataFilter
-from main.tables import EmployeeDataTable
+from .models import *
+from .tables import *
 from employee_management.settings import BASE_DIR
 
 
@@ -91,11 +95,59 @@ class FileUploadView(LoginRequiredMixin, FormView):
         return super(FileUploadView, self).post(request, *args, **kwargs)
 
 
-class EmployeeDataList(LoginRequiredMixin, MultiTableMixin, FilterView):
+class AddFormMixin(object, ):
+    def define_form(self):
+        def get_form_field_type(f):
+            if f == "user__email":
+                return forms.CharField(required=False, label="Email")
+            elif f == "user__first_name":
+                return forms.CharField(required=False, label="First Name")
+            elif f == "user__last_name":
+                return forms.CharField(required=False, label="Last Name")
+            return forms.CharField(required=False)
+        attrs = dict((f, get_form_field_type(f)) for f in self.get_form_fields())
+        klass = type('DForm', (forms.Form,), attrs)
+        return klass
+
+    def get_queryset(self):
+        form_class = self.define_form()
+        if self.request.GET:
+            self.form = form_class(self.request.GET)
+        else:
+            self.form = form_class()
+        qs = super(AddFormMixin, self).get_queryset()
+
+        if self.form.data and self.form.is_valid():
+            q_objects = Q()
+            for f in self.get_form_fields():
+                if self.form.cleaned_data.get(f):
+                    q_objects &= Q(**{f + '__icontains': self.form.cleaned_data[f]})
+            qs = qs.filter(q_objects)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AddFormMixin, self).get_context_data(**kwargs)
+        ctx['form'] = self.form
+        return ctx
+
+
+class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
     login_url = reverse_lazy('login')
     model = EmployeeData
     template_name = "table_show.html"
-    tables = [EmployeeDataTable(EmployeeData.objects.all().order_by('-id'))]
-    table_pagination = {'per_page': 6}
-    filterset_class = EmployeeDataFilter
-    # context_object_name = "files"
+    table_class = EmployeeDataTable
+    table_pagination = {'per_page': 15}
+
+    def get_form_fields(self):
+        return 'user__first_name', 'user__last_name', 'contact_no', 'user__email'
+
+
+class SurveyManager(LoginRequiredMixin, ListView):
+    login_url = reverse_lazy('login')
+    template_name = 'survey.html'
+    queryset = Survey.objects.all()
+
+
+class AddSurvey(SuccessMessageMixin, CreateView, ModelForm):
+    template_name = 'survey.html'
+    success_url = reverse_lazy('survey_manage')

@@ -7,8 +7,8 @@ class EmployeeDataTable(tables.Table):
     last_name = tables.Column(accessor='user.last_name', verbose_name='Last Name')
     email = tables.Column(accessor='user.email', verbose_name='Email Address')
 
-
     class Meta:
         model = EmployeeData
-        fields = ['id', 'first_name', 'last_name', 'contact_no', 'email']
+        fields = ['id', 'first_name', 'last_name', 'contact_no', 'email', 'registration_date']
         attrs = {'class': 'table table-sm'}
+        order_by = ("-registration_date",)

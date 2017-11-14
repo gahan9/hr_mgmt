@@ -1,0 +1,14 @@
+{% extends 'common.html' %}
+{% block content %}
+<section>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
+    <li class="breadcrumb-item active">Survey</li>
+</ol>
+<div class="container-fluid">
+    <a href="{% url 'add_survey' %}" class="breadcrumb-item navbar-right btn btn-success"> + Add Survey </a>
+</div>
+<h2>Survey</h2>
+</section>
+{% endblock %}

@@ -4,6 +4,11 @@
 {% load custom_tags %}
 {% block content %}
     <section>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'employee_data' %}">Employee Data</a></li>
+            <li class="breadcrumb-item active">Upload File</li>
+        </ol>
         <div class="container-fluid">
             {% if form.non_field_errors %}
                 <div class="row">

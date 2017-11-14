@@ -1,6 +1,10 @@
 {% extends 'common.html' %}
 {% block content %}
 <section>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item active">FieldRate</li>
+</ol>
 <div class="container">
     <div class="row">
         <div class="list-group col-md-3">
@@ -14,7 +18,7 @@
             </a>
         </div>
         <div class="list-group col-md-3">
-            <a class="list-group-item" href="#">
+            <a class="list-group-item" href="{% url 'survey_manage' %}">
                 <h4 class="list-group-item-heading">Survey</h4>
             </a>
         </div>

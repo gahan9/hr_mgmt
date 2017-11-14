@@ -1,6 +1,10 @@
 {% extends 'common.html' %}
 {% block content %}
 <section>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item active"><a href="{% url 'employee_data' %}">Employee Data</a></li>
+</ol>
 <div class="container">
     <div class="row">
         <div class="list-group col-md-3">
@@ -9,7 +13,7 @@
             </a>
         </div>
         <div class="list-group col-md-3">
-            <a class="list-group-item" href="{% url 'view_file' %}">
+            <a class="list-group-item" href="{% url 'view_data' %}">
                 <h4 class="list-group-item-heading">View Data</h4>
             </a>
         </div>

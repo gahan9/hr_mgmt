@@ -39,9 +39,7 @@ class QuestionDB(models.Model):
         verbose_name_plural = "Question Bank"
 
 
-class EmployeeDataFilter(django_filters.FilterSet):
-    # user__first_name = django_filters.CharFilter(lookup_expr='icontains')
-
-    class Meta:
-        model = EmployeeData
-        fields = ['user__first_name']
+class Survey(models.Model):
+    name = models.CharField(max_length=50)
+    # employee_group =
+    # question = models.
