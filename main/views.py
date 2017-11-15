@@ -15,12 +15,13 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import TemplateView, FormView, CreateView
 from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 import django_tables2 as tables
 from django_tables2.tables import Table
 from django_tables2.views import MultiTableMixin, SingleTableView
 from django import forms
-from forms.common import FileUploadForm
+from forms.common import FileUploadForm, SurveyCreator
 from .models import *
 from .tables import *
 from employee_management.settings import BASE_DIR
@@ -66,13 +67,12 @@ class FileUploadView(LoginRequiredMixin, FormView):
 
     def post(self, request, *args, **kwargs):
         user_file = self.request.FILES['file']
+        count = 0
+        no_of_user = 0
+        failed_user = 0
         try:
             csv_read = csv.DictReader(codecs.iterdecode(user_file, 'utf-8'))
             failure_store_location, file_name = self.server_dump_setup()
-            csv_file = open(failure_store_location, 'w')
-            fieldnames = ['first_name', 'last_name', "mobile", "email", "error_reason"]
-            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-            writer.writeheader()
             for row in csv_read:
                 password = row['first_name'] + "@" + row['mobile']
                 try:
@@ -84,25 +84,38 @@ class FileUploadView(LoginRequiredMixin, FormView):
                         last_name=row['last_name']
                     )
                     EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
+                    no_of_user += 1
                 except IntegrityError as duplicate_error:
+                    csv_file = open(failure_store_location, 'a')
+                    fieldnames = ['first_name', 'last_name', "mobile", "email", "error_reason"]
+                    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+                    if failed_user == 0:
+                        writer.writeheader()
+                    count += 1
+                    # print("duplicate_error-----> {}".format(duplicate_error))
                     row['error_reason'] = "Unable to add employee because User with the same email already exist"
                     writer.writerow(row)
+                    csv_file.close()
+                    failed_user += 1
                 except Exception as unknown_exception:
+                    print("unknown_exception-----> {}".format(unknown_exception))
                     row['error_reason'] = unknown_exception
-                    writer.writerow(row)
-            csv_file.close()
-            if failure_store_location:
-                messages.error(request, "Error: Some of the user failed to create")
+                    # writer.writerow(row)
+            if failed_user > 0:
+                messages.error(request, "Error: {} user(s) failed to create from {}".format(failed_user, user_file))
                 response = HttpResponse(open(failure_store_location, "rb"), content_type='text/csv')
                 response['Content-Disposition'] = "attachment; filename={filename}".format(
                     filename=file_name
                 )
-                response['Content-Length'] = open(failure_store_location, "rb").tell()
+                # response['Content-Length'] = open(failure_store_location, "rb").tell()
                 return response
-            return super(FileUploadView, self).post(request, *args, **kwargs)
         except Exception as file_error:
+            print("File-Error-----> {}".format(file_error))
             messages.error(request, "Error: Invalid file type or header : '{}' . Please upload valid csv file".format(user_file))
-            return HttpResponseRedirect(file_error)
+            return HttpResponseRedirect("")
+        if no_of_user > 0:
+            messages.success(request, "{} user(s) created successfully".format(no_of_user))
+        return super(FileUploadView, self).post(request, *args, **kwargs)
 
 
 class AddFormMixin(object, ):
@@ -159,5 +172,10 @@ class SurveyManager(LoginRequiredMixin, ListView):
 
 
 class AddSurvey(SuccessMessageMixin, CreateView, ModelForm):
-    template_name = 'survey.html'
+    template_name = 'add_survey.html'
     success_url = reverse_lazy('survey_manage')
+    form_class = SurveyCreator
+
+    def form_valid(self, form):
+        print("here... {}".format(self.object))
+        return super(AddSurvey, self).form_valid(form)

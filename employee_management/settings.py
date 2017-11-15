@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_filters',
     'bootstrap3',
-    'surveys.apps.SurveysConfig',
 ]
 
 MIDDLEWARE = [
