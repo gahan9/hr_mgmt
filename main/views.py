@@ -2,26 +2,27 @@ import os
 import csv
 import codecs
 from datetime import datetime
+
+from braces.views._access import SuperuserRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.db.models.fields import DateTimeField
 from django.db.utils import IntegrityError
-from django.forms.models import ModelForm
 from django.http import HttpResponse
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import render
-from django.views.generic import TemplateView, FormView, CreateView
+from django.shortcuts import render, render_to_response
+from django.views.generic import TemplateView, FormView
 from django.urls import reverse_lazy
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 import django_tables2 as tables
 from django_tables2.tables import Table
 from django_tables2.views import MultiTableMixin, SingleTableView
-from django import forms
-from forms.common import FileUploadForm, SurveyCreator
+from formtools.wizard.views import WizardView, SessionWizardView
+
+from forms.common import *
 from .models import *
 from .tables import *
 from employee_management.settings import BASE_DIR
@@ -70,6 +71,8 @@ class FileUploadView(LoginRequiredMixin, FormView):
         count = 0
         no_of_user = 0
         failed_user = 0
+        fieldnames = ['first_name', 'last_name', "mobile", "email", 'alternate_email', 'alternate_contact_no',
+                      'job_title', 'street', 'zip_code', 'city', 'country', "error_reason"]
         try:
             csv_read = csv.DictReader(codecs.iterdecode(user_file, 'utf-8'))
             failure_store_location, file_name = self.server_dump_setup()
@@ -77,17 +80,22 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 password = row['first_name'] + "@" + row['mobile']
                 try:
                     user_obj = User.objects.create(
-                        username=row['email'],
+                        username=row['mobile'],
                         password=make_password(password),
                         email=row['email'],
                         first_name=row['first_name'],
                         last_name=row['last_name']
                     )
-                    EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'])
+                    EmployeeData.objects.create(user=user_obj, contact_no=row['mobile'],
+                                                alternate_contact_no=row['alternate_contact_no'],
+                                                alternate_email=row['alternate_email'],
+                                                job_title=row['job_title'], street=row['street'],
+                                                zip_code=row['zip_code'], city=row['city'],
+                                                country=row['country']
+                                                )
                     no_of_user += 1
                 except IntegrityError as duplicate_error:
                     csv_file = open(failure_store_location, 'a')
-                    fieldnames = ['first_name', 'last_name', "mobile", "email", "error_reason"]
                     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                     if failed_user == 0:
                         writer.writeheader()
@@ -98,9 +106,14 @@ class FileUploadView(LoginRequiredMixin, FormView):
                     csv_file.close()
                     failed_user += 1
                 except Exception as unknown_exception:
+                    csv_file = open(failure_store_location, 'a')
+                    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+                    if failed_user == 0:
+                        writer.writeheader()
+                    count += 1
                     print("unknown_exception-----> {}".format(unknown_exception))
                     row['error_reason'] = unknown_exception
-                    # writer.writerow(row)
+                    writer.writerow(row)
             if failed_user > 0:
                 messages.error(request, "Error: {} user(s) failed to create from {}".format(failed_user, user_file))
                 response = HttpResponse(open(failure_store_location, "rb"), content_type='text/csv')
@@ -162,7 +175,7 @@ class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
     table_pagination = {'per_page': 15}
 
     def get_form_fields(self):
-        return 'user__first_name', 'user__last_name', 'contact_no', 'user__email'
+        return ['user__first_name', 'user__last_name', 'contact_no', 'user__email', 'job_title', 'street', 'city', 'country']
 
 
 class SurveyManager(LoginRequiredMixin, ListView):
@@ -171,11 +184,39 @@ class SurveyManager(LoginRequiredMixin, ListView):
     queryset = Survey.objects.all()
 
 
-class AddSurvey(SuccessMessageMixin, CreateView, ModelForm):
+class AddSurvey(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
+    login_url = reverse_lazy('login')
     template_name = 'add_survey.html'
     success_url = reverse_lazy('survey_manage')
-    form_class = SurveyCreator
+    form_list = [SurveyCreator1, SurveyCreator2]
+
+    def done(self, form_list, **kwargs):
+        for form in form_list:
+            pass
+        return render_to_response('done.html', {
+            'form_data': [form.cleaned_data for form in form_list],
+        })
+
+    # def form_valid(self, form):
+    #     print("here... {}".format(self.object))
+    #     return super(AddSurvey, self).form_valid(form)
+
+
+class CreateStaffUserView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
+    login_url = reverse_lazy('login')
+    form_class = CreateStaffUserForm
+    template_name = "create_staff_user.html"
+    success_url = reverse_lazy('create_staff')
 
     def form_valid(self, form):
-        print("here... {}".format(self.object))
-        return super(AddSurvey, self).form_valid(form)
+        form_data = form.cleaned_data
+        hr = User.objects.create(username=form_data['username'], email=form_data['email'],
+                                 password=make_password(form_data['password']), is_staff=True,
+                                 first_name=form_data['first_name'], last_name=form_data['last_name'],
+                                 )
+        EmployeeData.objects.create(user=hr, company_name=form_data['company_name'],
+                                    alternate_email=form_data['alternate_email'],
+                                    contact_no=form_data['contact_no'],
+                                    job_title=form_data['job_title'])
+        messages.success(self.request, "HR with username {} created successfully.".format(hr.username))
+        return HttpResponseRedirect(reverse_lazy('create_staff'))

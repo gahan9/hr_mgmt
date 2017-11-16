@@ -9,6 +9,8 @@ class EmployeeDataTable(tables.Table):
 
     class Meta:
         model = EmployeeData
-        fields = ['id', 'first_name', 'last_name', 'contact_no', 'email', 'registration_date']
+        fields = ['id', 'first_name', 'last_name', 'contact_no', 'email', 'alternate_email',
+                  'alternate_contact_no', 'job_title', 'street', 'zip_code', 'city', 'country',
+                  'registration_date']
         attrs = {'class': 'table table-sm'}
         order_by = ("-registration_date",)

@@ -13,6 +13,7 @@
                         <li><a href="#contact">Contact</a></li>
                         {% if user.is_superuser %}
                             <li><a href="{% url "admin:index" %}">Admin</a></li>
+                            <li><a href="{% url "create_staff" %}">Add HR</a></li>
                         {% endif %}
                         {% if user.is_authenticated %}
                             <li class="nav-item dropdown">

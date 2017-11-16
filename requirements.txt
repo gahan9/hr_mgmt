@@ -9,3 +9,5 @@ django-crispy-forms
 django-bootstrap3
 django-filters
 django-crowdsourcing
+django-countries
+django-formtools
