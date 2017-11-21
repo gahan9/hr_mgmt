@@ -4,8 +4,9 @@ from django_countries import countries
 from django_countries.fields import LazyTypedMultipleChoiceField
 from django_countries.widgets import CountrySelectWidget
 
-from forms.helpers import file_upload_helper, survey_helper, create_staff_helper
+from forms.helpers import *
 from main.models import *
+from employee.models import *
 
 
 class LoginForm(AuthenticationForm):
@@ -24,26 +25,49 @@ class LoginForm(AuthenticationForm):
                                           'type': 'password', 'placeholder': 'Password'}))
 
 
+class CreateCompanyForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    alternate_email = forms.EmailField(widget=forms.EmailInput)
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    country = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    alternate_contact_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    def __init__(self, *args, **kwargs):
+        super(CreateCompanyForm, self).__init__(*args, **kwargs)
+        self.helper = create_company_helper
+        self.fields['email'].required = True
+        self.fields['alternate_email'].required = True
+        self.fields['alternate_contact_no'].required = False
+
+    class Meta:
+        model = UserModel
+        fields = ['contact_number', 'first_name', 'last_name', 'password', 'email', 'is_head_hr', 'is_hr']
+
+
 class CreateStaffUserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     alternate_email = forms.EmailField(widget=forms.EmailInput)
     job_title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    company_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    contact_no = forms.CharField(widget=forms.NumberInput)
+    street = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    zip_code = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    country = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    alternate_contact_no = forms.CharField(widget=forms.NumberInput)
 
     def __init__(self, *args, **kwargs):
+
         super(CreateStaffUserForm, self).__init__(*args, **kwargs)
-        self.helper = create_staff_helper
+        self.helper = create_hr_helper
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
         self.fields['email'].required = True
         self.fields['job_title'].required = True
-        self.fields['company_name'].required = True
         self.fields['alternate_email'].required = False
+        self.fields['alternate_contact_no'].required = False
 
     class Meta:
-        model = User
-        fields = ['username', 'password', 'email', 'is_staff', 'first_name', 'last_name']
+        model = UserModel
+        fields = ['contact_number', 'first_name', 'last_name', 'password', 'email', 'is_head_hr', 'is_hr']
 
 
 class FileUploadForm(forms.ModelForm):

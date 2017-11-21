@@ -3,28 +3,56 @@ from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from django.forms.widgets import PasswordInput
 
-create_staff_helper = FormHelper()
-create_staff_helper.form_tag = False
-create_staff_helper.form_class = ''
-create_staff_helper.form_method = 'POST'
+create_company_helper = FormHelper()
+create_company_helper.form_tag = False
+create_company_helper.form_class = ''
+create_company_helper.form_method = 'POST'
 # create_staff_helper.form_show_labels = False
 # create_staff_helper.label_class = 'col-sm-2 col-form-label'
-create_staff_helper.layout = Layout(
+create_company_helper.layout = Layout(
     Div(
+        Field('contact_number', css_class='form-control', placeholder='Mobile Number (used as Username)'),
+        Field('name', css_class='form-control', placeholder='Company Name'),
+        Field('country', css_class='form-control', placeholder='Country'),
         Field('first_name', css_class='form-control', placeholder='First Name'),
         Field('last_name', css_class='form-control', placeholder='Last Name'),
-        Field('username', css_class='form-control', placeholder='Username'),
         Field('email', css_class='form-control', placeholder='Email'),
         Field('alternate_email', css_class='form-control', placeholder='Alternate Email'),
+        Field('alternate_contact_no', css_class='form-control', placeholder='Mobile Number'),
         Field('password', css_class='form-control', placeholder='Password'),
-        Field('contact_no', css_class='form-control', placeholder='Mobile Number'),
-        Field('job_title', css_class='form-control', placeholder='Job Title'),
-        Field('company_name', css_class='form-control', placeholder='Company Name'),
-        # Field('is_staff', css_class='custom-control-input', placeholder='Allow Admin Rights?'),
+        Field('is_head_hr', css_class='custom-control-input', placeholder='Allow Head HR Rights?'),
+        Field('is_hr', css_class='custom-control-input', placeholder='Allow HR Rights?'),
         css_class="form-group row"
     ),
-
 )
+
+
+create_hr_helper = FormHelper()
+create_hr_helper.form_tag = False
+create_hr_helper.form_class = ''
+create_hr_helper.form_method = 'POST'
+# create_staff_helper.form_show_labels = False
+# create_staff_helper.label_class = 'col-sm-2 col-form-label'
+create_hr_helper.layout = Layout(
+    Div(
+        Field('contact_number', css_class='form-control', placeholder='Primary Mobile Number (for username)'),
+        Field('first_name', css_class='form-control', placeholder='First Name'),
+        Field('last_name', css_class='form-control', placeholder='Last Name'),
+        Field('email', css_class='form-control', placeholder='Email'),
+        Field('password', css_class='form-control', placeholder='Password'),
+        Field('alternate_contact_no', css_class='form-control', placeholder='Mobile Number'),
+        Field('alternate_email', css_class='form-control', placeholder='Alternate Email'),
+        Field('job_title', css_class='form-control', placeholder='Job Title'),
+        Field('street', css_class='form-control', placeholder='Street'),
+        Field('zip_code', css_class='form-control', placeholder='Zip Code'),
+        Field('city', css_class='form-control', placeholder='City'),
+        Field('country', css_class='form-control', placeholder='Country'),
+        Field('is_head_hr', css_class='custom-control-input', placeholder='Allow Head HR Rights?'),
+        Field('is_hr', css_class='custom-control-input', placeholder='Allow HR Rights?'),
+        css_class="form-group row"
+    ),
+)
+
 
 file_upload_helper = FormHelper()
 file_upload_helper.form_tag = True
