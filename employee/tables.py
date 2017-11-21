@@ -1,9 +1,9 @@
-from .models import *
+from main.models import *
 import django_tables2 as tables
 from employee.models import *
 
 
-class EmployeeDataTable(tables.Table):
+class EmployeeTable(tables.Table):
     first_name = tables.Column(accessor='user.first_name', verbose_name='First Name')
     last_name = tables.Column(accessor='user.last_name', verbose_name='Last Name')
     email = tables.Column(accessor='user.email', verbose_name='Email Address')
