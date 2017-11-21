@@ -44,7 +44,7 @@ class CreateCompanyForm(forms.ModelForm):
         fields = ['contact_number', 'first_name', 'last_name', 'password', 'email', 'is_head_hr', 'is_hr']
 
 
-class CreateStaffUserForm(forms.ModelForm):
+class CreateUserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     alternate_email = forms.EmailField(widget=forms.EmailInput)
     job_title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -56,7 +56,7 @@ class CreateStaffUserForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
 
-        super(CreateStaffUserForm, self).__init__(*args, **kwargs)
+        super(CreateUserForm, self).__init__(*args, **kwargs)
         self.helper = create_hr_helper
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
