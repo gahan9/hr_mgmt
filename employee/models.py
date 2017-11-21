@@ -2,12 +2,12 @@ from main.models import *
 
 
 class AccessLevel(models.Model):
-    ACCESS_LEVEL = [("head_hr", "Head HR"), ("hr", "HR"), ("employee", "Employee")]
-    name = models.CharField(max_length=30, default="employee", choices=ACCESS_LEVEL)
+    ACCESS_LEVEL = [("head_hr", "Head HR"), ("hr", "HR"), ("company", "Employee")]
+    name = models.CharField(max_length=30, default="company", choices=ACCESS_LEVEL)
 
 
 class Employee(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="employee")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="company")
     company_name = models.ForeignKey(Company)
     registration_date = models.DateTimeField(auto_now=True)
     alternate_email = models.EmailField(blank=True, null=True, verbose_name="Alternate Email")
