@@ -39,11 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'main',
+    'employee',
     'django_tables2',
     'crispy_forms',
     'django_filters',
     'bootstrap3',
+    'django_countries',
+    'formtools',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -140,3 +144,9 @@ FILE_UPLOAD_HANDLERS = [
 ]
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # in bytes
+
+# specify countries to be select
+COUNTRIES_ONLY = ['AU', 'IN', 'NZ', 'US']
+
+AUTH_USER_MODEL = 'main.UserModel'
+
