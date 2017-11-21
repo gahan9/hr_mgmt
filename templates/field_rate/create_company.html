@@ -1,8 +1,9 @@
-{% extends 'common.html' %}
+{% extends 'common/common.html' %}
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
 <section>
+{% if user.is_superuser %}
     <div class="container col-xs-4 col-xs-offset-3">
         {% if messages %}
             <div class="alert alert-success">
@@ -19,4 +20,5 @@
         </form>
     </div>
 </section>
+{% endif %}
 {% endblock %}
