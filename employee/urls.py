@@ -1,7 +1,8 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
+
 
 urlpatterns = [
     url(r'^$', views.HomePageView.as_view(), name="home"),
@@ -9,7 +10,10 @@ urlpatterns = [
     url(r'^company-data/', views.EmployeeDataView.as_view(), name="employee_data"),
         url(r'^upload_file/', views.FileUploadView.as_view(), name="file_upload"),
         url(r'^view_data/', views.EmployeeDataList.as_view(), name="view_data"),
+        url(r'^edit_data/(?P<pk>\d+)/$', views.EditUserView.as_view(), name="edit_data"),
     url(r'^field-rate/', views.FieldRateView.as_view(), name="field_rate"),
         url(r'^survey/', views.SurveyManager.as_view(), name="survey_manage"),
             url(r'^add_survey/', views.AddSurvey.as_view(), name="add_survey"),
+
+    # url(r'^api/employee/', views.EmployeeViewSet, name="employee"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

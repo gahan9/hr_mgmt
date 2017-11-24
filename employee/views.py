@@ -1,10 +1,14 @@
+from django.views.generic.edit import UpdateView, FormMixin
+from rest_framework import viewsets
+
+from employee.serializers import *
 from main.views import *
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
     # login_url = reverse_lazy('admin:index')
     login_url = reverse_lazy('login')
-    template_name = "field_rate/../templates/company/home.html"
+    template_name = "company/home.html"
     success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
@@ -15,19 +19,19 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 
 class EmployeeDataView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    template_name = "field_rate/../templates/company/employee_data.html"
+    template_name = "company/employee_data.html"
 
 
 class FieldRateView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    template_name = "field_rate/../templates/company/field_rate.html"
+    template_name = "company/field_rate.html"
 
 
 class FileUploadView(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('login')
     form_class = FileUploadForm
     success_url = reverse_lazy('file_upload')
-    template_name = "field_rate/../templates/company/file_upload.html"
+    template_name = "company/file_upload.html"
 
     def server_dump_setup(self):
         # setup directory for error handling
@@ -40,41 +44,54 @@ class FileUploadView(LoginRequiredMixin, FormView):
         return file_location, file_name
 
     def post(self, request, *args, **kwargs):
+        current_user = self.request.user
+        try:
+            current_user_company = Company.objects.get(company_user=current_user)
+        except:
+            current_user_company = Company.objects.get(id=Employee.objects.get(user=current_user).id)
+        print(current_user, current_user_company)
         user_file = self.request.FILES['file']
         count = 0
         no_of_user = 0
         failed_user = 0
-        fieldnames = ['first_name', 'last_name', "mobile", "email", 'alternate_email', 'alternate_contact_no',
-                      'job_title', 'street', 'zip_code', 'city', 'country', "error_reason"]
+        fieldnames = ['contact_number', 'first_name', 'last_name', 'email', 'alternate_email',
+                      'alternate_contact_no', 'job_title', 'street', 'zip_code', 'city', 'country',
+                      'role', 'password', 'error_reason']
         try:
             csv_read = csv.DictReader(codecs.iterdecode(user_file, 'utf-8'))
             failure_store_location, file_name = self.server_dump_setup()
             for row in csv_read:
-                password = row['first_name'] + "@" + row['mobile']
+                password_generated = row['first_name'] + "@" + row['contact_number']
+                if "password" in row.keys():
+                    password = row['password'] if row['password'] else password_generated
+                else:
+                    password = password_generated
                 try:
                     user_obj = UserModel.objects.create(
-                        contact_number=row['mobile'],
+                        contact_number=row['contact_number'],
                         password=make_password(password),
                         email=row['email'],
                         first_name=row['first_name'],
-                        last_name=row['last_name']
+                        last_name=row['last_name'],
+                        role=3  # employee
                     )
-                    Employee.objects.create(user=user_obj, contact_no=row['mobile'],
+                    Employee.objects.create(user=user_obj, company_name=current_user_company,
                                             alternate_contact_no=row['alternate_contact_no'],
                                             alternate_email=row['alternate_email'],
                                             job_title=row['job_title'], street=row['street'],
                                             zip_code=row['zip_code'], city=row['city'],
-                                            country=row['country']
+                                            country=row['country'], added_by=current_user
                                             )
                     no_of_user += 1
+                    print("success...")
                 except IntegrityError as duplicate_error:
                     csv_file = open(failure_store_location, 'a')
                     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                     if failed_user == 0:
                         writer.writeheader()
                     count += 1
-                    # print("duplicate_error-----> {}".format(duplicate_error))
-                    row['error_reason'] = "Unable to add company because User with the same email already exist"
+                    print("duplicate_error-----> {}".format(duplicate_error))
+                    row['error_reason'] = "Unable to add company because User with the same email already exist more-detail:{}".format(duplicate_error)
                     writer.writerow(row)
                     csv_file.close()
                     failed_user += 1
@@ -98,7 +115,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
         except Exception as file_error:
             print("File-Error-----> {}".format(file_error))
             messages.error(request, "Error: Invalid file type or header : '{}' . Please upload valid csv file".format(user_file))
-            return HttpResponseRedirect("")
+            # return HttpResponseRedirect("")
         if no_of_user > 0:
             messages.success(request, "{} user(s) created successfully".format(no_of_user))
         return super(FileUploadView, self).post(request, *args, **kwargs)
@@ -143,23 +160,35 @@ class AddFormMixin(object, ):
 class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
     login_url = reverse_lazy('login')
     model = Employee
-    template_name = "field_rate/../templates/company/table_show.html"
+    template_name = "company/table_show.html"
     table_class = EmployeeTable
     table_pagination = {'per_page': 15}
 
     def get_form_fields(self):
-        return ['user__first_name', 'user__last_name', 'contact_no', 'user__email', 'job_title', 'street', 'city', 'country']
+        return ['user__first_name', 'user__last_name', 'user__contact_number', 'user__email', 'job_title', 'street', 'city', 'country']
+
+    def get_queryset(self):
+        current_user = self.request.user
+        try:
+            company_id = Company.objects.get(id=Employee.objects.get(user=current_user).company_name.id)
+        except Exception as e:
+            # if user in this exception means user itself a company-owner
+            print(e)
+            company_id = Company.objects.get(company_user=current_user).id
+        if self.queryset is None:
+            self.queryset = Employee.objects.filter(company_name=company_id, user__role__gte=current_user.role)
+        return super(EmployeeDataList, self).get_queryset()
 
 
 class SurveyManager(LoginRequiredMixin, ListView):
     login_url = reverse_lazy('login')
-    template_name = 'field_rate/../templates/company/survey.html'
+    template_name = 'company/survey.html'
     queryset = Survey.objects.all()
 
 
 class AddSurvey(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
     login_url = reverse_lazy('login')
-    template_name = 'field_rate/../templates/company/add_survey.html'
+    template_name = 'company/add_survey.html'
     success_url = reverse_lazy('survey_manage')
     form_list = [SurveyCreator1, SurveyCreator2]
 
@@ -185,10 +214,11 @@ class CreateUserView(LoginRequiredMixin, CreateView):
         current_user = self.request.user
         current_user_company = Company.objects.get(company_user=current_user)
         form_data = form.cleaned_data
+        set_role = 3 if form_data['role'] < current_user.role else form_data['role']
         hr = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
                                       first_name=form_data['first_name'], last_name=form_data['last_name'],
                                       password=make_password(form_data['password']),
-                                      is_head_hr=form_data['is_head_hr'], is_hr=form_data['is_hr'],
+                                      role=set_role,
                                       )
         Employee.objects.create(user=hr, company_name=current_user_company,
                                 job_title=form_data['job_title'],
@@ -197,10 +227,24 @@ class CreateUserView(LoginRequiredMixin, CreateView):
                                 street=form_data['street'], zip_code=form_data['zip_code'],
                                 city=form_data['city'], country=form_data['country']
                                 )
-        messages.success(self.request, "HR with username {} created successfully.".format(hr.username))
-        return HttpResponseRedirect(reverse_lazy('create_staff'))
+        messages.success(self.request, "HR {} {} created successfully.".format(hr.first_name, hr.last_name))
+        return HttpResponseRedirect(reverse_lazy('create_user'))
 
     def form_invalid(self, form):
         msg = "Error: invalid data... {}".format(form.errors)
         messages.error(self.request, msg)
-        return HttpResponseRedirect(reverse_lazy('create_staff'))
+        return HttpResponseRedirect(reverse_lazy('create_user'))
+
+
+class EditUserView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    login_url = reverse_lazy('login')
+    template_name = 'company/edit_user.html'
+    model = Employee
+    success_url = reverse_lazy('view_data')
+    form_class = CreateUserForm
+    success_message = "Details updated successfully."
+
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    serializer_class = EmployeeSerializer
+    queryset = Employee.objects.all()
