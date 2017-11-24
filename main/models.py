@@ -94,6 +94,8 @@ class ActivityMonitor(models.Model):
     activity_type = models.IntegerField(choices=[(0, 'create'), (1, 'change'), (2, 'delete')])
     performed_by = models.ForeignKey(User)
     time_stamp = models.DateTimeField(auto_now=True)
+    affected_user = models.ForeignKey(User)
+    bulk_create = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Activity Monitor"
