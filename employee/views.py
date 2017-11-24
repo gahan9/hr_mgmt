@@ -262,8 +262,11 @@ class EmployeeDeleteView(LoginRequiredMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         user_object = self.get_object()
-        activity_obj = ActivityMonitor.objects.create(
-            activity_type=2, performed_by=self.request.user, affected_user=user_object)
+        value_user = [user_object.contact_number, user_object.first_name, user_object.last_name]
+        del_msg = "{}".format(value_user)
+        activity_obj = ActivityMonitor.objects.create(remarks=del_msg,
+                                                      activity_type=2, performed_by=self.request.user,
+                                                      affected_user=user_object)
         print(activity_obj)
         message = 'User: {} (M: {}) deleted successfully'.format(user_object.first_name, user_object.contact_number)
         messages.success(self.request, message)

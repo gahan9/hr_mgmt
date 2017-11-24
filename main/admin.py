@@ -32,7 +32,7 @@ class CompanyAdmin(admin.ModelAdmin):
 
 
 class ActivityMonitorAdmin(admin.ModelAdmin):
-    list_display = ('performed_by', 'activity_type', 'affected_user', 'bulk_create', 'time_stamp')
+    list_display = ('performed_by', 'activity_type', 'affected_user', 'bulk_create', 'remarks', 'time_stamp')
 
 
 admin.site.register(UserModel, UserModelAdmin)
