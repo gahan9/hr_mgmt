@@ -31,8 +31,13 @@ class CompanyAdmin(admin.ModelAdmin):
     list_display = ('company_user', 'name', 'alternate_contact_no', 'alternate_email', 'country')
 
 
+class ActivityMonitorAdmin(admin.ModelAdmin):
+    list_display = ('performed_by', 'activity_type', 'affected_user', 'bulk_create', 'time_stamp')
+
+
 admin.site.register(UserModel, UserModelAdmin)
 admin.site.register(Company, CompanyAdmin)
+admin.site.register(ActivityMonitor, ActivityMonitorAdmin)
 
 admin.site.site_header = 'FieldRate administration'
 admin.site.site_title = 'FieldRate administration'

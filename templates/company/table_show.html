@@ -2,6 +2,7 @@
 {% load render_table from django_tables2 %}
 {% load bootstrap3 %}
 {% load crispy_forms_tags %}
+{% load custom_tags %}
 {% block content %}
 
 <section>
@@ -11,6 +12,15 @@
         <li class="breadcrumb-item active">View Data</li>
     </ol>
     <div class="container-fluid">
+        {% if messages %}
+            <div class="alert alert-success">
+                {% for message in messages %}
+                    <div class="{{ message|message_filter }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         {% if form %}
             <form action="" method="get" class="form form-inline">
                 {% bootstrap_form form layout='inline' %}

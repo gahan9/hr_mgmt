@@ -91,10 +91,13 @@ class FileUpload(models.Model):
 
 class ActivityMonitor(models.Model):
     activity_type = models.IntegerField(choices=[(0, 'create'), (1, 'change'), (2, 'delete')])
-    performed_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="perform")
-    affected_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="affect")
+    performed_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="perform",
+                                     on_delete=models.SET_NULL, null=True, blank=True)
+    affected_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="affect",
+                                      on_delete=models.SET_NULL, null=True, blank=True)
     bulk_create = models.BooleanField(default=False)
     time_stamp = models.DateTimeField(auto_now=True)
+    remarks = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Activity Monitor"

@@ -1,4 +1,4 @@
-from django.views.generic.edit import UpdateView, FormMixin
+from django.views.generic.edit import UpdateView, FormMixin, DeleteView
 from rest_framework import viewsets
 
 from employee.serializers import *
@@ -75,11 +75,13 @@ class FileUploadView(LoginRequiredMixin, FormView):
                         last_name=row['last_name'],
                         role=3  # employee
                     )
+                    ActivityMonitor.objects.create(activity_type=0, performed_by=current_user, affected_user=user_obj,
+                                                   bulk_create=True)
                     Employee.objects.create(user=user_obj, company_name=current_user_company,
                                             alternate_contact_no=row['alternate_contact_no'],
                                             alternate_email=row['alternate_email'],
-                                            job_title=row['job_title'], street=row['street'],
-                                            zip_code=row['zip_code'], city=row['city'],
+                                            job_title=row['job_title'],
+                                            street=row['street'], zip_code=row['zip_code'], city=row['city'],
                                             country=row['country'], added_by=current_user
                                             )
                     no_of_user += 1
@@ -215,19 +217,21 @@ class CreateUserView(LoginRequiredMixin, CreateView):
         current_user_company = Company.objects.get(company_user=current_user)
         form_data = form.cleaned_data
         set_role = 3 if form_data['role'] < current_user.role else form_data['role']
-        hr = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
-                                      first_name=form_data['first_name'], last_name=form_data['last_name'],
-                                      password=make_password(form_data['password']),
-                                      role=set_role,
-                                      )
-        Employee.objects.create(user=hr, company_name=current_user_company,
+        user_obj = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
+                                            first_name=form_data['first_name'], last_name=form_data['last_name'],
+                                            password=make_password(form_data['password']),
+                                            role=set_role,
+                                            )
+        activity_obj = ActivityMonitor.objects.create(activity_type=0, performed_by=current_user, affected_user=user_obj)
+        Employee.objects.create(user=user_obj, company_name=current_user_company,
                                 job_title=form_data['job_title'],
                                 alternate_email=form_data['alternate_email'],
                                 alternate_contact_no=form_data['alternate_contact_no'],
                                 street=form_data['street'], zip_code=form_data['zip_code'],
                                 city=form_data['city'], country=form_data['country']
                                 )
-        messages.success(self.request, "HR {} {} created successfully.".format(hr.first_name, hr.last_name))
+        messages.success(self.request,
+                         "HR {} {} created successfully.".format(user_obj.first_name, user_obj.last_name))
         return HttpResponseRedirect(reverse_lazy('create_user'))
 
     def form_invalid(self, form):
@@ -248,3 +252,19 @@ class EditUserView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 class EmployeeViewSet(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     queryset = Employee.objects.all()
+
+
+class EmployeeDeleteView(LoginRequiredMixin, DeleteView):
+    login_url = reverse_lazy('login')
+    model = UserModel
+    success_message = "'%(name)s'  deleted..."
+    success_url = reverse_lazy("view_data")
+
+    def delete(self, request, *args, **kwargs):
+        user_object = self.get_object()
+        activity_obj = ActivityMonitor.objects.create(
+            activity_type=2, performed_by=self.request.user, affected_user=user_object)
+        print(activity_obj)
+        message = 'User: {} (M: {}) deleted successfully'.format(user_object.first_name, user_object.contact_number)
+        messages.success(self.request, message)
+        return super(EmployeeDeleteView, self).delete(request, *args, **kwargs)
