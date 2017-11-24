@@ -1,8 +1,11 @@
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django_countries.fields import CountryField
 
 from employee_management import settings
+
+fs = FileSystemStorage(location='/var/www/html/field_rate/photos')
 
 
 class MyUserManager(UserManager):
@@ -28,9 +31,8 @@ class MyUserManager(UserManager):
         u = self.create_user(contact_number, password=password, is_hr=True, is_head_hr=True)
         u.is_admin = True
         u.is_staff = True
-        u.is_head_hr = True
-        u.is_hr = True
         u.is_superuser = True
+        u.role = 1  # Head HR
         if "first_name" in kwargs.keys():
             u.first_name = kwargs['first_name']
         if "last_name" in kwargs.keys():
@@ -40,9 +42,14 @@ class MyUserManager(UserManager):
 
 
 class UserModel(AbstractUser):
+    ROLE_CHOICES = (
+        (1, 'Head HR'),
+        (2, 'HR'),
+        (3, 'Employee')
+    )
     contact_number = models.CharField(max_length=12, unique=True, verbose_name="Contact Number")
-    is_hr = models.BooleanField(default=False)
-    is_head_hr = models.BooleanField(default=False)
+    profile_image = models.ImageField(storage=fs, blank=True, null=True)
+    role = models.IntegerField(choices=ROLE_CHOICES, default=3)
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
     registration_date = models.DateTimeField(auto_now=True)
     objects = MyUserManager()

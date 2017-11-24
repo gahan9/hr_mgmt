@@ -8,8 +8,8 @@ from .models import *
 class UserModelAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('contact_number', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_hr', 'is_head_hr',
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'profile_image')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'role',
                                        'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
@@ -19,7 +19,10 @@ class UserModelAdmin(UserAdmin):
             'fields': ('contact_number', 'password1', 'password2'),
         }),
     )
-    list_display = ('id', 'contact_number', 'first_name', 'last_name', 'email', 'is_hr', 'is_head_hr', 'is_staff', 'registration_date', 'password')
+    list_display = ('id', 'contact_number', 'first_name', 'last_name', 'email', 'role', 'is_staff',
+                    # 'profile_image', 'password',
+                    'registration_date',
+                    )
     search_fields = ('contact_number', 'first_name', 'last_name', 'email')
     ordering = ('-registration_date',)
 
