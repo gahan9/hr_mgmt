@@ -15,10 +15,11 @@
                             <li><a href="{% url "admin:index" %}">Admin</a></li>
                             <li><a href="{% url "create_company" %}">Add Company</a></li>
                         {% endif %}
-                        {% if user.is_hr %}
+                        {% if user.role <= 2 %}
+                            <li><a href="{% url "create_user" %}">Create User</a></li>
                         {% endif %}
-                        {% if user.is_head_hr %}
-                            <li><a href="{% url "create_user" %}">Add HR</a></li>
+                        {% if user.role <= 1 %}
+                            <li><a href="{% url "create_user" %}">Create HR</a></li>
                         {% endif %}
                         {% if user.is_authenticated %}
                             <li class="nav-item dropdown">

@@ -30,7 +30,7 @@
                 </div>
             {% endif %}
             <div class="container center-block col-md-5">
-                {% if user.is_staff %}
+                {% if user.role <= 2 %}
                     {% crispy form form.helper %}
                 {% else %}
                     <h4>You don't have rights to access this facility</h4>

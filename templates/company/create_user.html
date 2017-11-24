@@ -3,7 +3,7 @@
 {% load custom_tags %}
 {% block content %}
 <section>
-{% if user.is_head_hr %}
+{% if user.role <= 1 %}
     <div class="container col-xs-4 col-xs-offset-3">
         {% if messages %}
             <div class="alert alert-success">
