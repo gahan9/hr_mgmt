@@ -41,7 +41,7 @@ class CreateCompanyForm(forms.ModelForm):
 
     class Meta:
         model = UserModel
-        fields = ['contact_number', 'first_name', 'last_name', 'password', 'email', 'is_head_hr', 'is_hr']
+        fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'password', 'email', 'role']
 
 
 class CreateUserForm(forms.ModelForm):
@@ -67,11 +67,13 @@ class CreateUserForm(forms.ModelForm):
 
     class Meta:
         model = UserModel
-        fields = ['contact_number', 'first_name', 'last_name', 'password', 'email', 'is_head_hr', 'is_hr']
+        fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'password', 'email', 'role']
 
 
 class FileUploadForm(forms.ModelForm):
     """Upload files with this form"""
+    category = forms.CharField(widget=forms.TextInput)
+
     def __init__(self, *args, **kwargs):
         super(FileUploadForm, self).__init__(*args, **kwargs)
         self.helper = file_upload_helper
