@@ -12,16 +12,16 @@ create_company_helper.form_method = 'POST'
 create_company_helper.layout = Layout(
     Div(
         Field('contact_number', css_class='form-control', placeholder='Mobile Number (used as Username)'),
+        Field('profile_image', css_class='form-control', placeholder='Company Logo'),
         Field('name', css_class='form-control', placeholder='Company Name'),
         Field('country', css_class='form-control', placeholder='Country'),
-        Field('first_name', css_class='form-control', placeholder='First Name'),
-        Field('last_name', css_class='form-control', placeholder='Last Name'),
+        Field('first_name', css_class='form-control', placeholder='Owner First Name'),
+        Field('last_name', css_class='form-control', placeholder='Owner Last Name'),
         Field('email', css_class='form-control', placeholder='Email'),
         Field('alternate_email', css_class='form-control', placeholder='Alternate Email'),
         Field('alternate_contact_no', css_class='form-control', placeholder='Mobile Number'),
         Field('password', css_class='form-control', placeholder='Password'),
-        Field('is_head_hr', css_class='custom-control-input', placeholder='Allow Head HR Rights?'),
-        Field('is_hr', css_class='custom-control-input', placeholder='Allow HR Rights?'),
+        Field('role', css_class='custom-control-input', placeholder='Specify user role?'),
         css_class="form-group row"
     ),
 )
@@ -36,6 +36,7 @@ create_hr_helper.form_method = 'POST'
 create_hr_helper.layout = Layout(
     Div(
         Field('contact_number', css_class='form-control', placeholder='Primary Mobile Number (for username)'),
+        Field('profile_image', css_class='form-control', placeholder='Company Logo'),
         Field('first_name', css_class='form-control', placeholder='First Name'),
         Field('last_name', css_class='form-control', placeholder='Last Name'),
         Field('email', css_class='form-control', placeholder='Email'),
@@ -47,8 +48,7 @@ create_hr_helper.layout = Layout(
         Field('zip_code', css_class='form-control', placeholder='Zip Code'),
         Field('city', css_class='form-control', placeholder='City'),
         Field('country', css_class='form-control', placeholder='Country'),
-        Field('is_head_hr', css_class='custom-control-input', placeholder='Allow Head HR Rights?'),
-        Field('is_hr', css_class='custom-control-input', placeholder='Allow HR Rights?'),
+        Field('role', css_class='custom-control-input', placeholder='Specify user role?'),
         css_class="form-group row"
     ),
 )
@@ -62,17 +62,14 @@ file_upload_helper.form_show_labels = False  # default = True
 file_upload_helper.layout = Layout(
     Div(
         Div(
-            Div(
-                Field('file', css_class='form-control'),
-                css_class="col-md-3"
-            ),
-            Div(
-                FormActions(
-                    Submit('Upload', value="Upload", css_class="btn-theme"),
-                ),
-                css_class="col-md-3"
-            ),
-            css_class="row"),
+            Field('file', css_class='form-control'),
+            Field('category', css_class='form-control', placeholder="Employee Group/Region"),
+            css_class="col-md-3"
+        ),
+        Div(
+            FormActions(Submit('Upload', value="Upload", css_class="btn-theme"),),
+            css_class="col-md-3"
+        ),
         css_class="container")
 )
 
