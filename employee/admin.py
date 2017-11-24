@@ -13,31 +13,21 @@ class FileUploadAdmin(admin.ModelAdmin):
 
 class EmployeeDataAdmin(admin.ModelAdmin):
     search_fields = ['user__first_name', 'user__last_name', 'user__email']
-    list_display = ('id', 'contact_number', 'first_name', 'last_name', 'company_name', 'email',
-                    'alternate_email', 'alternate_contact_no', 'job_title',
-                    'street', 'zip_code', 'city', 'country', 'is_head_hr', 'is_hr', 'registration_date'
+    list_display = ('id', 'contact_number', 'first_name', 'last_name', 'company_name', 'email', 'role',
+                    # 'alternate_email', 'alternate_contact_no',
+                    'job_title',
+                    # 'street', 'zip_code', 'city',
+                    'country', 'added_by', 'registration_date'
                     )
     ordering = ('company_name', '-registration_date', )
-
-    # def change_view(self, request, object_id, form_url='', extra_context=None):
-    #     print(object_id)
-    #     print(Employee.objects.get(id=object_id).user.id)
-    #     return redirect(
-    #         "admin:main_usermodel_change",
-    #         args=(Employee.objects.get(id=object_id).user.id,)
-    #     )
 
     @staticmethod
     def contact_number(obj):
         return obj.user.contact_number
 
     @staticmethod
-    def is_head_hr(obj):
-        return obj.user.is_head_hr
-
-    @staticmethod
-    def is_hr(obj):
-        return obj.user.is_hr
+    def role(obj):
+        return obj.user.role
 
     @staticmethod
     def first_name(obj):
