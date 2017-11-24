@@ -1,13 +1,8 @@
 from main.models import *
 
 
-class AccessLevel(models.Model):
-    ACCESS_LEVEL = [("head_hr", "Head HR"), ("hr", "HR"), ("company", "Employee")]
-    name = models.CharField(max_length=30, default="company", choices=ACCESS_LEVEL)
-
-
 class Employee(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="company")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="employee", on_delete=models.CASCADE)
     company_name = models.ForeignKey(Company)
     registration_date = models.DateTimeField(auto_now=True)
     alternate_email = models.EmailField(blank=True, null=True, verbose_name="Alternate Email")
@@ -17,9 +12,11 @@ class Employee(models.Model):
     zip_code = models.CharField(max_length=50, verbose_name="Work Zip Code", blank=True)
     city = models.CharField(max_length=50, verbose_name="Work City", blank=True)
     country = models.CharField(max_length=50, verbose_name="Work Country", blank=True)
+    category = models.CharField(max_length=30, verbose_name="Category/Region", blank=True, null=True)
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="created_by", blank=True, null=True)
 
-    def __str__(self):
-        return "{}".format(self.user.first_name)
+    def __unicode__(self):
+        return self.user.contact_number
 
     class Meta:
         verbose_name = "Employee Detail"
@@ -40,4 +37,6 @@ class Survey(models.Model):
     name = models.CharField(max_length=50, verbose_name="Survey Name")
     employee_group = CountryField(blank_label="Employee Group", blank=True, null=True)
     question = models.ManyToManyField(QuestionDB, related_name="Question", blank=True)
-
+    steps = models.SmallIntegerField(default=0)
+    complete = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now=True)
