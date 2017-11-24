@@ -7,7 +7,6 @@ from django_countries.fields import CountryField
 from employee_management import settings
 
 fs = FileSystemStorage(location='/var/www/html/field_rate/photos')
-User = get_user_model()
 
 
 class MyUserManager(UserManager):
@@ -79,7 +78,7 @@ class Company(models.Model):
 
 
 class FileUpload(models.Model):
-    uploader = models.ForeignKey(User, blank=True, null=True)
+    uploader = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     file = models.FileField(upload_to='.', verbose_name="File")
     added = models.DateTimeField(auto_now=True)
 
@@ -92,10 +91,10 @@ class FileUpload(models.Model):
 
 class ActivityMonitor(models.Model):
     activity_type = models.IntegerField(choices=[(0, 'create'), (1, 'change'), (2, 'delete')])
-    performed_by = models.ForeignKey(User)
-    time_stamp = models.DateTimeField(auto_now=True)
-    affected_user = models.ForeignKey(User)
+    performed_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="perform")
+    affected_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="affect")
     bulk_create = models.BooleanField(default=False)
+    time_stamp = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = "Activity Monitor"
