@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.files.storage import FileSystemStorage
 from django.db import models
@@ -6,6 +7,7 @@ from django_countries.fields import CountryField
 from employee_management import settings
 
 fs = FileSystemStorage(location='/var/www/html/field_rate/photos')
+User = get_user_model()
 
 
 class MyUserManager(UserManager):
@@ -77,7 +79,7 @@ class Company(models.Model):
 
 
 class FileUpload(models.Model):
-    uploader = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    uploader = models.ForeignKey(User, blank=True, null=True)
     file = models.FileField(upload_to='.', verbose_name="File")
     added = models.DateTimeField(auto_now=True)
 
@@ -86,3 +88,12 @@ class FileUpload(models.Model):
 
     class Meta:
         verbose_name_plural = "Uploads"
+
+
+class ActivityMonitor(models.Model):
+    activity_type = models.IntegerField(choices=[(0, 'create'), (1, 'change'), (2, 'delete')])
+    performed_by = models.ForeignKey(User)
+    time_stamp = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Activity Monitor"
