@@ -5,10 +5,9 @@ register = template.Library()
 @register.filter
 def message_filter(msg, **kwargs):
     if msg.message.lower().startswith("error"):
-        return 'alert-danger'
-        # return 'class=row alert-danger'
+        return 'text-danger'
     else:
-        return 'class=row alert-success'
+        return 'class=row text-success'
 
 
 @register.filter

@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
+from django.forms.models import ModelForm
 from django_countries import countries
 from django_countries.fields import LazyTypedMultipleChoiceField
 from django_countries.widgets import CountrySelectWidget
@@ -55,7 +56,6 @@ class CreateUserForm(forms.ModelForm):
     alternate_contact_no = forms.CharField(widget=forms.NumberInput)
 
     def __init__(self, *args, **kwargs):
-
         super(CreateUserForm, self).__init__(*args, **kwargs)
         self.helper = create_hr_helper
         self.fields['first_name'].required = True
@@ -68,6 +68,26 @@ class CreateUserForm(forms.ModelForm):
     class Meta:
         model = UserModel
         fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'password', 'email', 'role']
+
+
+class EditUserForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditUserForm, self).__init__(*args, **kwargs)
+        self.helper = edit_user_helper
+
+    class Meta:
+        model = UserModel
+        fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'email', 'role']
+
+
+class EditEmployeeForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditEmployeeForm, self).__init__(*args, **kwargs)
+        self.helper = edit_employee_data_helper
+
+    class Meta:
+        model = Employee
+        fields = ['alternate_contact_no', 'alternate_email', 'job_title', 'street', 'zip_code', 'city', 'country']
 
 
 class FileUploadForm(forms.ModelForm):

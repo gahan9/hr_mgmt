@@ -5,12 +5,21 @@
 <section>
     <div class="container col-xs-4 col-xs-offset-3">
         {% if messages %}
-            <div class="alert alert-success">
+            <div class="container-fluid alert alert-success">
                 {% for message in messages %}
                     <div class="{{ message|message_filter }}">
                         {{ message }}
                     </div>
                 {% endfor %}
+            </div>
+        {% endif %}
+        {% if form.field_errors %}
+            <div class="row">
+                <ul class='form-errors'>
+                    {% for error in form.field_errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
             </div>
         {% endif %}
         <form action="" class="form-group" method="post" role="form" >

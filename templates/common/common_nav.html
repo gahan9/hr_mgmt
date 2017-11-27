@@ -27,6 +27,10 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">{{ user.get_role_display }}</a></li>
+                                    {% if user.role == 1 %}
+                                        <li><a class="dropdown-item" href="{% url 'activity_log' %}">Activity Log</a></li>
+                                    {% endif %}
                                     <li role="separator" class="divider"></li>
                                     <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                                 </ul>

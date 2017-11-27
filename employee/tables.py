@@ -4,11 +4,11 @@ from employee.models import *
 
 class EmployeeTable(tables.Table):
     # id = tables.LinkColumn('employee:edit_data', args=[Employee('pk')])
-    id = tables.TemplateColumn('<a href="/edit_data/{{record.id}}">{{record.id}}</a>')
+    id = tables.TemplateColumn('<a href="/edit_employee_profile/{{record.id}}">{{record.id}}</a>')
     # contact_number = tables.Column(accessor='user.contact_number', verbose_name='Mobile Number')
     contact_number = tables.TemplateColumn(
         accessor='user.contact_number',
-        template_code='<a href="/edit_data/{{record.id}}">{{record.user.contact_number}}</a>')
+        template_code='<a href="/edit_user_profile/{{record.user.id}}">{{record.user.contact_number}}</a>')
     first_name = tables.Column(accessor='user.first_name', verbose_name='First Name')
     last_name = tables.Column(accessor='user.last_name', verbose_name='Last Name')
     email = tables.Column(accessor='user.email', verbose_name='Email Address')
@@ -28,3 +28,11 @@ class EmployeeTable(tables.Table):
                   'category', 'added_by', 'registration_date', 'delete']
         attrs = {'class': 'table table-sm'}
         order_by = ("-registration_date",)
+
+
+class ActivityTable(tables.Table):
+    class Meta:
+        model = ActivityMonitor
+        fields = ['id', 'performed_by', 'activity_type', 'affected_user', 'bulk_create', 'status', 'time_stamp', 'remarks']
+        attrs = {'class': 'table table-sm'}
+        order_by = ("-time_stamp",)

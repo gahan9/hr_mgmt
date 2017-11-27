@@ -5,6 +5,13 @@ from employee.serializers import *
 from main.views import *
 
 
+def get_user_company(user):
+    if hasattr(user, 'employee'):
+        return user.employee.company_name
+    elif hasattr(user, 'rel_company_user'):
+        return user.rel_company_user
+
+
 class HomePageView(LoginRequiredMixin, TemplateView):
     # login_url = reverse_lazy('admin:index')
     login_url = reverse_lazy('login')
@@ -45,10 +52,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
 
     def post(self, request, *args, **kwargs):
         current_user = self.request.user
-        try:
-            current_user_company = Company.objects.get(company_user=current_user)
-        except:
-            current_user_company = Company.objects.get(id=Employee.objects.get(user=current_user).id)
+        current_user_company = get_user_company(current_user)
         print(current_user, current_user_company)
         user_file = self.request.FILES['file']
         count = 0
@@ -75,8 +79,9 @@ class FileUploadView(LoginRequiredMixin, FormView):
                         last_name=row['last_name'],
                         role=3  # employee
                     )
-                    ActivityMonitor.objects.create(activity_type=0, performed_by=current_user, affected_user=user_obj,
-                                                   bulk_create=True)
+                    ActivityMonitor.objects.create(activity_type=0, company_id=current_user_company.id,
+                                                   performed_by=current_user.get_detail(),
+                                                   affected_user=user_obj.get_detail(), bulk_create=True)
                     Employee.objects.create(user=user_obj, company_name=current_user_company,
                                             alternate_contact_no=row['alternate_contact_no'],
                                             alternate_email=row['alternate_email'],
@@ -93,7 +98,9 @@ class FileUploadView(LoginRequiredMixin, FormView):
                         writer.writeheader()
                     count += 1
                     print("duplicate_error-----> {}".format(duplicate_error))
-                    row['error_reason'] = "Unable to add company because User with the same email already exist more-detail:{}".format(duplicate_error)
+                    row[
+                        'error_reason'] = "Unable to add company because User with the same email already exist more-detail:{}".format(
+                        duplicate_error)
                     writer.writerow(row)
                     csv_file.close()
                     failed_user += 1
@@ -116,7 +123,8 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 return response
         except Exception as file_error:
             print("File-Error-----> {}".format(file_error))
-            messages.error(request, "Error: Invalid file type or header : '{}' . Please upload valid csv file".format(user_file))
+            messages.error(request,
+                           "Error: Invalid file type or header : '{}' . Please upload valid csv file".format(user_file))
             # return HttpResponseRedirect("")
         if no_of_user > 0:
             messages.success(request, "{} user(s) created successfully".format(no_of_user))
@@ -133,6 +141,7 @@ class AddFormMixin(object, ):
             elif f == "user__last_name":
                 return forms.CharField(required=False, label="Last Name")
             return forms.CharField(required=False)
+
         attrs = dict((f, get_form_field_type(f)) for f in self.get_form_fields())
         klass = type('DForm', (forms.Form,), attrs)
         return klass
@@ -162,12 +171,14 @@ class AddFormMixin(object, ):
 class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
     login_url = reverse_lazy('login')
     model = Employee
-    template_name = "company/table_show.html"
+    template_name = "company/employee_detail.html"
     table_class = EmployeeTable
+
     table_pagination = {'per_page': 15}
 
     def get_form_fields(self):
-        return ['user__first_name', 'user__last_name', 'user__contact_number', 'user__email', 'job_title', 'street', 'city', 'country']
+        return ['user__first_name', 'user__last_name', 'user__contact_number', 'user__email', 'job_title', 'street',
+                'city', 'country']
 
     def get_queryset(self):
         current_user = self.request.user
@@ -176,7 +187,7 @@ class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
         except Exception as e:
             # if user in this exception means user itself a company-owner
             print(e)
-            company_id = Company.objects.get(company_user=current_user).id
+            company_id = Company.objects.get(company_user=current_user)
         if self.queryset is None:
             self.queryset = Employee.objects.filter(company_name=company_id, user__role__gte=current_user.role)
         return super(EmployeeDataList, self).get_queryset()
@@ -192,18 +203,16 @@ class AddSurvey(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
     login_url = reverse_lazy('login')
     template_name = 'company/add_survey.html'
     success_url = reverse_lazy('survey_manage')
+
     form_list = [SurveyCreator1, SurveyCreator2]
 
     def done(self, form_list, **kwargs):
         for form in form_list:
             pass
+
         return render_to_response('common/done.html', {
             'form_data': [form.cleaned_data for form in form_list],
         })
-
-    # def form_valid(self, form):
-    #     print("here... {}".format(self.object))
-    #     return super(AddSurvey, self).form_valid(form)
 
 
 class CreateUserView(LoginRequiredMixin, CreateView):
@@ -222,7 +231,9 @@ class CreateUserView(LoginRequiredMixin, CreateView):
                                             password=make_password(form_data['password']),
                                             role=set_role,
                                             )
-        activity_obj = ActivityMonitor.objects.create(activity_type=0, performed_by=current_user, affected_user=user_obj)
+        activity_obj = ActivityMonitor.objects.create(activity_type=0, performed_by=current_user.get_detail(),
+                                                      company_id=current_user_company.id,
+                                                      affected_user=user_obj.get_detail())
         Employee.objects.create(user=user_obj, company_name=current_user_company,
                                 job_title=form_data['job_title'],
                                 alternate_email=form_data['alternate_email'],
@@ -240,13 +251,48 @@ class CreateUserView(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(reverse_lazy('create_user'))
 
 
-class EditUserView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class EditEmployeeView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     login_url = reverse_lazy('login')
     template_name = 'company/edit_user.html'
     model = Employee
     success_url = reverse_lazy('view_data')
-    form_class = CreateUserForm
+    form_class = EditEmployeeForm
     success_message = "Details updated successfully."
+
+    def form_valid(self, form, **kwargs):
+        user_object = Employee.objects.get(id=self.kwargs['pk']).user
+        company_id = get_user_company(self.request.user).id
+        ActivityMonitor.objects.create(activity_type=1, company_id=company_id,
+                                       performed_by=self.request.user.get_detail(),
+                                       affected_user=user_object.get_detail())
+        return super(EditEmployeeView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        user_object = Employee.objects.get(id=self.kwargs['pk']).user
+        company_id = get_user_company(self.request.user).id
+        ActivityMonitor.objects.create(activity_type=1, company_id=company_id, status=False,
+                                       performed_by=self.request.user.get_detail(),
+                                       affected_user=user_object.get_detail())
+        return super(EditEmployeeView, self).form_invalid(form)
+
+
+class EditUserView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    login_url = reverse_lazy('login')
+    template_name = 'company/edit_user.html'
+    model = UserModel
+    success_url = reverse_lazy('view_data')
+    form_class = EditUserForm
+    success_message = "Details updated successfully."
+
+    def form_valid(self, form, **kwargs):
+        current_user = self.request.user
+        user_object = UserModel.objects.get(id=self.kwargs['pk'])
+        company_id = get_user_company(current_user).id
+        activity_obj = ActivityMonitor.objects.create(activity_type=1,
+                                                      company_id=company_id,
+                                                      performed_by=self.request.user.get_detail(),
+                                                      affected_user=user_object.get_detail())
+        return super(EditUserView, self).form_valid(form)
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -261,13 +307,31 @@ class EmployeeDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("view_data")
 
     def delete(self, request, *args, **kwargs):
+        current_user = self.request.user
+        company_id = get_user_company(current_user).id
         user_object = self.get_object()
         value_user = [user_object.contact_number, user_object.first_name, user_object.last_name]
         del_msg = "{}".format(value_user)
-        activity_obj = ActivityMonitor.objects.create(remarks=del_msg,
-                                                      activity_type=2, performed_by=self.request.user,
-                                                      affected_user=user_object)
+        activity_obj = ActivityMonitor.objects.create(remarks=del_msg, activity_type=2,
+                                                      company_id=company_id,
+                                                      performed_by=self.request.user.get_detail(),
+                                                      affected_user=user_object.get_detail())
         print(activity_obj)
         message = 'User: {} (M: {}) deleted successfully'.format(user_object.first_name, user_object.contact_number)
         messages.success(self.request, message)
         return super(EmployeeDeleteView, self).delete(request, *args, **kwargs)
+
+
+class ActivityMonitorView(LoginRequiredMixin, SingleTableView):
+    login_url = reverse_lazy('login')
+    table_class = ActivityTable
+    model = ActivityMonitor
+    template_name = "company/employee_detail.html"
+    table_pagination = {'per_page': 15}
+
+    def get_queryset(self):
+        current_user = self.request.user
+        company_id = get_user_company(current_user).id
+        if self.queryset is None:
+            self.queryset = ActivityMonitor.objects.filter(company_id=company_id)
+        return super(ActivityMonitorView, self).get_queryset()

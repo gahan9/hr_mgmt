@@ -31,8 +31,6 @@ create_hr_helper = FormHelper()
 create_hr_helper.form_tag = False
 create_hr_helper.form_class = ''
 create_hr_helper.form_method = 'POST'
-# create_staff_helper.form_show_labels = False
-# create_staff_helper.label_class = 'col-sm-2 col-form-label'
 create_hr_helper.layout = Layout(
     Div(
         Field('contact_number', css_class='form-control', placeholder='Primary Mobile Number (for username)'),
@@ -48,7 +46,7 @@ create_hr_helper.layout = Layout(
         Field('zip_code', css_class='form-control', placeholder='Zip Code'),
         Field('city', css_class='form-control', placeholder='City'),
         Field('country', css_class='form-control', placeholder='Country'),
-        Field('role', css_class='custom-control-input', placeholder='Specify user role?'),
+        Field('role', css_class='form-control select', placeholder='Specify user role?'),
         css_class="form-group row"
     ),
 )
@@ -84,4 +82,40 @@ survey_helper.layout = Layout(
         Field('employee_group', css_class='form-control'),
         css_class="form-group row"
     )
+)
+
+edit_user_helper = FormHelper()
+edit_user_helper.form_tag = False
+edit_user_helper.form_class = ''
+edit_user_helper.form_method = 'POST'
+edit_user_helper.layout = Layout(
+    Div(
+        Field('contact_number', css_class='form-control', placeholder='Primary Mobile Number (for username)', readonly=True),
+        Field('profile_image', css_class='form-control', placeholder='Company Logo'),
+        Field('first_name', css_class='form-control', placeholder='First Name'),
+        Field('last_name', css_class='form-control', placeholder='Last Name'),
+        Field('email', css_class='form-control', placeholder='Email'),
+        Field('password', css_class='form-control', placeholder='Password'),
+        Field('role', css_class='form-control select', placeholder='Specify user role?'),
+        css_class="form-group row"
+    ),
+)
+
+edit_employee_data_helper = FormHelper()
+edit_employee_data_helper.form_tag = False
+edit_employee_data_helper.form_class = ''
+edit_employee_data_helper.form_method = 'POST'
+edit_employee_data_helper.layout = Layout(
+    Div(
+        Field('user', css_class='form-control', placeholder='user', disabled=True),
+        Field('company_name', css_class='form-control', placeholder='company', disabled=True),
+        Field('alternate_contact_no', css_class='form-control', placeholder='Mobile Number'),
+        Field('alternate_email', css_class='form-control', placeholder='Alternate Email'),
+        Field('job_title', css_class='form-control', placeholder='Job Title'),
+        Field('street', css_class='form-control', placeholder='Street'),
+        Field('zip_code', css_class='form-control', placeholder='Zip Code'),
+        Field('city', css_class='form-control', placeholder='City'),
+        Field('country', css_class='form-control', placeholder='Country'),
+        css_class="form-group row"
+    ),
 )

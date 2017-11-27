@@ -28,11 +28,14 @@ class UserModelAdmin(UserAdmin):
 
 
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('company_user', 'name', 'alternate_contact_no', 'alternate_email', 'country')
+    list_display = ('id', 'company_user', 'name', 'alternate_contact_no', 'alternate_email', 'country')
+    search_fields = ['id', 'name', 'alternate_contact_no', 'alternate_email', 'country']
 
 
 class ActivityMonitorAdmin(admin.ModelAdmin):
-    list_display = ('performed_by', 'activity_type', 'affected_user', 'bulk_create', 'remarks', 'time_stamp')
+    search_fields = ['performed_by', 'activity_type', 'affected_user']
+    list_display = ('id', 'company', 'performed_by', 'activity_type', 'affected_user', 'bulk_create',
+                    'status', 'remarks', 'time_stamp')
 
 
 admin.site.register(UserModel, UserModelAdmin)
