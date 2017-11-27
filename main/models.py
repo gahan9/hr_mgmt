@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django_countries.fields import CountryField
+from rest_framework.fields import JSONField
 
 from employee_management import settings
 
@@ -58,12 +59,15 @@ class UserModel(AbstractUser):
     USERNAME_FIELD = 'contact_number'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
+    def get_detail(self):
+        return {'number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
+
     def __str__(self):
         return "{}- {}".format(self.contact_number, self.first_name)
 
 
 class Company(models.Model):
-    company_user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    company_user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='rel_company_user')
     name = models.CharField(max_length=100, verbose_name="Company Name", unique=True)
     alternate_contact_no = models.CharField(max_length=15, blank=True, null=True,
                                             verbose_name="Alternate Contact Number")
@@ -90,14 +94,14 @@ class FileUpload(models.Model):
 
 
 class ActivityMonitor(models.Model):
+    company = models.ForeignKey(Company)
     activity_type = models.IntegerField(choices=[(0, 'create'), (1, 'change'), (2, 'delete')])
-    performed_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="perform",
-                                     on_delete=models.SET_NULL, null=True, blank=True)
-    affected_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="affect",
-                                      on_delete=models.SET_NULL, null=True, blank=True)
+    performed_by = models.TextField(null=True, blank=True)
+    affected_user = models.TextField(null=True, blank=True)
     bulk_create = models.BooleanField(default=False)
     time_stamp = models.DateTimeField(auto_now=True)
     remarks = models.TextField(blank=True, null=True)
+    status = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "Activity Monitor"
