@@ -1,3 +1,7 @@
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from rest_framework.compat import MaxValueValidator, MinValueValidator
+
 from main.models import *
 
 
@@ -24,19 +28,37 @@ class Employee(models.Model):
 
 
 class QuestionDB(models.Model):
-    CHOICE = [("Rating", "Rating"), ("ShortTextField", "ShortTextField"), ("LongTextField", "LongTextField")]
+    CHOICE = [("MCQ", "MCQ"), ("Rating", "Rating"), ("TextField", "TextField")]
     question = models.TextField()
     answer_type = models.CharField(max_length=15, choices=CHOICE)
+    asked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="is_asked_by", blank=True)
+    created_on = models.DateTimeField(auto_now=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
 
     class Meta:
         verbose_name = "Question Bank"
         verbose_name_plural = "Question Bank"
 
 
+class MCQ(models.Model):
+    type = GenericRelation(QuestionDB)
+    option = models.CharField(max_length=40, blank=True, null=True)
+
+
+class Rating(models.Model):
+    type = GenericRelation(QuestionDB)
+
+
+class TextAnswer(models.Model):
+    type = GenericRelation(QuestionDB)
+
+
 class Survey(models.Model):
     name = models.CharField(max_length=50, verbose_name="Survey Name")
     employee_group = CountryField(blank_label="Employee Group", blank=True, null=True)
-    question = models.ManyToManyField(QuestionDB, related_name="Question", blank=True)
+    question = GenericRelation(QuestionDB)
     steps = models.SmallIntegerField(default=0)
     complete = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now=True)

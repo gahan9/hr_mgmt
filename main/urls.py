@@ -13,6 +13,8 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'employee', EmployeeViewSet)
 router.register(r'company', CompanyViewSet)
+router.register(r'question_database', QuestionViewSet)
+
 urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^login/', django_login, {'template_name': 'common/login.html', 'authentication_form': LoginForm}, name='login'),

@@ -335,3 +335,8 @@ class ActivityMonitorView(LoginRequiredMixin, SingleTableView):
         if self.queryset is None:
             self.queryset = ActivityMonitor.objects.filter(company_id=company_id)
         return super(ActivityMonitorView, self).get_queryset()
+
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    serializer_class = QuestionSerializer
+    queryset = QuestionDB.objects.all()

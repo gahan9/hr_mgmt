@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from employee.models import Employee
+from employee.models import Employee, QuestionDB
 from main.serializers import UserSerializer, CompanySerializer
 
 User = get_user_model()
@@ -19,3 +19,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
                   'job_title', 'street', 'zip_code', 'city', 'country',
                   'added_by', 'registration_date'
                   ]
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionDB
+        fields = ['url', 'id', 'question']
