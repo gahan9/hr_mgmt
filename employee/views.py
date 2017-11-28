@@ -337,6 +337,26 @@ class ActivityMonitorView(LoginRequiredMixin, SingleTableView):
         return super(ActivityMonitorView, self).get_queryset()
 
 
+class TextAnswerViewSet(viewsets.ModelViewSet):
+    serializer_class = TextSerializer
+    queryset = TextAnswer.objects.all()
+
+
+class RatingAnswerViewSet(viewsets.ModelViewSet):
+    serializer_class = RatingSerializer
+    queryset = RatingAnswer.objects.all()
+
+
+class MCQAnswerViewSet(viewsets.ModelViewSet):
+    serializer_class = MCQSerializer
+    queryset = MCQAnswer.objects.all()
+
+
 class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = QuestionDB.objects.all()
+
+
+class SurveyViewSet(viewsets.ModelViewSet):
+    serializer_class = SurveySerializer
+    queryset = Survey.objects.all()

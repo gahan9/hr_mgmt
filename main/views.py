@@ -32,7 +32,7 @@ User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    queryset = User.objects.all().order_by('company_name')
+    queryset = User.objects.all().order_by('employee__company_name', 'role')
 
 
 class CompanyViewSet(viewsets.ModelViewSet):

@@ -14,6 +14,10 @@ router.register(r'users', views.UserViewSet)
 router.register(r'employee', EmployeeViewSet)
 router.register(r'company', CompanyViewSet)
 router.register(r'question_database', QuestionViewSet)
+router.register(r'answers/mcq', MCQAnswerViewSet)
+router.register(r'answers/rating', RatingAnswerViewSet)
+router.register(r'answers/text', TextAnswerViewSet)
+router.register(r'survey', SurveyViewSet)
 
 urlpatterns = [
     url(r'^api/', include(router.urls)),

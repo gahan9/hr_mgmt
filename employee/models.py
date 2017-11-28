@@ -34,7 +34,7 @@ class QuestionDB(models.Model):
     asked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="is_asked_by", blank=True)
     created_on = models.DateTimeField(auto_now=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey()
 
     class Meta:
@@ -42,22 +42,24 @@ class QuestionDB(models.Model):
         verbose_name_plural = "Question Bank"
 
 
-class MCQ(models.Model):
+class MCQAnswer(models.Model):
     type = GenericRelation(QuestionDB)
-    option = models.CharField(max_length=40, blank=True, null=True)
+    option = models.CharField(max_length=150, blank=True, null=True)
 
 
-class Rating(models.Model):
+class RatingAnswer(models.Model):
     type = GenericRelation(QuestionDB)
+    rate_value = models.SmallIntegerField(blank=True, null=True)
 
 
 class TextAnswer(models.Model):
     type = GenericRelation(QuestionDB)
+    text = models.TextField(blank=True, null=True)
 
 
 class Survey(models.Model):
     name = models.CharField(max_length=50, verbose_name="Survey Name")
-    employee_group = CountryField(blank_label="Employee Group", blank=True, null=True)
+    employee_group = models.CharField(max_length=70, verbose_name="Employee Group|Country-Region", blank=True, null=True)
     question = GenericRelation(QuestionDB)
     steps = models.SmallIntegerField(default=0)
     complete = models.BooleanField(default=False)

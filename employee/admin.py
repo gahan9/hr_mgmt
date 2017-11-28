@@ -1,8 +1,5 @@
 from django.contrib import admin
-from django.shortcuts import redirect
-from django.urls.base import reverse
-from django.utils.translation import ugettext_lazy as _
-
+from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 from .models import *
 
 
@@ -50,9 +47,14 @@ class QuestionDBAdmin(admin.ModelAdmin):
 class SurveyAdmin(admin.ModelAdmin):
     list_display = ('name', 'employee_region')
 
-    def employee_region(self, obj):
+    @staticmethod
+    def employee_region(obj):
         return obj.employee_group.region
 
 
 admin.site.register(FileUpload, FileUploadAdmin)
 admin.site.register(Employee, EmployeeDataAdmin)
+admin.site.register(QuestionDB, QuestionDBAdmin)
+admin.site.register(MCQAnswer)
+admin.site.register(RatingAnswer)
+admin.site.register(TextAnswer)
