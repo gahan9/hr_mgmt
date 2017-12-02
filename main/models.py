@@ -53,7 +53,8 @@ class UserModel(AbstractUser):
     profile_image = models.ImageField(storage=fs, blank=True, null=True)
     role = models.IntegerField(choices=ROLE_CHOICES, default=3)
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
-    registration_date = models.DateTimeField(auto_now=True)
+    registration_date = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
     objects = MyUserManager()
 
     USERNAME_FIELD = 'contact_number'
@@ -73,6 +74,8 @@ class Company(models.Model):
                                             verbose_name="Alternate Contact Number")
     alternate_email = models.EmailField(blank=True, null=True, verbose_name="Alternate Email")
     country = models.CharField(max_length=50, verbose_name="Country", blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name

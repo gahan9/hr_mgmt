@@ -1,8 +1,36 @@
-from django.views.generic.edit import UpdateView, FormMixin, DeleteView
-from rest_framework import viewsets
+import codecs
+import csv
+import os
+from datetime import datetime
 
+from bootstrap3 import renderers
+from django.contrib import messages
+from django.contrib.auth import mixins
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Q
+from django.db.utils import IntegrityError
+from django.shortcuts import render_to_response
+from django.http import HttpResponse
+from django.http.response import HttpResponseRedirect
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, FormView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
+from django_tables2.views import SingleTableView
+from formtools.wizard.views import SessionWizardView
+from rest_framework import viewsets, generics
+from rest_framework.decorators import detail_route
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.mixins import UpdateModelMixin
+from rest_framework.renderers import StaticHTMLRenderer
+from rest_framework.response import Response
+
+from employee_management.settings import BASE_DIR
+from employee.tables import *
 from employee.serializers import *
-from main.views import *
+from forms.common import *
 
 
 def get_user_company(user):
@@ -356,7 +384,38 @@ class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = QuestionDB.objects.all()
 
+    def get_queryset(self, **kwargs):
+        print(kwargs)
+        if not self.request.user.is_superuser:
+            queryset = QuestionDB.objects.filter(asked_by=self.request.user)
+            return queryset
+        else:
+            queryset = QuestionDB.objects.all()
+            return queryset
+
+
+class QuestionSet(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = QuestionSerializer
+    model = QuestionDB
+    lookup_field = "rel_question"
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = self.model.objects.filter(rel_question=24)
+        return queryset
+
+
+class TimeLineSet(RetrieveUpdateDestroyAPIView, CreateAPIView):
+    pass
+
 
 class SurveyViewSet(viewsets.ModelViewSet):
     serializer_class = SurveySerializer
     queryset = Survey.objects.all()
+
+    def get_queryset(self):
+        if not self.request.user.is_superuser:
+            queryset = Survey.objects.filter(created_by=self.request.user)
+            return queryset
+        else:
+            queryset = Survey.objects.all()
+            return queryset

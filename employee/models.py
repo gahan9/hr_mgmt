@@ -22,23 +22,34 @@ class Employee(models.Model):
     def __unicode__(self):
         return self.user.contact_number
 
+    def __str__(self):
+        return self.user.contact_number
+
     class Meta:
         verbose_name = "Employee Detail"
         verbose_name_plural = "Employee Details"
 
 
 class QuestionDB(models.Model):
-    CHOICE = [("MCQ", "MCQ"), ("Rating", "Rating"), ("TextField", "TextField")]
+    CHOICE = ((0, "MCQ"),  # content_type: 16
+              (1, "Rating"),  # content_type: 15
+              (2, "TextField"))  # content_type: 14
     question = models.TextField()
-    answer_type = models.CharField(max_length=15, choices=CHOICE)
-    asked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="is_asked_by", blank=True)
-    created_on = models.DateTimeField(auto_now=True)
+    answer_type = models.IntegerField(choices=CHOICE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey()
+    asked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="is_asked_by", blank=True)
+    created_on = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.question
+
+    def __str__(self):
+        return self.question
 
     class Meta:
-        verbose_name = "Question Bank"
+        verbose_name = "Question"
         verbose_name_plural = "Question Bank"
 
 
@@ -58,9 +69,16 @@ class TextAnswer(models.Model):
 
 
 class Survey(models.Model):
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="survey_owner")
     name = models.CharField(max_length=50, verbose_name="Survey Name")
     employee_group = models.CharField(max_length=70, verbose_name="Employee Group|Country-Region", blank=True, null=True)
-    question = GenericRelation(QuestionDB)
-    steps = models.SmallIntegerField(default=0)
+    question = models.ManyToManyField(QuestionDB, blank=True, related_name="rel_question")
+    steps = models.SmallIntegerField(default=1)
     complete = models.BooleanField(default=False)
-    date_created = models.DateTimeField(auto_now=True)
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def get_question(self):
+        return [p.question for p in self.question.all()]

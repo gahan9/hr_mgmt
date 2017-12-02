@@ -1,29 +1,13 @@
-import codecs
-import csv
-import os
-from datetime import datetime
-
 from braces.views._access import SuperuserRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Q
-from django.db.utils import IntegrityError
-from django.http import HttpResponse
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import render_to_response
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import CreateView
-from django.views.generic.list import ListView
-from django_tables2.views import SingleTableView
-from formtools.wizard.views import SessionWizardView
 from rest_framework import viewsets
 
-from employee.tables import *
-from employee_management.settings import BASE_DIR
+from employee.views import get_user_company
 from forms.common import *
 from main.serializers import *
 
@@ -34,6 +18,14 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by('employee__company_name', 'role')
 
+    def get_queryset(self):
+        if not self.request.user.is_superuser:
+            queryset = UserModel.objects.filter(employee__company_name=get_user_company(self.request.user.rel_company_user))
+            print(queryset)
+            return queryset
+        else:
+            queryset = UserModel.objects.all()
+            return queryset
 
 class CompanyViewSet(viewsets.ModelViewSet):
     serializer_class = CompanySerializer

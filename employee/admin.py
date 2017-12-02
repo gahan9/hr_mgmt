@@ -41,15 +41,11 @@ class EmployeeDataAdmin(admin.ModelAdmin):
 
 class QuestionDBAdmin(admin.ModelAdmin):
     search_fields = ['question']
-    list_display = ('question', 'answer_type')
+    list_display = ('id', 'question', 'answer_type', 'content_type')
 
 
 class SurveyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'employee_region')
-
-    @staticmethod
-    def employee_region(obj):
-        return obj.employee_group.region
+    list_display = ('id', 'name', 'employee_group', 'get_question')
 
 
 admin.site.register(FileUpload, FileUploadAdmin)
@@ -58,3 +54,4 @@ admin.site.register(QuestionDB, QuestionDBAdmin)
 admin.site.register(MCQAnswer)
 admin.site.register(RatingAnswer)
 admin.site.register(TextAnswer)
+admin.site.register(Survey, SurveyAdmin)
