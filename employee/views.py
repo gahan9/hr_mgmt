@@ -400,7 +400,7 @@ class QuestionSet(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "rel_question"
 
     def get_queryset(self, *args, **kwargs):
-        queryset = self.model.objects.filter(rel_question=24)
+        queryset = self.model.objects.all()
         return queryset
 
 
