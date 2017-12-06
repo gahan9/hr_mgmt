@@ -68,7 +68,7 @@ class UserModel(AbstractUser):
 
 
 class Company(models.Model):
-    company_user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='rel_company_user')
+    company_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rel_company_user')
     name = models.CharField(max_length=100, verbose_name="Company Name", unique=True)
     alternate_contact_no = models.CharField(max_length=15, blank=True, null=True,
                                             verbose_name="Alternate Contact Number")
@@ -85,7 +85,7 @@ class Company(models.Model):
 
 
 class FileUpload(models.Model):
-    uploader = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    uploader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     file = models.FileField(upload_to='.', verbose_name="File")
     added = models.DateTimeField(auto_now=True)
 
@@ -97,7 +97,7 @@ class FileUpload(models.Model):
 
 
 class ActivityMonitor(models.Model):
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     activity_type = models.IntegerField(choices=[(0, 'create'), (1, 'change'), (2, 'delete')])
     performed_by = models.TextField(null=True, blank=True)
     affected_user = models.TextField(null=True, blank=True)
