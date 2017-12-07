@@ -5,6 +5,9 @@ from main.models import *
 
 
 class Employee(models.Model):
+    """
+    Extends custom user model for login details and store other necessary details of employee
+    """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="employee", on_delete=models.CASCADE)
     company_name = models.ForeignKey(Company, on_delete=models.CASCADE)
     registration_date = models.DateTimeField(auto_now=True)
@@ -30,6 +33,9 @@ class Employee(models.Model):
 
 
 class QuestionDB(models.Model):
+    """
+    Question database - stores all the question added from any company
+    """
     CHOICE = ((0, "MCQ"),  # content_type: 16
               (1, "Rating"),  # content_type: 15
               (2, "TextField"))  # content_type: 14
@@ -53,21 +59,33 @@ class QuestionDB(models.Model):
 
 
 class MCQAnswer(models.Model):
+    """
+    MCQAnswer type in generic relationship with question
+    """
     type = GenericRelation(QuestionDB)
     option = models.CharField(max_length=150, blank=True, null=True)
 
 
 class RatingAnswer(models.Model):
+    """
+    Rating answer type in generic relationship with question
+    """
     type = GenericRelation(QuestionDB)
     rate_value = models.SmallIntegerField(blank=True, null=True)
 
 
 class TextAnswer(models.Model):
+    """
+    Text answer type in generic relationship with question
+    """
     type = GenericRelation(QuestionDB)
     text = models.TextField(blank=True, null=True)
 
 
 class Survey(models.Model):
+    """
+    Survey model, stores survey details
+    """
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="survey_owner")
     name = models.CharField(max_length=50, verbose_name="Survey Name")
     employee_group = models.CharField(max_length=70, verbose_name="Employee Group|Country-Region", blank=True, null=True)

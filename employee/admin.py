@@ -1,13 +1,24 @@
+"""
+FieldRate Administration- will only be accessible by Super User
+individual company can not access this features
+super user can manage all companies data(for which model admin are registered here)
+"""
 from django.contrib import admin
 from .models import *
 
 
 class FileUploadAdmin(admin.ModelAdmin):
+    """
+    mange file upload details
+    """
     search_fields = ['file']
     list_display = ('id', 'file')
 
 
 class EmployeeDataAdmin(admin.ModelAdmin):
+    """
+    every employee detail registered in field-rate from all companies
+    """
     search_fields = ['user__first_name', 'user__last_name', 'user__email']
     list_display = ('id', 'contact_number', 'first_name', 'last_name', 'company_name', 'email', 'role',
                     # 'alternate_email', 'alternate_contact_no',
@@ -39,6 +50,9 @@ class EmployeeDataAdmin(admin.ModelAdmin):
 
 
 class QuestionDBAdmin(admin.ModelAdmin):
+    """
+    manage questions of all companies
+    """
     search_fields = ['question']
     list_display = ('id', 'question', 'answer_type', 'content_type', 'used_by')
 
@@ -48,6 +62,9 @@ class QuestionDBAdmin(admin.ModelAdmin):
 
 
 class SurveyAdmin(admin.ModelAdmin):
+    """
+    manage surveys of all companies
+    """
     list_display = ('id', 'name', 'employee_group', 'get_question')
 
 

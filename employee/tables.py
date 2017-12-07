@@ -3,6 +3,9 @@ from employee.models import *
 
 
 class EmployeeTable(tables.Table):
+    """
+    django-tables2 used for Employee model to list employee details
+    """
     # id = tables.LinkColumn('employee:edit_data', args=[Employee('pk')])
     id = tables.TemplateColumn('<a href="/edit_employee_profile/{{record.id}}">{{record.id}}</a>')
     # contact_number = tables.Column(accessor='user.contact_number', verbose_name='Mobile Number')
@@ -31,6 +34,9 @@ class EmployeeTable(tables.Table):
 
 
 class ActivityTable(tables.Table):
+    """
+    activity table to view activity performed by company admin in portal
+    """
     class Meta:
         model = ActivityMonitor
         fields = ['id', 'performed_by', 'activity_type', 'affected_user', 'bulk_create', 'status', 'time_stamp', 'remarks']

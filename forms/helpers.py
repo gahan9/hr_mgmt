@@ -7,8 +7,6 @@ create_company_helper = FormHelper()
 create_company_helper.form_tag = False
 create_company_helper.form_class = ''
 create_company_helper.form_method = 'POST'
-# create_staff_helper.form_show_labels = False
-# create_staff_helper.label_class = 'col-sm-2 col-form-label'
 create_company_helper.layout = Layout(
     Div(
         Field('contact_number', css_class='form-control', placeholder='Mobile Number (used as Username)'),
@@ -27,11 +25,11 @@ create_company_helper.layout = Layout(
 )
 
 
-create_hr_helper = FormHelper()
-create_hr_helper.form_tag = False
-create_hr_helper.form_class = ''
-create_hr_helper.form_method = 'POST'
-create_hr_helper.layout = Layout(
+create_user_helper = FormHelper()
+create_user_helper.form_tag = False
+create_user_helper.form_class = ''
+create_user_helper.form_method = 'POST'
+create_user_helper.layout = Layout(
     Div(
         Field('contact_number', css_class='form-control', placeholder='Primary Mobile Number (for username)'),
         Field('profile_image', css_class='form-control', placeholder='Company Logo'),

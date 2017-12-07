@@ -9,6 +9,11 @@ UserModel = get_user_model()
 
 
 def dummy_employee(role=3):
+    """
+    test case to create user followed by it's employee detail
+    :param role:
+    :return:
+    """
     number = random.randint(1000000000, 9999999999)
     name = "demo"
     email = "{0}@{0}.{0}".format(number)

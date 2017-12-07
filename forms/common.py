@@ -27,6 +27,7 @@ class LoginForm(AuthenticationForm):
 
 
 class CreateCompanyForm(forms.ModelForm):
+    """ Create Company """
     password = forms.CharField(widget=forms.PasswordInput)
     alternate_email = forms.EmailField(widget=forms.EmailInput)
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -46,6 +47,7 @@ class CreateCompanyForm(forms.ModelForm):
 
 
 class CreateUserForm(forms.ModelForm):
+    """ Create user """
     password = forms.CharField(widget=forms.PasswordInput)
     alternate_email = forms.EmailField(widget=forms.EmailInput)
     job_title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -57,7 +59,7 @@ class CreateUserForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)
-        self.helper = create_hr_helper
+        self.helper = create_user_helper
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
         self.fields['email'].required = True
@@ -71,6 +73,7 @@ class CreateUserForm(forms.ModelForm):
 
 
 class EditUserForm(ModelForm):
+    """ Edit employee data of form """
     def __init__(self, *args, **kwargs):
         super(EditUserForm, self).__init__(*args, **kwargs)
         self.helper = edit_user_helper
@@ -81,6 +84,7 @@ class EditUserForm(ModelForm):
 
 
 class EditEmployeeForm(ModelForm):
+    """ Edit associated employee profile data of user """
     def __init__(self, *args, **kwargs):
         super(EditEmployeeForm, self).__init__(*args, **kwargs)
         self.helper = edit_employee_data_helper

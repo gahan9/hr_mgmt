@@ -1,3 +1,6 @@
+"""
+SQLITE database & settings for local
+"""
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 

@@ -1,3 +1,7 @@
+"""
+MySQL database & settings for server
+"""
+
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 

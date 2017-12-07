@@ -9,6 +9,9 @@ User = get_user_model()
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
+    """
+    Employee model serializer
+    """
     user = UserSerializer()
     added_by = UserSerializer()
     company_name = CompanySerializer()
@@ -72,10 +75,19 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class SurveySerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Survey serializer
+    Relation: field question: many to many field
+    """
     question = QuestionSerializer(partial=True, allow_null=True, many=True)
     created_by = UserSerializer(read_only=True)
 
     def create(self, validated_data):
+        """
+        creates survey with name as necessary parameter
+        :param validated_data: data received in API/form
+        :return: survey_instance: instance of survey object
+        """
         requested_by = self.context['request'].user
         validated_data['created_by'] = requested_by
         print(validated_data)
@@ -109,6 +121,12 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         return survey_instance
 
     def update(self, instance, validated_data):
+        """
+        update value of existing survey instance
+        :param instance: survey instance
+        :param validated_data: details
+        :return:
+        """
         for attr, value in validated_data.items():
             if not attr == "question":
                 setattr(instance, attr, value)
