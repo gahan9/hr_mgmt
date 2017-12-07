@@ -131,9 +131,15 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             if not attr == "question":
                 setattr(instance, attr, value)
         instance.save()
+        steps = 1
+        steps = 2 if instance.employee_group else steps
+        steps = 3 if steps == 2 and instance.question else steps
+        steps = 4 if steps == 3 and instance.start_date and instance.end_date else steps
+        instance.steps = steps
         return instance
 
     class Meta:
         model = Survey
-        fields = ["url", "id", "name", "employee_group", "question", "steps", "complete", "created_by"]
+        fields = ["url", "id", "name", "employee_group", "question", "steps", "complete",
+                  "start_date", "end_date", "created_by"]
         read_only_fields = ('steps',)
