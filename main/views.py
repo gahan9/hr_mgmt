@@ -27,12 +27,14 @@ class UserViewSet(viewsets.ModelViewSet):
             queryset = UserModel.objects.all()
             return queryset
 
+
 class CompanyViewSet(viewsets.ModelViewSet):
     serializer_class = CompanySerializer
     queryset = Company.objects.all()
 
 
 class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
+    """ view set to create company """
     login_url = reverse_lazy('login')
     template_name = "field_rate/create_company.html"
     form_class = CreateCompanyForm

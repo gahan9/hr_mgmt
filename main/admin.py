@@ -6,6 +6,7 @@ from .models import *
 
 
 class UserModelAdmin(UserAdmin):
+    """ Model Admin to handle custom user model by Super User"""
     fieldsets = (
         (None, {'fields': ('contact_number', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'profile_image')}),
@@ -28,11 +29,13 @@ class UserModelAdmin(UserAdmin):
 
 
 class CompanyAdmin(admin.ModelAdmin):
+    """ View/Manage companies from admin """
     list_display = ('id', 'company_user', 'name', 'alternate_contact_no', 'alternate_email', 'country')
     search_fields = ['id', 'name', 'alternate_contact_no', 'alternate_email', 'country']
 
 
 class ActivityMonitorAdmin(admin.ModelAdmin):
+    """ Manage log of activity performed by company admin """
     search_fields = ['performed_by', 'activity_type', 'affected_user']
     list_display = ('id', 'company', 'performed_by', 'activity_type', 'affected_user', 'bulk_create',
                     'status', 'remarks', 'time_stamp')

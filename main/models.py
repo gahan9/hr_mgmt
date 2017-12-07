@@ -12,9 +12,7 @@ fs = FileSystemStorage(location='/var/www/html/field_rate/photos')
 
 class MyUserManager(UserManager):
     def create_user(self, contact_number, password=None, **kwargs):
-        """
-        Creates and saves a User with the given contact_number and password.
-        """
+        """ Creates and saves a User with the given contact_number and password. """
         if not contact_number:
             raise ValueError('Users must have an contact number')
         user = self.model(contact_number=contact_number)
@@ -27,9 +25,7 @@ class MyUserManager(UserManager):
         return user
 
     def create_superuser(self, contact_number, password, **kwargs):
-        """
-        Creates and saves a superuser with the given contact_number and password.
-        """
+        """ Creates and saves a superuser with the given contact_number and password. """
         u = self.create_user(contact_number, password=password, is_hr=True, is_head_hr=True)
         u.is_admin = True
         u.is_staff = True
@@ -44,6 +40,9 @@ class MyUserManager(UserManager):
 
 
 class UserModel(AbstractUser):
+    """
+    Custom User model extends AbstractUser to user contact number and password for login
+    """
     ROLE_CHOICES = (
         (1, 'Head HR'),
         (2, 'HR'),
@@ -61,6 +60,9 @@ class UserModel(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def get_detail(self):
+        """
+        :return: details of current user model
+        """
         return {'number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
 
     def __str__(self):
@@ -68,6 +70,9 @@ class UserModel(AbstractUser):
 
 
 class Company(models.Model):
+    """
+    Company Model created by Super User
+    """
     company_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rel_company_user')
     name = models.CharField(max_length=100, verbose_name="Company Name", unique=True)
     alternate_contact_no = models.CharField(max_length=15, blank=True, null=True,
@@ -85,6 +90,9 @@ class Company(models.Model):
 
 
 class FileUpload(models.Model):
+    """ File Upload Model
+    :: ATTENTION :: place this model in employee.models for better seek
+    """
     uploader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     file = models.FileField(upload_to='.', verbose_name="File")
     added = models.DateTimeField(auto_now=True)
@@ -97,6 +105,7 @@ class FileUpload(models.Model):
 
 
 class ActivityMonitor(models.Model):
+    """ Model to store activity performed by company admin (HR) """
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     activity_type = models.IntegerField(choices=[(0, 'create'), (1, 'change'), (2, 'delete')])
     performed_by = models.TextField(null=True, blank=True)
