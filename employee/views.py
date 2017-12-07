@@ -20,7 +20,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django_tables2.views import SingleTableView
 from formtools.wizard.views import SessionWizardView
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.decorators import detail_route
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.mixins import UpdateModelMixin
@@ -385,7 +385,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
     queryset = QuestionDB.objects.all()
 
     def get_queryset(self, **kwargs):
-        print(kwargs)
         if not self.request.user.is_superuser:
             queryset = QuestionDB.objects.filter(asked_by=self.request.user)
             return queryset
@@ -394,13 +393,25 @@ class QuestionViewSet(viewsets.ModelViewSet):
             return queryset
 
 
-class QuestionSet(generics.RetrieveUpdateDestroyAPIView):
+class QuestionSet(generics.ListCreateAPIView):
     serializer_class = QuestionSerializer
     model = QuestionDB
     lookup_field = "rel_question"
+    # queryset = QuestionDB.objects.all()
+
+    def perform_create(self, serializer):
+        survey_obj = Survey.objects.get(id=self.kwargs['rel_question'])
+        print(survey_obj)
+        que_obj = serializer.save()
+        que_obj.asked_by.add(self.request.user)
+        survey_obj.question.add(que_obj)
+        print(que_obj)
 
     def get_queryset(self, *args, **kwargs):
-        queryset = self.model.objects.all()
+        if 'rel_question' in self.kwargs:
+            queryset = self.model.objects.filter(rel_question=self.kwargs['rel_question'])
+        else:
+            queryset = self.model.objects.filter(rel_question__created_by=self.request.user)
         return queryset
 
 
