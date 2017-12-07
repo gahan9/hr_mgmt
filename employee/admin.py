@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 from .models import *
 
 
@@ -41,7 +40,11 @@ class EmployeeDataAdmin(admin.ModelAdmin):
 
 class QuestionDBAdmin(admin.ModelAdmin):
     search_fields = ['question']
-    list_display = ('id', 'question', 'answer_type', 'content_type')
+    list_display = ('id', 'question', 'answer_type', 'content_type', 'used_by')
+
+    @staticmethod
+    def used_by(obj):
+        return "\n".join([a.first_name for a in obj.asked_by.all()])
 
 
 class SurveyAdmin(admin.ModelAdmin):
