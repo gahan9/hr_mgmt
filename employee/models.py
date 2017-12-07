@@ -1,6 +1,5 @@
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from rest_framework.compat import MaxValueValidator, MinValueValidator
 
 from main.models import *
 

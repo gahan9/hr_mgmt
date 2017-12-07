@@ -64,20 +64,6 @@ class TextSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     # content_type = ContentObjectRelatedField(queryset=QuestionDB.objects.all())
-    def create(self, validated_data):
-        existing_survey_instance = QuestionDB.objects.filter(**validated_data)
-        if existing_survey_instance:
-            return existing_survey_instance[0]
-        else:
-            return super(QuestionSerializer, self).create(validated_data)
-
-    # def get_question_url(self, obj):
-    #     survey_id = self.context.get('survey_id')
-    #     url = reverse('api_customer_rep',
-    #                   kwargs={'survey_id': survey_id,
-    #                           'question_id': obj.id},
-    #                   request=self.serializer.context.get('request'))
-    #     return url
 
     class Meta:
         model = QuestionDB
@@ -88,15 +74,6 @@ class QuestionSerializer(serializers.ModelSerializer):
 class SurveySerializer(serializers.HyperlinkedModelSerializer):
     question = QuestionSerializer(partial=True, allow_null=True, many=True)
     created_by = UserSerializer(read_only=True)
-    # question = serializers.SerializerMethodField()
-    # question = serializers.HyperlinkedRelatedField(QuestionDB.objects.all(), many=True, view_name='detail')
-
-    # def get_question(self, obj):
-    #     question = obj.question
-    #     serializer_context = {'request': self.context.get('request'),
-    #                           'survey_id': obj.id}
-    #     serializer = QuestionSerializer(question, context=serializer_context)
-    #     return serializer.data
 
     def create(self, validated_data):
         requested_by = self.context['request'].user
@@ -130,6 +107,13 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             question_instance.asked_by.add(requested_by)
             survey_instance.question.add(question_instance)
         return survey_instance
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            if not attr == "question":
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
 
     class Meta:
         model = Survey
