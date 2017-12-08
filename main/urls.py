@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from rest_framework import routers
 
 from main import views
-from employee.views import *
+from employee.viewsets import *
 
 # register api with default router
 router = routers.DefaultRouter()
