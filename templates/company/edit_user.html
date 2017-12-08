@@ -4,15 +4,7 @@
 {% block content %}
 <section>
     <div class="container col-xs-4 col-xs-offset-3">
-        {% if messages %}
-            <div class="container-fluid alert alert-success">
-                {% for message in messages %}
-                    <div class="{{ message|message_filter }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'common/message.html' %}
         {% if form.field_errors %}
             <div class="row">
                 <ul class='form-errors'>

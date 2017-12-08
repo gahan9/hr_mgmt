@@ -20,15 +20,7 @@
                 </div>
             {% endif %}
 
-            {% if messages %}
-                <div class="row">
-                    {% for message in messages %}
-                        <div class="{{ message|message_filter }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            {% include 'common/message.html' %}
             <div class="container center-block col-md-5">
                 {% if user.role <= 2 %}
                     {% crispy form form.helper %}

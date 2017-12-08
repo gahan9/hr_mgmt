@@ -5,15 +5,7 @@
 <section>
 {% if user.role <= 1 %}
     <div class="container col-xs-4 col-xs-offset-3">
-        {% if messages %}
-            <div class="alert alert-success">
-                {% for message in messages %}
-                    <div class="{{ message|message_filter }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'common/message.html' %}
         <form action="" class="form-group" method="post" role="form" >
             {% crispy form form.helper %}
             <input type="submit" class="btn btn-theme" value="Save" />

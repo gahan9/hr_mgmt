@@ -12,15 +12,7 @@
         <li class="breadcrumb-item active">View Data</li>
     </ol>
     <div class="container-fluid">
-        {% if messages %}
-            <div class="alert alert-success">
-                {% for message in messages %}
-                    <div class="{{ message|message_filter }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        {% include 'common/message.html' %}
         {% if form %}
             <form action="" method="get" class="form form-inline">
                 {% bootstrap_form form layout='inline' %}

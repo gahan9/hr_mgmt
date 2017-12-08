@@ -1,8 +1,6 @@
 {% extends 'common/common.html' %}
 {% load i18n %}
-{% load crispy_forms_tags %}
-{% load custom_tags %}
-{% load countries %}
+{% load rest_framework %}
 {% block content %}
 <section>
     <ol class="breadcrumb">
@@ -12,24 +10,10 @@
         <li class="breadcrumb-item active">Add Survey</li>
     </ol>
     <div class="container center-block">
-        <p>Step {{ wizard.steps.current }} of {{ wizard.steps.count }}</p>
-        <form action="../" method="post">{% csrf_token %}
-            <table>
-                {{ wizard.management_form }}
-                {% if wizard.form.forms %}
-                    {{ wizard.form.management_form }}
-                    {% for form in wizard.form.forms %}
-                        {{ form }}
-                    {% endfor %}
-                {% else %}
-                    {{ wizard.form }}
-                {% endif %}
-                {% if wizard.steps.prev %}
-                    <button name="wizard_prev_step" value="{{ wizard.steps.first }}">{% trans "first step" %}</button>
-                    <button name="wizard_prev_step" value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
-                {% endif %}
-            </table>
-            <input type="submit">
+        <form action="{% url 'survey' %}" method="POST">
+            {% csrf_token %}
+            {% render_form serializer %}
+            <input type="submit" value="Save">
         </form>
     </div>
 </section>

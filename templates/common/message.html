@@ -1,0 +1,12 @@
+{% load custom_tags %}
+{% block message %}
+    {% if messages %}
+        <div class="alert alert-success">
+            {% for message in messages %}
+                <div class="{{ message|message_filter }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
