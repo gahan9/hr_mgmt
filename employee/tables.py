@@ -42,3 +42,15 @@ class ActivityTable(tables.Table):
         fields = ['id', 'performed_by', 'activity_type', 'affected_user', 'bulk_create', 'status', 'time_stamp', 'remarks']
         attrs = {'class': 'table table-sm'}
         order_by = ("-time_stamp",)
+
+
+class SurveyTable(tables.Table):
+    """ survey table to view/manage surveys """
+    id = tables.TemplateColumn("""<a href="{% url 'survey-detail' pk=record.id %}">{{record.id}}</a>""")
+    steps = tables.TemplateColumn("""{{record.steps}} out of 5""")
+
+    class Meta:
+        model = Survey
+        fields = ['id', 'name', 'date_created', 'employee_group', 'steps']
+        attrs = {'class': 'table table-sm'}
+        order_by = ("-time_stamp",)

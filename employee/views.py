@@ -255,10 +255,21 @@ class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
         return super(EmployeeDataList, self).get_queryset()
 
 
-class SurveyManager(LoginRequiredMixin, ListView):
+class SurveyManager(LoginRequiredMixin, SingleTableView):
     login_url = reverse_lazy('login')
     template_name = 'company/survey.html'
-    queryset = Survey.objects.all()
+    model = Survey
+    table_class = SurveyTable
+    table_pagination = {'per_page': 15}
+
+    def get_queryset(self):
+        if not self.request.user.is_superuser:
+            queryset = Survey.objects.filter(created_by=self.request.user)
+            return queryset
+        else:
+            queryset = Survey.objects.all()
+            return queryset
+
 
 
 class AddSurvey(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):

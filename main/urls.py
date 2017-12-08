@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^api/survey/(?P<pk>[^/.]+)/$', SurveyViewSet.as_view(
       {'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}),
       name="survey-detail"),
-    url(r'^api/survey/(?P<rel_question>\d+)/question/$', QuestionSet.as_view()),
+    url(r'^api/survey/(?P<rel_question>\d+)/question/$', QuestionSet.as_view(), name="survey_question"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
