@@ -17,24 +17,46 @@
         </ol>
         {% include 'common/message.html' %}
         <div class="container center-block">
-            {% if not step or step == 1 %}
+            {% if not step or step == 1 or step == '1' %}
                 <form action="{% url 'add_survey' survey_id=survey_id step=2 %}" method="post" novalidate>
                     {% csrf_token %}
                     {% render_field serializer.name style=style %}
                     <button type="submit" class="btn btn-success">Next</button>
                 </form>
-            {% elif step == 2 %}
+            {% elif step == 2 or step == '2' %}
                 <form action="{% url 'add_survey' survey_id=survey_id step=3 %}" method="post" novalidate>
                     {% csrf_token %}
                     {% render_field serializer.employee_group style=style %}
                     <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=1 %}">Previous</a>
                     <button type="submit" class="btn btn-success">Next</button>
                 </form>
-            {% elif step == 3 %}
+            {% elif step == 3 or step == '3' %}
                 <form action="{% url 'add_survey' survey_id=survey_id step=4 %}" method="post" novalidate>
                     {% csrf_token %}
-                    {% render_form serializer template_pack='rest_framework/vertical' %}
+                <div class="form-group related-widget-wrapper">
+                    <label for="id_question">Select from existing question...</label>
+                    <select name="question" id="id_question" class="form-control select" multiple>
+                        {% for question in question_set %}
+                            <option value="{{ question.id }}">{{ question }}</option>
+                        {% endfor %}
+                    </select>
+                    <a role="button" class="related-widget-wrapper-link add-related" id="add_id_question"
+                       href="{% url 'add_new_question' %}" title="Add new Question">Add New
+                    </a>
+                </div>
+{#                {% render_field serializer.question style=style %}#}
+{#                {% render_field serializer.answer_type style=style %}#}
+{#                {% render_field serializer.content_type style=style %}#}
+{#                    {% render_form serializer template_pack='rest_framework/vertical' %}#}
                     <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=2 %}">Previous</a>
+                    <button type="submit" class="btn btn-success">Next</button>
+                </form>
+            {% elif step == 4 or step == '4' %}
+                <form action="{% url 'add_survey' survey_id=survey_id step=5 %}" method="post" novalidate>
+                    {% csrf_token %}
+                    {% render_field serializer.start_date style=style %}
+                    {% render_field serializer.end_date style=style %}
+                    <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=3 %}">Previous</a>
                     <button type="submit" class="btn btn-success">Next</button>
                 </form>
             {% else %}
