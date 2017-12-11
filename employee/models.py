@@ -97,5 +97,11 @@ class Survey(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
+    def next_step(self):
+        return self.steps + 1
+
     def get_question(self):
         return [p.question for p in self.question.all()]
+
+    def __str__(self):
+        return "{1}- {0}".format(self.name, self.id)

@@ -46,7 +46,7 @@ class ActivityTable(tables.Table):
 
 class SurveyTable(tables.Table):
     """ survey table to view/manage surveys """
-    id = tables.TemplateColumn("""<a href="{% url 'survey-detail' pk=record.id %}">{{record.id}}</a>""")
+    id = tables.TemplateColumn("""<a href="{% url 'add_survey' survey_id=record.id step=record.next_step %}">{{record.id}}</a>""")
     steps = tables.TemplateColumn("""{{record.steps}} out of 5""")
 
     class Meta:

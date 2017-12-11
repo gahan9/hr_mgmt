@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views
@@ -16,5 +16,6 @@ urlpatterns = [
         url(r'^edit_employee_profile/(?P<pk>\d+)/$', views.EditEmployeeView.as_view(), name="edit_employee_profile"),
     url(r'^field-rate/', views.FieldRateView.as_view(), name="field_rate"),
         url(r'^survey/', views.SurveyManager.as_view(), name="survey_manage"),
-            url(r'^add_survey/', views.AddSurvey.as_view(), name="add_survey"),
+            url(r'^add_survey/$', views.AddSurvey.as_view(), name="add_survey"),
+            url(r'^add_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.AddSurvey.as_view(), name="add_survey"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

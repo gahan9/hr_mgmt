@@ -90,9 +90,9 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         """
         requested_by = self.context['request'].user
         validated_data['created_by'] = requested_by
-        print(validated_data)
+        # print(validated_data)
         steps = 1
-        steps = 2 if validated_data['employee_group'] else steps
+        steps = 2 if 'employee_group' in validated_data and validated_data['employee_group'] else steps
         steps = 3 if steps == 2 and validated_data['question'] else steps
         if 'start_date' in validated_data and 'end_date' in validated_data:
             steps = 4 if steps == 3 and validated_data['start_date'] and validated_data['end_date'] else steps
@@ -100,11 +100,11 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         existing_survey_instance = Survey.objects.filter(**validated_data)
         if existing_survey_instance:
             survey_instance = existing_survey_instance[0]
-            print("existing survey: {}".format(survey_instance))
+            # print("existing survey: {}".format(survey_instance))
         else:
             survey_instance = Survey(**validated_data, steps=steps)
             survey_instance.save()
-        print(que_lis)
+        # print(que_lis)
         for item in que_lis:
             item.pop('asked_by') if 'asked_by' in item else []
             if item['answer_type'] == 0:

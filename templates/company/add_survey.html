@@ -2,19 +2,44 @@
 {% load i18n %}
 {% load rest_framework %}
 {% block content %}
-<section>
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'survey_manage' %}">Survey</a></li>
-        <li class="breadcrumb-item active">Add Survey</li>
-    </ol>
-    <div class="container center-block">
-        <form action="{% url 'survey' %}" method="POST">
-            {% csrf_token %}
-            {% render_form serializer %}
-            <input type="submit" value="Save">
-        </form>
-    </div>
-</section>
+    <section>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'survey_manage' %}">Survey</a></li>
+            {% if step %}
+                <li class="breadcrumb-item active">Edit Survey</li>
+                <li class="breadcrumb-item active">id({{ survey_id }})</li>
+                <li class="breadcrumb-item active">step({{ step }})</li>
+            {% else %}
+                <li class="breadcrumb-item active">Add Survey</li>
+            {% endif %}
+        </ol>
+        {% include 'common/message.html' %}
+        <div class="container center-block">
+            {% if not step or step == 1 %}
+                <form action="{% url 'add_survey' survey_id=survey_id step=2 %}" method="post" novalidate>
+                    {% csrf_token %}
+                    {% render_field serializer.name style=style %}
+                    <button type="submit" class="btn btn-success">Next</button>
+                </form>
+            {% elif step == 2 %}
+                <form action="{% url 'add_survey' survey_id=survey_id step=3 %}" method="post" novalidate>
+                    {% csrf_token %}
+                    {% render_field serializer.employee_group style=style %}
+                    <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=1 %}">Previous</a>
+                    <button type="submit" class="btn btn-success">Next</button>
+                </form>
+            {% elif step == 3 %}
+                <form action="{% url 'add_survey' survey_id=survey_id step=4 %}" method="post" novalidate>
+                    {% csrf_token %}
+                    {% render_form serializer template_pack='rest_framework/vertical' %}
+                    <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=2 %}">Previous</a>
+                    <button type="submit" class="btn btn-success">Next</button>
+                </form>
+            {% else %}
+                <h3>Invalid URL</h3>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}

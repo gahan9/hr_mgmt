@@ -25,8 +25,9 @@ from rest_framework import viewsets, generics, status
 from rest_framework.decorators import detail_route
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.mixins import UpdateModelMixin
-from rest_framework.renderers import StaticHTMLRenderer
+from rest_framework.renderers import StaticHTMLRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from employee_management.settings import BASE_DIR
 from employee.tables import *
@@ -271,20 +272,51 @@ class SurveyManager(LoginRequiredMixin, SingleTableView):
             return queryset
 
 
-class AddSurvey(LoginRequiredMixin, SuccessMessageMixin, SessionWizardView):
+class AddSurvey(APIView):
     login_url = reverse_lazy('login')
     template_name = 'company/add_survey.html'
-    success_url = reverse_lazy('survey_manage')
+    # success_url = reverse_lazy('survey_manage')
+    renderer_classes = [TemplateHTMLRenderer]
+    style = {'template_pack': 'rest_framework/vertical/'}
 
-    form_list = [SurveyCreator1, SurveyCreator2]
+    def get(self, request, *args, **kwargs):
+        step = int(kwargs['step']) if 'step' in kwargs else None
+        survey_id = kwargs['survey_id'] if 'survey_id' in kwargs else None
+        serializer = SurveySerializer()
+        if not step:  # initialize survey
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
+        elif step == 2:  #
+            print(step)
+        elif step == 3:
+            print("here.......")
+            serializer = QuestionSerializer()
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
+        return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
 
-    def done(self, form_list, **kwargs):
-        for form in form_list:
-            pass
+    def post(self, request, **kwargs):
+        print(kwargs)
+        d = request.data
+        partial = False
+        instance = None
+        if 'survey_id' in kwargs:
+            partial = True
+            instance = Survey.objects.get(pk=kwargs['survey_id'])
 
-        return render_to_response('common/done.html', {
-            'form_data': [form.cleaned_data for form in form_list],
-        })
+        # print("requested data >> {}".format(d))
+        serializer = SurveySerializer(instance=instance, data=request.data, context={'request': request}, partial=partial)
+        if serializer.is_valid():
+            print("serialized_data: {}".format(serializer.validated_data))
+        survey_obj = serializer.save()
+        data = {'serializer': serializer, 'style': self.style,
+                'step': kwargs['step'], 'survey_id': survey_obj.id,
+                'add_survey':
+                    reverse('add_survey',
+                            kwargs={'step': kwargs['step'], 'survey_id': survey_obj.id},
+                            request=request)
+                }
+        message = "created survey {}".format(survey_obj.id)
+        messages.success(request, message=message)
+        return Response(data)
 
 
 class CreateUserView(LoginRequiredMixin, CreateView):
