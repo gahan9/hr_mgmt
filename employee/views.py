@@ -4,28 +4,19 @@ import os
 from collections import OrderedDict
 from datetime import datetime
 
-from bootstrap3 import renderers
 from django.contrib import messages
-from django.contrib.auth import mixins
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
 from django_tables2.views import SingleTableView
-from formtools.wizard.views import SessionWizardView
-from rest_framework import viewsets, generics, status
-from rest_framework.decorators import detail_route
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
-from rest_framework.mixins import UpdateModelMixin
-from rest_framework.renderers import StaticHTMLRenderer, TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -273,69 +264,91 @@ class SurveyManager(LoginRequiredMixin, SingleTableView):
             return queryset
 
 
-class AddSurvey(APIView):
+class AddQuestion(APIView):
+    """    Add Question pop up    """
     login_url = reverse_lazy('login')
-    template_name = 'company/add_survey.html'
-    # success_url = reverse_lazy('survey_manage')
+    template_name = 'company/add_question.html'
     renderer_classes = [TemplateHTMLRenderer]
     style = {'template_pack': 'rest_framework/vertical/'}
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
+        serializer = QuestionSerializer()
+        return Response({'serializer': serializer, 'style': self.style})
+
+    def post(self, request):
+        serializer = QuestionSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            que_obj = serializer.save()
+            que_obj.asked_by.add(request.user)  # add user created in field
+            message = "question created"
+            messages.success(request, message=message)
+        else:
+            messages.error(request, message="Something went wrong")
+        return Response({'serializer': serializer, 'style': self.style})
+
+
+class AddSurvey(APIView):
+    login_url = reverse_lazy('login')
+    template_name = 'company/add_survey.html'
+    renderer_classes = [TemplateHTMLRenderer]
+    style = {'template_pack': 'rest_framework/vertical/'}
+
+    def get(self, request, **kwargs):
         step = int(kwargs['step']) if 'step' in kwargs else None
         survey_id = kwargs['survey_id'] if 'survey_id' in kwargs else None
         serializer = SurveySerializer()
+        # print("kwargs: {}".format(kwargs))
         if not step:  # initialize survey
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
-        elif step == 2:  # handle employee group entry
+            return Response({'serializer': serializer, 'style': self.style, 'step': step})
+        elif step == 2 or step == '2':  # handle employee group entry
             print(step)
-        elif step == 3:  # handle question entry
+        elif step == 3 or step == '3':  # handle question entry
             question_set = QuestionDB.objects.filter(asked_by=request.user)
             serializer = QuestionSerializer()
+            print("question set : {}".format(question_set))
+            flag = "add_new" if 'add_new' in kwargs else None
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
-                             'question_set': question_set})
+                             'question_set': question_set, 'flag': flag})
         elif step == 4:
             pass
         return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
 
     def post(self, request, **kwargs):
         survey_id = kwargs['survey_id'] if 'survey_id' in kwargs else None
-        d = request.data
+        survey_id = None if survey_id == 0 or survey_id == '0' else survey_id
         partial = False
         instance = None
         if survey_id:
             partial = True
             instance = Survey.objects.get(id=survey_id)
+            instance.steps = int(kwargs['step']) - 1
         if kwargs['step'] == '4':
-            # question_instance = QuestionSerializer(data=request.data)
-            # if question_instance.is_valid():
-            #     question_instance.save()
-            #     question_instance.asked_by.add(self.request.user)
-            # instance.question.clear()  # uncomment to clear previously stored question list
             for question in request.data.getlist('question'):
-                print(QuestionDB.objects.get(id=int(question)))
                 instance.question.add(QuestionDB.objects.get(id=question))
-            print("Instance -- > {}".format(instance))
             serializer = SurveySerializer(instance=instance, data=request.data, context={'request': request},
                                           partial=partial)
         else:
             serializer = SurveySerializer(instance=instance, data=request.data, context={'request': request},
                                           partial=partial)
-
         if serializer.is_valid():
             survey_obj = serializer.save()
             data = {'serializer': serializer, 'style': self.style,
                     'step': kwargs['step'], 'survey_id': survey_obj.id,
-                    'add_survey':
-                        reverse('add_survey',
-                                kwargs={'step': kwargs['step'], 'survey_id': survey_obj.id},
-                                request=request)
+                    'question_set': QuestionDB.objects.filter(asked_by=request.user)
                     }
-            message = "created survey {}".format(survey_obj.id)
-            messages.success(request, message=message)
+            if kwargs['step'] == '6' or kwargs['step'] == 6:
+                data['step'] = 'complete'
+                survey_obj.complete = True
+                survey_obj.steps = 5
+                message = "created survey {} for publish".format(survey_obj.id)
+                messages.success(request, message=message)
+            else:
+                message = 'created survey "{} (id - {})" with {} steps'.format(survey_obj.name, survey_obj.id, kwargs['step'])
+                messages.success(request, message=message)
             return Response(data)
         else:
             messages.error(request, message="Error: Something bad happened")
-            return Response()
+            return Response({'serializer': serializer, 'style': self.style})
 
 
 class CreateUserView(LoginRequiredMixin, CreateView):

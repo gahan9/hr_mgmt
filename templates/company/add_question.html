@@ -1,0 +1,25 @@
+{% extends 'common/common.html' %}
+{% load rest_framework %}
+{% block includes %} {% endblock %}
+{% block content %}
+    <div class="container">
+        {% include 'common/message.html' %}
+        <form action="{% url 'add_new_question' %}" onsubmit="return closeSelf(this)" method="post" novalidate>
+            {% csrf_token %}
+            {% render_form serializer template_pack='rest_framework/vertical' %}
+            <button type="submit" class="btn btn-success">Save</button>
+        </form>
+    </div>
+{% endblock %}
+{% block footer %} {% endblock %}
+{% block extrajs %}
+    <script type="text/javascript">
+        window.onunload = refreshParent;
+        function refreshParent() {
+            window.opener.location.reload();
+        }
+        function closeSelf(f) {
+            f.submit();
+        }
+    </script>
+{% endblock %}

@@ -65,7 +65,7 @@ class SurveyAdmin(admin.ModelAdmin):
     """
     manage surveys of all companies
     """
-    list_display = ('id', 'name', 'employee_group', 'get_question')
+    list_display = ('id', 'name', 'employee_group', 'get_question', 'steps', 'start_date', 'end_date', 'complete')
 
 
 admin.site.register(FileUpload, FileUploadAdmin)

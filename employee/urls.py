@@ -18,5 +18,5 @@ urlpatterns = [
         url(r'^survey/', views.SurveyManager.as_view(), name="survey_manage"),
             url(r'^add_survey/$', views.AddSurvey.as_view(), name="add_survey"),
             url(r'^add_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.AddSurvey.as_view(), name="add_survey"),
-            url(r'^add_survey/add_new_question/', views.AddSurvey.as_view(), name="add_new_question", kwargs={"new":"question"}),
+            url(r'^add_survey/add_new_question/', views.AddQuestion.as_view(), name="add_new_question"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
