@@ -303,7 +303,8 @@ class AddSurvey(APIView):
         elif step == 2 or step == '2':  # handle employee group entry
             print(step)
         elif step == 3 or step == '3':  # handle question entry
-            question_set = QuestionDB.objects.filter(asked_by=request.user)
+            print(get_user_company(request.user))
+            question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
             serializer = QuestionSerializer()
             print("question set : {}".format(question_set))
             flag = "add_new" if 'add_new' in kwargs else None
@@ -324,7 +325,9 @@ class AddSurvey(APIView):
             instance.steps = int(kwargs['step']) - 1
         if kwargs['step'] == '4':
             for question in request.data.getlist('question'):
-                instance.question.add(QuestionDB.objects.get(id=question))
+                question_instance = QuestionDB.objects.get(id=question)
+                question_instance.asked_by.add(request.user)
+                instance.question.add(question_instance)
             serializer = SurveySerializer(instance=instance, data=request.data, context={'request': request},
                                           partial=partial)
         else:
@@ -332,9 +335,10 @@ class AddSurvey(APIView):
                                           partial=partial)
         if serializer.is_valid():
             survey_obj = serializer.save()
+            question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
             data = {'serializer': serializer, 'style': self.style,
                     'step': kwargs['step'], 'survey_id': survey_obj.id,
-                    'question_set': QuestionDB.objects.filter(asked_by=request.user)
+                    'question_set': question_set
                     }
             if kwargs['step'] == '6' or kwargs['step'] == 6:
                 data['step'] = 'complete'

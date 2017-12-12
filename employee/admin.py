@@ -58,7 +58,7 @@ class QuestionDBAdmin(admin.ModelAdmin):
 
     @staticmethod
     def used_by(obj):
-        return "\n".join([a.first_name for a in obj.asked_by.all()])
+        return ", ".join([a.first_name for a in obj.asked_by.all()])
 
 
 class SurveyAdmin(admin.ModelAdmin):
