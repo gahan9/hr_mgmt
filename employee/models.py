@@ -43,7 +43,7 @@ class QuestionDB(models.Model):
     answer_type = models.IntegerField(choices=CHOICE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(blank=True, null=True)
-    content_object = GenericForeignKey()
+    content_object = GenericForeignKey('content_type', 'object_id')
     asked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="is_asked_by", blank=True)
     created_on = models.DateTimeField(auto_now=True)
 

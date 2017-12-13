@@ -324,6 +324,7 @@ class AddSurvey(APIView):
             instance = Survey.objects.get(id=survey_id)
             instance.steps = int(kwargs['step']) - 1
         if kwargs['step'] == '4':
+            instance.question.clear()
             for question in request.data.getlist('question'):
                 question_instance = QuestionDB.objects.get(id=question)
                 question_instance.asked_by.add(request.user)
@@ -451,18 +452,18 @@ class EmployeeDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("view_data")
 
     def delete(self, request, *args, **kwargs):
-        current_user = self.request.user
+        current_user = request.user
         company_id = get_user_company(current_user).id
         user_object = self.get_object()
         value_user = [user_object.contact_number, user_object.first_name, user_object.last_name]
         del_msg = "{}".format(value_user)
         activity_obj = ActivityMonitor.objects.create(remarks=del_msg, activity_type=2,
                                                       company_id=company_id,
-                                                      performed_by=self.request.user.get_detail(),
+                                                      performed_by=request.user.get_detail(),
                                                       affected_user=user_object.get_detail())
         print(activity_obj)
         message = 'User: {} (M: {}) deleted successfully'.format(user_object.first_name, user_object.contact_number)
-        messages.success(self.request, message)
+        messages.success(request, message)
         return super(EmployeeDeleteView, self).delete(request, *args, **kwargs)
 
 
