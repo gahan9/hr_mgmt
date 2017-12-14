@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'django_countries',
     'formtools',
+    'generic_relations',
 ]
 
 MIDDLEWARE = [
