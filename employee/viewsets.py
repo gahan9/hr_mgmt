@@ -30,6 +30,17 @@ class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     queryset = QuestionDB.objects.all()
 
+    def perform_create(self, serializer):
+        que_obj = serializer.save()
+        que_obj.asked_by.add(self.request.user)
+        if que_obj.answer_type == 0:  # MCQ
+            que_obj.content_type = ContentType.objects.get_for_model(MCQAnswer)
+        if que_obj.answer_type == 1:  # Rating
+            que_obj.content_type = ContentType.objects.get_for_model(RatingAnswer)
+        if que_obj.answer_type == 2:  # TextField
+            que_obj.content_type = ContentType.objects.get_for_model(TextAnswer)
+        que_obj.save()
+
     def get_queryset(self, **kwargs):
         if not self.request.user.is_superuser:
             queryset = QuestionDB.objects.filter(asked_by=self.request.user)
@@ -56,6 +67,7 @@ class QuestionSet(generics.ListCreateAPIView):
         survey_obj = Survey.objects.get(id=self.kwargs['rel_question'])
         que_obj = serializer.save()
         que_obj.asked_by.add(self.request.user)
+        print(que_obj.answer_type, que_obj.get_answer_type_display())
         survey_obj.question.add(que_obj)
 
     def get_queryset(self, *args, **kwargs):

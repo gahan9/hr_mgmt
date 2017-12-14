@@ -295,18 +295,15 @@ class AddSurvey(APIView):
 
     def get(self, request, **kwargs):
         step = int(kwargs['step']) if 'step' in kwargs else None
-        survey_id = kwargs['survey_id'] if 'survey_id' in kwargs else None
+        survey_id = int(kwargs['survey_id']) if 'survey_id' in kwargs else None
         serializer = SurveySerializer()
-        # print("kwargs: {}".format(kwargs))
         if not step:  # initialize survey
             return Response({'serializer': serializer, 'style': self.style, 'step': step})
-        elif step == 2 or step == '2':  # handle employee group entry
+        elif step == 2:  # handle employee group entry
             print(step)
-        elif step == 3 or step == '3':  # handle question entry
-            print(get_user_company(request.user))
+        elif step == 3:  # handle question entry
             question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
             serializer = QuestionSerializer()
-            print("question set : {}".format(question_set))
             flag = "add_new" if 'add_new' in kwargs else None
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
                              'question_set': question_set, 'flag': flag})
@@ -315,15 +312,16 @@ class AddSurvey(APIView):
         return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
 
     def post(self, request, **kwargs):
-        survey_id = kwargs['survey_id'] if 'survey_id' in kwargs else None
-        survey_id = None if survey_id == 0 or survey_id == '0' else survey_id
+        step = int(kwargs['step']) if 'step' in kwargs else None
+        survey_id = int(kwargs['survey_id']) if 'survey_id' in kwargs else None
+        survey_id = None if survey_id == 0 else survey_id
         partial = False
         instance = None
         if survey_id:
             partial = True
             instance = Survey.objects.get(id=survey_id)
-            instance.steps = int(kwargs['step']) - 1
-        if kwargs['step'] == '4':
+            instance.steps = step
+        if step == 4:
             instance.question.clear()
             for question in request.data.getlist('question'):
                 question_instance = QuestionDB.objects.get(id=question)
@@ -338,17 +336,17 @@ class AddSurvey(APIView):
             survey_obj = serializer.save()
             question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
             data = {'serializer': serializer, 'style': self.style,
-                    'step': kwargs['step'], 'survey_id': survey_obj.id,
+                    'step': step+1, 'survey_id': survey_obj.id,
                     'question_set': question_set
                     }
-            if kwargs['step'] == '6' or kwargs['step'] == 6:
+            if step == 6:
                 data['step'] = 'complete'
                 survey_obj.complete = True
                 survey_obj.steps = 5
                 message = "created survey {} for publish".format(survey_obj.id)
                 messages.success(request, message=message)
             else:
-                message = 'created survey "{} (id - {})" with {} steps'.format(survey_obj.name, survey_obj.id, kwargs['step'])
+                message = 'created survey "{} (id - {})" with {} steps'.format(survey_obj.name, survey_obj.id, step)
                 messages.success(request, message=message)
             return Response(data)
         else:

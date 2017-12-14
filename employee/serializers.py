@@ -1,8 +1,4 @@
-from django.contrib.auth import get_user_model
-from pandas._libs.lib import datetime, timedelta
 from rest_framework import serializers
-from rest_framework.fields import MultipleChoiceField
-from rest_framework.reverse import reverse
 
 from employee.models import *
 from main.serializers import UserSerializer, CompanySerializer
@@ -28,19 +24,22 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 class ContentObjectRelatedField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        return ContentType.objects.get(model=data)
+
     def to_representation(self, value):
         """
         Serialize tagged objects to a simple textual representation.
         """
-        if isinstance(value, MCQAnswer):
-            return 'MCQ: {}'.format(value.option)
-        elif isinstance(value, RatingAnswer):
-            return 'Rate: {}'.format(value.rate_value)
-        elif isinstance(value, TextAnswer):
-            return 'Text: ' + value.text
-        elif isinstance(value, QuestionDB):
-            return QuestionSerializer(value)
-        raise Exception('Unexpected type of tagged object')
+        if value.model_class() == MCQAnswer:
+            serializer = MCQSerializer(value, context=self.context)
+        elif value.model_class() == RatingAnswer:
+            serializer = RatingSerializer(value, context=self.context)
+        elif value.model_class() == TextAnswer:
+            serializer = TextSerializer(value, context=self.context)
+        else:
+            raise Exception("Unexpected object")
+        return serializer.data
 
 
 class MCQSerializer(serializers.ModelSerializer):
@@ -68,7 +67,9 @@ class TextSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    # content_type = ContentObjectRelatedField(queryset=QuestionDB.objects.all())
+    answer_type = serializers.ChoiceField(choices=QuestionDB.CHOICE, style={'base_template': 'radio.html'})
+    # content_type = ContentObjectRelatedField(queryset=ContentType.objects.get_for_models(MCQAnswer, TextAnswer, RatingAnswer))
+    content_type = ContentObjectRelatedField(read_only=True, default=ContentType.objects.get_for_model(MCQAnswer))
 
     class Meta:
         model = QuestionDB
