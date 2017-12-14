@@ -17,22 +17,22 @@
         </ol>
         {% include 'common/message.html' %}
         <div class="container center-block">
-            {% if not step or step == 1 or step == '1' %}
-                <form action="{% url 'add_survey' survey_id=0 step=2 %}" method="post" novalidate>
+            {% if not step or step == 1 %}
+                <form action="{% url 'add_survey' survey_id=0 step=1 %}" method="post" novalidate>
                     {% csrf_token %}
                     {% render_field serializer.name style=style %}
                     <button type="submit" class="btn btn-success">Next</button>
                 </form>
-            {% elif step == 2 or step == '2' %}
-                <form action="{% url 'add_survey' survey_id=survey_id step=3 %}" method="post" novalidate>
+            {% elif step == 2 %}
+                <form action="{% url 'add_survey' survey_id step %}" method="post" novalidate>
                     {% csrf_token %}
                     {% render_field serializer.employee_group style=style %}
-                    <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=1 %}">Previous</a>
+                    <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id step|add:"-1" %}">Previous</a>
                     <button type="submit" class="btn btn-success">Next</button>
                 </form>
-            {% elif step == 3 or step == '3' %}
+            {% elif step == 3 %}
 
-                <form action="{% url 'add_survey' survey_id=survey_id step=4 %}" method="post" novalidate>
+                <form action="{% url 'add_survey' survey_id step %}" method="post" novalidate>
                     {% csrf_token %}
                     <div class="form-group col-md-12">
                         <div class="row col-md-7">
@@ -60,16 +60,16 @@
                     <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=2 %}">Previous</a>
                     <button type="submit" class="btn btn-success">Next</button>
                 </form>
-            {% elif step == 4 or step == '4' %}
-                <form action="{% url 'add_survey' survey_id=survey_id step=5 %}" method="post">
+            {% elif step == 4 %}
+                <form action="{% url 'add_survey' survey_id step %}" method="post">
                     {% csrf_token %}
                     {% render_field serializer.start_date style=style %}
                     {% render_field serializer.end_date style=style %}
                     <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=3 %}">Previous</a>
                     <button type="submit" class="btn btn-success">Next</button>
                 </form>
-            {% elif step == 5 or step == '5' %}
-                <form action="{% url 'add_survey' survey_id=survey_id step=6 %}" method="post">
+            {% elif step == 5 %}
+                <form action="{% url 'add_survey' survey_id step %}" method="post">
                     {% csrf_token %}
                     {% render_field serializer.complete style=style %}
                     <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=4 %}">Previous</a>
