@@ -67,7 +67,13 @@ class QuestionSet(generics.ListCreateAPIView):
         survey_obj = Survey.objects.get(id=self.kwargs['rel_question'])
         que_obj = serializer.save()
         que_obj.asked_by.add(self.request.user)
-        print(que_obj.answer_type, que_obj.get_answer_type_display())
+        if que_obj.answer_type == 0:  # MCQ
+            que_obj.content_type = ContentType.objects.get_for_model(MCQAnswer)
+        if que_obj.answer_type == 1:  # Rating
+            que_obj.content_type = ContentType.objects.get_for_model(RatingAnswer)
+        if que_obj.answer_type == 2:  # TextField
+            que_obj.content_type = ContentType.objects.get_for_model(TextAnswer)
+        que_obj.save()
         survey_obj.question.add(que_obj)
 
     def get_queryset(self, *args, **kwargs):
