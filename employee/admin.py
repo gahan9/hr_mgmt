@@ -68,10 +68,18 @@ class SurveyAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'employee_group', 'get_question', 'steps', 'start_date', 'end_date', 'complete')
 
 
+class MCQAnswerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'option', 'rel_type')
+
+    @staticmethod
+    def rel_type(obj):
+        return obj.type.all()[0]
+
+
 admin.site.register(FileUpload, FileUploadAdmin)
 admin.site.register(Employee, EmployeeDataAdmin)
 admin.site.register(QuestionDB, QuestionDBAdmin)
-admin.site.register(MCQAnswer)
+admin.site.register(MCQAnswer, MCQAnswerAdmin)
 admin.site.register(RatingAnswer)
 admin.site.register(TextAnswer)
 admin.site.register(Survey, SurveyAdmin)
