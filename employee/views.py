@@ -301,22 +301,31 @@ class AddSurvey(APIView):
     style = {'template_pack': 'rest_framework/vertical/'}
 
     def get(self, request, **kwargs):
-        step = int(kwargs['step']) if 'step' in kwargs else None
+        step = int(kwargs['step']) if 'step' in kwargs else 0
         survey_id = int(kwargs['survey_id']) if 'survey_id' in kwargs else None
-        serializer = SurveySerializer()
+        if survey_id:
+            instance = Survey.objects.get(id=survey_id)
+            serializer = SurveySerializer(instance, context={'request': request})
+        else:
+            serializer = SurveySerializer()
         if not step:  # initialize survey
-            return Response({'serializer': serializer, 'style': self.style, 'step': step})
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'step_range': range(step)})
         elif step == 2:  # handle employee group entry
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
         elif step == 3:  # handle question entry
             question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
+            try:
+                que_instance = QuestionDB.objects.filter(rel_question=Survey.objects.get(id=6))
+            except Exception as e:
+                print(e)
+                que_instance = None
             serializer = QuestionSerializer()
             flag = "add_new" if 'add_new' in kwargs else None
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
-                             'question_set': question_set, 'flag': flag})
+                             'question_set': question_set, 'flag': flag, 'que_id': [i.id for i in que_instance], 'step_range': range(step)})
         elif step == 4:
             pass
-        return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
+        return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
 
     def post(self, request, **kwargs):
         step = int(kwargs['step']) if 'step' in kwargs else None
@@ -344,7 +353,7 @@ class AddSurvey(APIView):
             question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
             data = {'serializer': serializer, 'style': self.style,
                     'step': step+1, 'survey_id': survey_obj.id,
-                    'question_set': question_set
+                    'question_set': question_set, 'step_range': range(step)
                     }
             if step == 6:
                 data['step'] = 'complete'
