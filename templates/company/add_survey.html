@@ -13,7 +13,20 @@
             {% if step %}
                 <li class="breadcrumb-item active">Edit Survey</li>
                 <li class="breadcrumb-item active">id({{ survey_id }})</li>
-                <li class="breadcrumb-item active">step({{ step }})</li>
+                {% if step_range %}
+                    {% for i in step_range %}
+                    <li class="breadcrumb-item">
+                        {% if not forloop.last %}
+                            <a href="{% url 'add_survey' survey_id i %}">{{ i }}</a>
+                        {% else %}
+                            {{ i }}
+                        {% endif %}
+
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="breadcrumb-item active">step({{ step }})</li>
+                {% endif %}
             {% else %}
                 <li class="breadcrumb-item active">Add Survey</li>
             {% endif %}
@@ -46,7 +59,7 @@
                                             <div class="row col-md-1">
                                                 <input name="question" type="checkbox"
                                                        class="form-control-input checkbox-row"
-                                                       value="{{ question.id }}">
+                                                       value="{{ question.id }}" {% if question.id in que_id %} checked {% endif %}>
                                             </div>
                                             <div class="row col-md-2">{{ question.question }}</div>
                                             <div class="row col-md-2">{{ question.get_answer_type_display }}</div>
