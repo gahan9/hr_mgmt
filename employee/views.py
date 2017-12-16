@@ -264,7 +264,7 @@ class SurveyManager(LoginRequiredMixin, SingleTableView):
             return queryset
 
 
-class AddQuestion(APIView):
+class AddQuestion(APIView, LoginRequiredMixin):
     """    Add Question pop up    """
     login_url = reverse_lazy('login')
     template_name = 'company/add_question.html'
@@ -285,8 +285,8 @@ class AddQuestion(APIView):
             que_obj = serializer.save()
             que_obj.asked_by.add(request.user)  # add user created in field
             if mcq_obj:
-                # que_obj.content_object = mcq_obj
-                pass
+                que_obj.content_object = mcq_obj
+                que_obj.save()
             message = "question created"
             messages.success(request, message=message)
         else:
@@ -307,7 +307,7 @@ class AddSurvey(APIView):
         if not step:  # initialize survey
             return Response({'serializer': serializer, 'style': self.style, 'step': step})
         elif step == 2:  # handle employee group entry
-            print(step)
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id})
         elif step == 3:  # handle question entry
             question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
             serializer = QuestionSerializer()

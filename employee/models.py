@@ -68,7 +68,10 @@ class MCQAnswer(models.Model):
     option = models.CharField(max_length=150, blank=True, null=True)
 
     def __str__(self):
-        return ", ".join(ast.literal_eval(self.option))
+        return self.option
+
+    def get_option_list(self):
+        return ast.literal_eval(self.option)
 
 
 class RatingAnswer(models.Model):
