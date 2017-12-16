@@ -1,3 +1,5 @@
+import ast
+
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
@@ -65,13 +67,16 @@ class MCQAnswer(models.Model):
     type = GenericRelation(QuestionDB)
     option = models.CharField(max_length=150, blank=True, null=True)
 
+    def __str__(self):
+        return ", ".join(ast.literal_eval(self.option))
+
 
 class RatingAnswer(models.Model):
     """
     Rating answer type in generic relationship with question
     """
     type = GenericRelation(QuestionDB)
-    rate_value = models.SmallIntegerField(blank=True, null=True)
+    rate_value = models.SmallIntegerField(blank=True, null=True, default=10)  # max_rating_value
 
 
 class TextAnswer(models.Model):

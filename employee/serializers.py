@@ -67,7 +67,7 @@ class TextSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    answer_type = serializers.ChoiceField(choices=QuestionDB.CHOICE, style={'base_template': 'radio.html'})
+    answer_type = serializers.ChoiceField(choices=QuestionDB.CHOICE, style={'base_template': 'select.html'})
     content_type = ContentObjectRelatedField(read_only=True, default=ContentType.objects.get_for_model(MCQAnswer))
 
     class Meta:

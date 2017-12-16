@@ -276,10 +276,17 @@ class AddQuestion(APIView):
         return Response({'serializer': serializer, 'style': self.style})
 
     def post(self, request):
+        mcq_obj = None
+        if int(request.data['answer_type']) == 0:
+            options = request.data.getlist('mytext[]')
+            mcq_obj = MCQAnswer.objects.create(option=options)
         serializer = QuestionSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             que_obj = serializer.save()
             que_obj.asked_by.add(request.user)  # add user created in field
+            if mcq_obj:
+                # que_obj.content_object = mcq_obj
+                pass
             message = "question created"
             messages.success(request, message=message)
         else:
