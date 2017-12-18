@@ -92,7 +92,7 @@
                     <a role="button" class="btn btn-primary" href="{% url 'add_survey' survey_id=survey_id step=4 %}">Previous</a>
                     <button type="submit" class="btn btn-success">Complete</button>
                 </form>
-            {% elif step == 'complete' %}
+            {% elif step == 'complete' or step == 6 %}
                 <h4>
                     Survey Created successfully!! to view all survey click
                     <a href="{% url 'survey_manage' %}" class="card-link">here</a>
