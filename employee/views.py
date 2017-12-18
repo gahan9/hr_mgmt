@@ -324,7 +324,12 @@ class AddSurvey(APIView):
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
                              'question_set': question_set, 'flag': flag, 'que_id': [i.id for i in que_instance], 'step_range': range(step)})
         elif step == 4:
-            pass
+            try:
+                instance.start_date = default_start_time()
+                instance.end_date = default_end_time()
+            except NameError:
+                return HttpResponse("Don't be over smart...")
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
         return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
 
     def post(self, request, **kwargs):
@@ -351,10 +356,7 @@ class AddSurvey(APIView):
         if serializer.is_valid():
             survey_obj = serializer.save()
             question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
-            data = {'serializer': serializer, 'style': self.style,
-                    'step': step+1, 'survey_id': survey_obj.id,
-                    'question_set': question_set, 'step_range': range(step)
-                    }
+            data = {'serializer': serializer, 'style': self.style, 'step': step+1, 'survey_id': survey_obj.id, 'question_set': question_set, 'step_range': range(step)}
             if step == 6:
                 data['step'] = 'complete'
                 survey_obj.complete = True
@@ -364,7 +366,7 @@ class AddSurvey(APIView):
             else:
                 message = 'created survey "{} (id - {})" with {} steps'.format(survey_obj.name, survey_obj.id, step)
                 messages.success(request, message=message)
-            return Response(data)
+            return HttpResponseRedirect(redirect_to=reverse_lazy('add_survey', kwargs={'step': step+1, 'survey_id': survey_obj.id}))
         else:
             messages.error(request, message="Error: Something bad happened")
             return Response({'serializer': serializer, 'style': self.style})
