@@ -1,9 +1,18 @@
 import ast
+from datetime import datetime, timedelta
 
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
 from main.models import *
+
+
+def default_start_time():
+    return datetime.now()
+
+
+def default_end_time():
+    return default_start_time() + timedelta(days=7)
 
 
 class Employee(models.Model):
@@ -100,8 +109,8 @@ class Survey(models.Model):
     question = models.ManyToManyField(QuestionDB, blank=True, related_name="rel_question")
     steps = models.SmallIntegerField(default=1)
     complete = models.BooleanField(default=False)
-    start_date = models.DateTimeField(blank=True, null=True)
-    end_date = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateTimeField(default=default_start_time, blank=True, null=True)
+    end_date = models.DateTimeField(default=default_end_time, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
