@@ -53,6 +53,6 @@ class SurveyTable(tables.Table):
 
     class Meta:
         model = Survey
-        fields = ['id', 'name', 'date_created', 'employee_group', 'steps']
+        fields = ['id', 'name', 'question', 'date_created', 'employee_group', 'steps']
         attrs = {'class': 'table table-sm'}
         order_by = ("-time_stamp",)

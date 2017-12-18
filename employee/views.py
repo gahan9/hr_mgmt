@@ -248,20 +248,23 @@ class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
         return super(EmployeeDataList, self).get_queryset()
 
 
-class SurveyManager(LoginRequiredMixin, SingleTableView):
+class SurveyManager(LoginRequiredMixin, AddFormMixin, SingleTableView):
     login_url = reverse_lazy('login')
     template_name = 'company/survey.html'
     model = Survey
     table_class = SurveyTable
     table_pagination = {'per_page': 15}
+    search_fields = ['name', 'employee_group', 'question__question']
 
     def get_queryset(self):
         if not self.request.user.is_superuser:
-            queryset = Survey.objects.filter(created_by=self.request.user)
-            return queryset
+            self.queryset = Survey.objects.filter(created_by=self.request.user)
         else:
-            queryset = Survey.objects.all()
-            return queryset
+            self.queryset = Survey.objects.all()
+        return super(SurveyManager, self).get_queryset()
+
+    def get_form_fields(self):
+        return self.search_fields
 
 
 class AddQuestion(APIView, LoginRequiredMixin):
@@ -327,6 +330,7 @@ class AddSurvey(APIView):
             try:
                 instance.start_date = default_start_time()
                 instance.end_date = default_end_time()
+                serializer = SurveySerializer(instance, context={'request': request})
             except NameError:
                 return HttpResponse("Don't be over smart...")
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
