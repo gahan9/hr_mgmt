@@ -105,22 +105,3 @@ class FileUploadForm(forms.ModelForm):
     class Meta:
         model = FileUpload
         fields = "__all__"
-
-
-class SurveyCreator1(forms.Form):
-    name = forms.CharField(label="Survey Name", max_length=30,
-                           widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Survey Name"})
-                           )
-
-    class Meta:
-        model = Survey
-        fields = ['name', ]
-
-
-class SurveyCreator2(forms.Form):
-    employee_group = LazyTypedMultipleChoiceField(choices=countries)
-
-    class Meta:
-        model = Survey
-        fields = ['employee_group']
-        widgets = {'employee_group': CountrySelectWidget()}
