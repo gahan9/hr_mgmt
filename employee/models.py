@@ -52,6 +52,7 @@ class QuestionDB(models.Model):
               (2, "TextField"))  # content_type: 14
     question = models.TextField()
     answer_type = models.IntegerField(choices=CHOICE)
+    benchmark = models.BooleanField(default=False)  # if True will be visible to every company
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
