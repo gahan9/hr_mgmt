@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
@@ -99,6 +99,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
         current_user = self.request.user
         current_user_company = get_user_company(current_user)
         user_file = self.request.FILES['file']
+        category = self.request.POST['category']
         count = 0
         no_of_user = 0
         failed_user = 0
@@ -129,7 +130,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
                     Employee.objects.create(user=user_obj, company_name=current_user_company,
                                             alternate_contact_no=row['alternate_contact_no'],
                                             alternate_email=row['alternate_email'],
-                                            job_title=row['job_title'],
+                                            job_title=row['job_title'], category=category,
                                             street=row['street'], zip_code=row['zip_code'], city=row['city'],
                                             country=row['country'], added_by=current_user
                                             )
@@ -164,6 +165,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
                     filename=file_name
                 )
                 # response['Content-Length'] = open(failure_store_location, "rb").tell()
+                # return FileResponse(open(failure_store_location, "rb"))
                 return response
         except Exception as file_error:
             print("File-Error-----> {}".format(file_error))
