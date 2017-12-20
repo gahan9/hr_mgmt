@@ -339,6 +339,7 @@ class AddSurvey(APIView):
         return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
 
     def post(self, request, **kwargs):
+        print(kwargs)
         step = int(kwargs['step']) if 'step' in kwargs else None
         survey_id = int(kwargs['survey_id']) if 'survey_id' in kwargs else None
         survey_id = None if survey_id == 0 else survey_id
@@ -348,7 +349,7 @@ class AddSurvey(APIView):
             partial = True
             instance = Survey.objects.get(id=survey_id)
             instance.steps = step
-        if step == 4:
+        if step == 3:
             instance.question.clear()
             for question in request.data.getlist('question'):
                 question_instance = QuestionDB.objects.get(id=question)
