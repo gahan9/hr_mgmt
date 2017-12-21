@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django_countries',
     'formtools',
     'generic_relations',
+    'djmoney',
 ]
 
 MIDDLEWARE = [
