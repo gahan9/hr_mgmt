@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django_countries.fields import CountryField
+from djmoney.models.fields import MoneyField
 from rest_framework.fields import JSONField
 
 from employee_management import settings
@@ -39,6 +40,36 @@ class MyUserManager(UserManager):
         return u
 
 
+class Plan(models.Model):
+    CHOICES = [(1, "Individual"), (2, "Company")]
+    plan_name = models.IntegerField(
+        choices=CHOICES, default=2,
+        verbose_name="Select subscription type",
+        help_text="select if subscription is for individual or company")
+    plan_price = MoneyField(
+        decimal_places=2,
+        default=0,
+        default_currency='USD',
+        max_digits=11,
+    )
+    plan_validity = models.IntegerField(default=180, help_text="Days after plan expires")  # plan validity days
+
+    def get_price(self):
+        return "{} {}".format(self.plan_price.currency, self.plan_price.amount)
+
+    def get_plan_details(self):
+        return {'name': self.get_plan_name_display(), 'price': self.get_price(), 'period': "{} days".format(self.plan_validity)}
+
+    def __str__(self):
+        return "{}".format(self.get_plan_details())
+
+    def is_taken_company(self):
+        return True if self.plan_name == 2 else False
+
+    def is_taken_hr_plan(self):
+        return True if self.plan_name == 1 else False
+
+
 class UserModel(AbstractUser):
     """
     Custom User model extends AbstractUser to user contact number and password for login
@@ -54,6 +85,8 @@ class UserModel(AbstractUser):
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
     registration_date = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+    is_blocked = models.BooleanField(default=False, verbose_name="Account Suspended", help_text="account is disabled by HR")
+    has_plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     objects = MyUserManager()
 
     USERNAME_FIELD = 'contact_number'
@@ -81,6 +114,8 @@ class Company(models.Model):
     country = models.CharField(max_length=50, verbose_name="Country", blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+    subscription_expired = models.BooleanField(default=False)
+    region = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.name

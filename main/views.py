@@ -6,6 +6,9 @@ from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from rest_framework import viewsets
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from employee.views import get_user_company
 from forms.common import *
@@ -26,6 +29,11 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             queryset = UserModel.objects.all()
             return queryset
+
+
+class PlanViewSet(viewsets.ModelViewSet):
+    serializer_class = PlanSerializer
+    queryset = Plan.objects.all()
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -54,3 +62,19 @@ class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
         messages.success(self.request, "HR {} with contact_number {} created successfully.".format(hr.first_name, hr.contact_number))
         return HttpResponseRedirect(reverse_lazy('create_company'))
         # return super(CreateCompanyView, self).form_valid(form)
+
+
+class PlanSelector(APIView):
+    login_url = reverse_lazy('login')
+    serializer_class = UserSerializer()
+    template_name = 'field_rate/purchase_plan.html'
+    renderer_classes = [TemplateHTMLRenderer]
+    style = {'template_pack': 'rest_framework/vertical/'}
+
+    def get(self, request, **kwargs):
+        serializer = self.serializer_class
+        return Response({'serializer': serializer, 'style': self.style})
+
+    def post(self, request, **kwargs):
+        serializer = self.serializer_class
+        return Response({'serializer': serializer, 'style': self.style})

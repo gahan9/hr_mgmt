@@ -28,6 +28,11 @@ class UserModelAdmin(UserAdmin):
     ordering = ('-registration_date',)
 
 
+class PlanAdmin(admin.ModelAdmin):
+    """ Manage/view/add plans """
+    list_display = ['id', 'plan_name', 'plan_price', 'plan_validity']
+
+
 class CompanyAdmin(admin.ModelAdmin):
     """ View/Manage companies from admin """
     list_display = ('id', 'company_user', 'name', 'alternate_contact_no', 'alternate_email', 'country')
@@ -42,6 +47,7 @@ class ActivityMonitorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(UserModel, UserModelAdmin)
+admin.site.register(Plan, PlanAdmin)
 admin.site.register(Company, CompanyAdmin)
 admin.site.register(ActivityMonitor, ActivityMonitorAdmin)
 

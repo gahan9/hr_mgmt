@@ -10,6 +10,7 @@ from employee.viewsets import *
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'employee', EmployeeViewSet)
+router.register(r'plans', views.PlanViewSet)
 router.register(r'company', views.CompanyViewSet)
 router.register(r'question_database', QuestionViewSet)
 router.register(r'answers/mcq', MCQAnswerViewSet)
@@ -23,6 +24,7 @@ urlpatterns = [
     url(r'^login/', django_login, {'template_name': 'common/login.html', 'authentication_form': LoginForm}, name='login'),
     url(r'^logout/', django_logout, {'next_page': '/login/'}, name='logout'),
     url(r'^create-company', views.CreateCompanyView.as_view(), name="create_company"),
+    url(r'^select-plan', views.PlanSelector.as_view(), name="select_plan"),
     # custom implemented api
     url(r'^api/survey/$', SurveyViewSet.as_view({'get': 'list', 'post': 'create'}), name="survey-list"),
     url(r'^api/survey/(?P<pk>[^/.]+)/$', SurveyViewSet.as_view(
