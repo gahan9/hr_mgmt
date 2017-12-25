@@ -16,11 +16,12 @@ class PlanSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """ User serializer """
     has_plan = PrimaryKeyRelatedField(queryset=Plan.objects.all())
+    password = serializers.CharField(max_length=32, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['url', 'contact_number', 'first_name', 'last_name', 'profile_image', 'email', 'password',
-                  'role', 'registration_date', 'has_plan']
+        fields = ['url', 'contact_number', 'first_name', 'last_name', 'profile_image', 'email',
+                  'password', 'role', 'registration_date', 'has_plan']
         # extra_kwargs = {'password': {'write_only': True}}
 
 
