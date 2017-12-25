@@ -8,7 +8,7 @@ from .models import *
 class UserModelAdmin(UserAdmin):
     """ Model Admin to handle custom user model by Super User"""
     fieldsets = (
-        (None, {'fields': ('contact_number', 'password')}),
+        (None, {'fields': ('contact_number', 'password', 'has_plan')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'profile_image')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'role',
                                        'groups', 'user_permissions')}),
@@ -22,7 +22,7 @@ class UserModelAdmin(UserAdmin):
     )
     list_display = ('id', 'contact_number', 'first_name', 'last_name', 'email', 'role', 'is_staff',
                     # 'profile_image', 'password',
-                    'registration_date',
+                    'registration_date', 'has_plan'
                     )
     search_fields = ('contact_number', 'first_name', 'last_name', 'email')
     ordering = ('-registration_date',)
