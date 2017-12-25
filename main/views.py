@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from braces.views._access import SuperuserRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -6,6 +8,7 @@ from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from rest_framework import viewsets
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -66,15 +69,41 @@ class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
 
 class PlanSelector(APIView):
     login_url = reverse_lazy('login')
-    serializer_class = UserSerializer()
+    serializer_class = UserSerializer
+    parser_classes = (MultiPartParser, FormParser, )
     template_name = 'field_rate/purchase_plan.html'
     renderer_classes = [TemplateHTMLRenderer]
     style = {'template_pack': 'rest_framework/vertical/'}
 
     def get(self, request, **kwargs):
-        serializer = self.serializer_class
-        return Response({'serializer': serializer, 'style': self.style})
+        serializer = self.serializer_class(partial=True)
+        response_data = {'serializer': serializer, 'style': self.style}
+        stage = int(kwargs['stage']) if 'stage' in kwargs else 0
+        response_data['stage'] = stage
+        return Response(response_data)
 
     def post(self, request, **kwargs):
-        serializer = self.serializer_class
-        return Response({'serializer': serializer, 'style': self.style})
+        serializer = self.serializer_class(partial=True)
+        response_data = {'serializer': serializer, 'style': self.style}
+        stage = int(kwargs['stage']) if 'stage' in kwargs else 0
+        response_data['stage'] = stage
+        print(">> Request:POST::DATA === {}".format(request.data))
+        for field, value in request.data.items():
+            if request.data[field]:
+                response_data[field] = request.data[field]
+        if stage == 1:
+            plan_obj = Plan.objects.get(pk=response_data['has_plan'])
+            role_level = 1 if plan_obj.plan_name == 2 else 2
+            serializer = self.serializer_class(data=response_data)
+            serializer.initial_data.update({'role': role_level})
+            if serializer.is_valid():
+                print("valid serializer")
+                serializer.save()
+                response_data['serializer'] = CompanySerializer
+                return Response(response_data)
+            else:
+                messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors    ))
+                return Response(response_data)
+                # return HttpResponseRedirect(reverse_lazy('select_plan', kwargs={'stage': 0}))
+        else:
+            return Response(response_data)

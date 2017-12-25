@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 
-from main.models import Company, Plan
+from main.models import Company, Plan, UserModel
 
 User = get_user_model()
 

@@ -2,12 +2,47 @@
 {% load rest_framework %}
 {% block content %}
     <section>
+        {% include 'common/message.html' %}
+        {% if form.field_errors %}
+            <div class="row">
+                <ul class='form-errors'>
+                    {% for error in form.field_errors %}
+                        <li class="text-danger">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
         <div class="container-fluid col-xs-4 col-xs-offset-3">
-            <form action="#" method="post">
-                {% csrf_token %}
-                {% render_form serializer template_pack='rest_framework/vertical' %}
-                <button type="submit" class="btn btn-success">Proceed</button>
-            </form>
+            {% if stage == -1 %}
+                <h3>Select Plan</h3>
+                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post">
+                    {% csrf_token %}
+                    {% render_field serializer.has_plan style=style %}
+                    {% render_field serializer.contact_number style=style %}
+                    {% render_field serializer.first_name style=style %}
+                    {% render_field serializer.last_name style=style %}
+                    {% render_field serializer.profile_image style=style %}
+                    {% render_field serializer.email style=style %}
+                    {% render_field serializer.password style=style %}
+                    <button type="submit" class="btn btn-success">Proceed</button>
+                </form>
+            {% elif stage == 0 %}
+                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post">
+                    {% csrf_token %}
+                    {% render_form serializer %}
+                    <button type="submit" class="btn btn-success">Proceed</button>
+                </form>
+
+            {% endif %}
         </div>
     </section>
+
+{% endblock %}
+
+{% block extrajs %}
+    <script>
+        $(document).ready(function () {
+            $('select[name=role]').parent().hide();
+        });
+    </script>
 {% endblock %}
