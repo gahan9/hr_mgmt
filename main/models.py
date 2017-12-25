@@ -58,14 +58,17 @@ class Plan(models.Model):
         return "{} {}".format(self.plan_price.currency, self.plan_price.amount)
 
     def get_plan_details(self):
-        return {'name': self.get_plan_name_display(), 'price': self.get_price(), 'period': "{} days".format(self.plan_validity)}
+        return {'name': self.get_plan_name_display(), 'price': self.get_price(),
+                'period': "{} days".format(self.plan_validity)}
 
     def __str__(self):
         return "{}".format(self.get_plan_details())
 
+    @property
     def is_taken_company(self):
         return True if self.plan_name == 2 else False
 
+    @property
     def is_taken_hr_plan(self):
         return True if self.plan_name == 1 else False
 
