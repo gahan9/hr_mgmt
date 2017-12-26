@@ -1,14 +1,16 @@
 from copy import deepcopy
 
+from braces.views import AnonymousRequiredMixin
 from braces.views._access import SuperuserRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -70,6 +72,7 @@ class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
 class PlanSelector(APIView):
     login_url = reverse_lazy('login')
     serializer_class = UserSerializer
+    permission_classes = [AllowAny]
     parser_classes = (MultiPartParser, FormParser, )
     template_name = 'field_rate/purchase_plan.html'
     renderer_classes = [TemplateHTMLRenderer]
@@ -80,17 +83,28 @@ class PlanSelector(APIView):
         response_data = {'serializer': serializer, 'style': self.style}
         stage = int(kwargs['stage']) if 'stage' in kwargs else 0
         response_data['stage'] = stage
-        return Response(response_data)
+        if stage == 0:
+            return Response(response_data)
+        elif stage == 1:
+            response_data['serializer'] = CompanySerializer(partial=True)
+            return Response(response_data)
+        else:
+            return Http404
 
     def post(self, request, **kwargs):
         serializer = self.serializer_class(partial=True)
         response_data = {'serializer': serializer, 'style': self.style}
         stage = int(kwargs['stage']) if 'stage' in kwargs else 0
         response_data['stage'] = stage
+        print(">> KWARGS === {}".format(kwargs))
         print(">> Request:POST::DATA === {}".format(request.data))
         for field, value in request.data.items():
             if request.data[field]:
-                response_data[field] = request.data[field]
+                if field == "profile_image":
+                    print(self.request.FILES)
+                    response_data[field] = self.request.FILES[field]
+                else:
+                    response_data[field] = request.data[field]
         if stage == 1:
             plan_obj = Plan.objects.get(pk=response_data['has_plan'])
             role_level = 1 if plan_obj.plan_name == 2 else 2
@@ -100,10 +114,20 @@ class PlanSelector(APIView):
                 print("valid serializer")
                 serializer.save()
                 response_data['serializer'] = CompanySerializer
+                messages.success(request, message="User Created Successfully!")
                 return Response(response_data)
             else:
-                messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors    ))
+                messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
+                response_data['stage'] -= 1
                 return Response(response_data)
                 # return HttpResponseRedirect(reverse_lazy('select_plan', kwargs={'stage': 0}))
-        else:
-            return Response(response_data)
+        elif stage == 2:
+            print(request.data)
+            serializer = CompanySerializer(data=response_data, partial=True)
+            serializer.initial_data.update({'company_user': self.request.user.id})
+            if serializer.is_valid():
+                messages.success(request, message="Successfully created company profile.")
+                return Response(response_data)
+            else:
+                messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
+                return Response(response_data)

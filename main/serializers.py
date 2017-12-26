@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
     """ User serializer """
     has_plan = PrimaryKeyRelatedField(queryset=Plan.objects.all())
     password = serializers.CharField(max_length=32, style={'input_type': 'password'})
-    profile_image = Base64ImageField()
+    profile_image = Base64ImageField(required=False)
 
     class Meta:
         model = User

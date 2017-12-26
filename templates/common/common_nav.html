@@ -9,7 +9,8 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <nav class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="current"><a href="#intro">Home</a></li>
+                        <li class="current"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="current"><a href="{% url 'select_plan' 0 %}">Select-Plan</a></li>
                         <li><a href="#contact">Contact</a></li>
                         {% if user.is_superuser %}
                             <li><a href="{% url "admin:index" %}">Admin</a></li>

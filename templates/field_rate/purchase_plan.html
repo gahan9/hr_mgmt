@@ -13,26 +13,19 @@
             </div>
         {% endif %}
         <div class="container-fluid col-xs-4 col-xs-offset-3">
-            {% if stage == -1 %}
+            {% if stage == 0 %}
                 <h3>Select Plan</h3>
-                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post">
-                    {% csrf_token %}
-                    {% render_field serializer.has_plan style=style %}
-                    {% render_field serializer.contact_number style=style %}
-                    {% render_field serializer.first_name style=style %}
-                    {% render_field serializer.last_name style=style %}
-                    {% render_field serializer.profile_image style=style %}
-                    {% render_field serializer.email style=style %}
-                    {% render_field serializer.password style=style %}
-                    <button type="submit" class="btn btn-success">Proceed</button>
-                </form>
-            {% elif stage == 0 %}
-                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post">
+                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% render_form serializer %}
                     <button type="submit" class="btn btn-success">Proceed</button>
                 </form>
-
+            {% elif stage == 1 %}
+                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% render_form serializer %}
+                    <button type="submit" class="btn btn-success">Proceed</button>
+                </form>
             {% endif %}
         </div>
     </section>
@@ -42,7 +35,13 @@
 {% block extrajs %}
     <script>
         $(document).ready(function () {
+            var user_id = {{ user.id }};
+            var stage_val = {{ stage }};
             $('select[name=role]').parent().hide();
+            $('select[name=company_user]').parent().hide();
+            $('select[name=company_user]>option[value=user_id]').prop('selected', true);
+            console.log($('select[name=company_user]>option[value=user_id]').prop('selected', true).text())
+            debugger;
         });
     </script>
 {% endblock %}
