@@ -393,7 +393,8 @@ class CreateUserView(LoginRequiredMixin, CreateView):
         user_obj = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
                                             first_name=form_data['first_name'], last_name=form_data['last_name'],
                                             password=make_password(form_data['password']),
-                                            role=set_role,
+                                            profile_image=self.request.FILES['profile_image'],
+                                            role=set_role, has_plan=current_user.has_plan
                                             )
         activity_obj = ActivityMonitor.objects.create(activity_type=0, performed_by=current_user.get_detail(),
                                                       company_id=current_user_company.id,

@@ -56,6 +56,7 @@ class CreateUserForm(forms.ModelForm):
     city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     country = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     alternate_contact_no = forms.CharField(widget=forms.NumberInput)
+    profile_image = forms.ImageField()
 
     def __init__(self, *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)
@@ -66,6 +67,7 @@ class CreateUserForm(forms.ModelForm):
         self.fields['job_title'].required = True
         self.fields['alternate_email'].required = False
         self.fields['alternate_contact_no'].required = False
+        self.fields['profile_image'].required = False
 
     class Meta:
         model = UserModel

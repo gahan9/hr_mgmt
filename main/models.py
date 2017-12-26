@@ -83,7 +83,7 @@ class UserModel(AbstractUser):
         (3, 'Employee')
     )
     contact_number = models.CharField(max_length=12, unique=True, verbose_name="Contact Number")
-    profile_image = models.ImageField(storage=fs, blank=True, null=True)
+    profile_image = models.ImageField(upload_to='media/uploads/', blank=True, null=True)
     role = models.IntegerField(choices=ROLE_CHOICES, default=3)
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
     registration_date = models.DateTimeField(auto_now_add=True)

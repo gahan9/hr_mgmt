@@ -1,10 +1,26 @@
+import base64
+
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
+from pyparsing import basestring
+from requests.compat import basestring
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 
 from main.models import Company, Plan, UserModel
 
 User = get_user_model()
+
+
+class Base64ImageField(serializers.ImageField):
+    def to_internal_value(self, data):
+        if isinstance(data, basestring) and data.startswith('data:image'):
+            # base64 encoded image - decode
+            format, imgstr = data.split(';base64,')  # format ~= data:image/X,
+            ext = format.split('/')[-1]  # guess file extension
+
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        return super(Base64ImageField, self).to_internal_value(data)
 
 
 class PlanSerializer(serializers.ModelSerializer):
@@ -17,6 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
     """ User serializer """
     has_plan = PrimaryKeyRelatedField(queryset=Plan.objects.all())
     password = serializers.CharField(max_length=32, style={'input_type': 'password'})
+    profile_image = Base64ImageField()
 
     class Meta:
         model = User
