@@ -86,7 +86,8 @@ class PlanSelector(APIView):
         if stage == 0:
             return Response(response_data)
         elif stage == 1:
-            response_data['serializer'] = CompanySerializer(partial=True)
+            # uncomment below line to enable entry if company purchase (Enterprise Plan)
+            # response_data['serializer'] = CompanySerializer(partial=True)
             return Response(response_data)
         else:
             return Http404
@@ -112,9 +113,24 @@ class PlanSelector(APIView):
             serializer.initial_data.update({'role': role_level})
             if serializer.is_valid():
                 print("valid serializer")
-                serializer.save()
-                response_data['serializer'] = CompanySerializer
-                messages.success(request, message="User Created Successfully!")
+                user_serializer = serializer.save()
+                #  ## settings for (Enterprise Plan) --begin here
+                # uncomment below line(s) to enable entry if company purchase (Enterprise Plan)
+                # response_data['serializer'] = CompanySerializer
+                # comment below line(s)
+                company_serializer = CompanySerializer(
+                    data={'company_user': user_serializer.id,
+                          'name': user_serializer.get_full_name()})
+                if company_serializer.is_valid():
+                    company_serializer.save()
+                else:
+                    messages.error(request,
+                                   message="Error: Something bad happened. Reason: {}".format(company_serializer.errors))
+                    response_data['stage'] -= 1
+                    return Response(response_data)
+                response_data['stage'] = 5
+                # ## settings for (Enterprise Plan) --- Ends here
+                messages.success(request, message="Plan activated Successfully!")
                 return Response(response_data)
             else:
                 messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
@@ -131,3 +147,5 @@ class PlanSelector(APIView):
             else:
                 messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
                 return Response(response_data)
+        else:
+            return HttpResponseRedirect(reverse_lazy('select_plan', kwargs={'stage': 0}))

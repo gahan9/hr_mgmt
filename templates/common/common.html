@@ -16,7 +16,8 @@
         <link rel="stylesheet" href="{% static 'login/color/default.css' %}"/>
         <link rel="stylesheet" href="{% static 'login/css/fancybox/jquery.fancybox.css' %}"/>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"/>
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"/>
     {% endblock %}
     {% block extracss %} {% endblock %}
 </head>
@@ -25,11 +26,21 @@
 {% block includes %}
     {% include 'common/common_nav.html' %}
 {% endblock %}
+{% if user.role < 3 %}
+    {% block content %} <section>Coming soon...</section> {% endblock %}
+{% elif user.role >= 3 %}
+    {% block employee_content %}
+        <section>
+            <div class="container-fluid">
+                <h3>Hello, {{ user.first_name }} {{ user.last_name }}! You are not allowed to access this page.</h3>
+            </div>
+        </section>
+    {% endblock %}
+{% else %}
+    {% block anonymous_content %} {% endblock %}
+{% endif %}
 
-{% block content %} <section>Coming soon...</section>{% endblock %}
-{% block footer %}
-    {% include 'common/footer.html' %}
-{% endblock %}
+{% block footer %} {% include 'common/footer.html' %} {% endblock %}
 
 {% block javascript %}
     <script src="{% static 'login/js/jquery-1.9.1.min.js' %}"></script>
