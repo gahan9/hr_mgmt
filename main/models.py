@@ -78,7 +78,7 @@ class UserModel(AbstractUser):
     Custom User model extends AbstractUser to user contact number and password for login
     """
     ROLE_CHOICES = (
-        (1, 'Head HR'),
+        (1, 'Owner'),
         (2, 'HR'),
         (3, 'Employee')
     )
@@ -89,7 +89,7 @@ class UserModel(AbstractUser):
     registration_date = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     is_blocked = models.BooleanField(default=False, verbose_name="Account Suspended", help_text="account is disabled by HR")
-    has_plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    has_plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True, blank=True)
     objects = MyUserManager()
 
     USERNAME_FIELD = 'contact_number'
@@ -110,11 +110,11 @@ class Company(models.Model):
     Company Model created by Super User
     """
     company_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rel_company_user')
-    name = models.CharField(max_length=100, verbose_name="Company Name", unique=True)
+    name = models.CharField(max_length=100, verbose_name="Company Name", blank=True, null=True)
     alternate_contact_no = models.CharField(max_length=15, blank=True, null=True,
                                             verbose_name="Alternate Contact Number")
     alternate_email = models.EmailField(blank=True, null=True, verbose_name="Alternate Email")
-    country = models.CharField(max_length=50, verbose_name="Country", blank=True)
+    country = models.CharField(max_length=50, verbose_name="Country", blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     subscription_expired = models.BooleanField(default=False)
