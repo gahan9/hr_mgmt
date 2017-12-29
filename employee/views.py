@@ -281,6 +281,7 @@ class AddQuestion(APIView, LoginRequiredMixin):
         return Response({'serializer': serializer, 'style': self.style})
 
     def post(self, request):
+        current_user = self.request.user
         mcq_obj = None
         if int(request.data['answer_type']) == 0:
             options = request.data.getlist('mytext[]')
@@ -288,7 +289,7 @@ class AddQuestion(APIView, LoginRequiredMixin):
         serializer = QuestionSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             que_obj = serializer.save()
-            que_obj.asked_by.add(request.user)  # add user created in field
+            que_obj.asked_by.add(current_user)  # add user created in field
             if mcq_obj:
                 que_obj.content_object = mcq_obj
                 que_obj.save()

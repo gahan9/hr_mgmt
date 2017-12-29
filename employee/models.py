@@ -123,3 +123,12 @@ class Survey(models.Model):
 
     def __str__(self):
         return "{1}- {0}".format(self.name, self.id)
+
+
+class SurveyResponse(models.Model):
+    related_survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    related_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    answers = models.TextField()
+    complete = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)

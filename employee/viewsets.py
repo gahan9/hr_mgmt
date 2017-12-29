@@ -85,16 +85,24 @@ class QuestionSet(generics.ListCreateAPIView):
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
-    """
-    view set for survey
-    """
+    """ Survey API to list, add, modify survey """
     serializer_class = SurveySerializer
     queryset = Survey.objects.all()
 
     def get_queryset(self):
-        if not self.request.user.is_superuser:
-            queryset = Survey.objects.filter(created_by=self.request.user)
+        current_user = self.request.user
+        if not current_user.is_superuser:
+            if current_user.role in [1, 2]:
+                queryset = Survey.objects.filter(created_by=current_user, complete=True)
+            else:
+                queryset = Survey.objects.filter(created_by__rel_company_user=current_user.employee.company_name, complete=True)
             return queryset
         else:
             queryset = Survey.objects.all()
             return queryset
+
+
+class SurveyResponseViewSet(viewsets.ModelViewSet):
+    """ API for saving response of survey """
+    serializer_class = SurveyResponseSerializer
+    queryset = SurveyResponse.objects.all()

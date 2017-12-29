@@ -16,7 +16,8 @@ router.register(r'question_database', QuestionViewSet)
 router.register(r'answers/mcq', MCQAnswerViewSet)
 router.register(r'answers/rating', RatingAnswerViewSet)
 router.register(r'answers/text', TextAnswerViewSet)
-# router.register(r'survey', SurveyViewSet)
+router.register(r'survey/response', SurveyResponseViewSet)
+router.register(r'surveys', SurveyViewSet)
 # router.register(r'survey/{pk}/question/$', QuestionSet)
 
 urlpatterns = [

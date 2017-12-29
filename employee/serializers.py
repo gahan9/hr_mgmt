@@ -145,3 +145,10 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         fields = ["url", "id", "name", "employee_group", "question", "steps", "complete",
                   "start_date", "end_date", "created_by"]
         read_only_fields = ('steps',)
+
+
+class SurveyResponseSerializer(serializers.ModelSerializer):
+    """ Serializer to take response of Survey """
+    class Meta:
+        model = SurveyResponse
+        fields = ["url", "id", "related_survey", "related_user", "answers", "complete"]

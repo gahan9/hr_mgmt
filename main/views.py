@@ -1,7 +1,4 @@
-from copy import deepcopy
-
-from braces.views import AnonymousRequiredMixin
-from braces.views._access import SuperuserRequiredMixin, PermissionRequiredMixin
+from braces.views._access import SuperuserRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
