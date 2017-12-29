@@ -1,6 +1,7 @@
 import base64
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.core.files.base import ContentFile
 from pyparsing import basestring
 from requests.compat import basestring
@@ -34,6 +35,10 @@ class UserSerializer(serializers.ModelSerializer):
     has_plan = PrimaryKeyRelatedField(queryset=Plan.objects.all())
     password = serializers.CharField(max_length=32, style={'input_type': 'password'})
     profile_image = Base64ImageField(required=False)
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data["password"])
+        return super(UserSerializer, self).create(validated_data)
 
     class Meta:
         model = User
