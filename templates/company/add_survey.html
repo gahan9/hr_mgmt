@@ -105,6 +105,7 @@
 {% endblock %}
 {% block extrajs %}
     <script type="text/javascript">
+        var full_host = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
         var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
         console.log(csrftoken);
 
@@ -122,7 +123,7 @@
         });
         $(document).ready(function () {
             $(document).on('click', '#add_id_question', function (event) {
-                MyWindow = window.open("http://jarvis.py:8889/add_survey/add_new_question/", 'MyWindow', "width=600,height=300");
+                MyWindow = window.open(full_host + "/add_survey/add_new_question/", 'MyWindow', "width=600,height=300");
             });
         });
     </script>
