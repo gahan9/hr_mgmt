@@ -73,7 +73,10 @@ class MCQAnswerAdmin(admin.ModelAdmin):
 
     @staticmethod
     def rel_type(obj):
-        return obj.type.all()[0]
+        if obj.type.all():
+            return obj.type.all()[0]
+        else:
+            return "-"
 
 
 admin.site.register(FileUpload, FileUploadAdmin)
