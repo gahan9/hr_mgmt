@@ -3,6 +3,11 @@ import os
 import sys
 
 if __name__ == "__main__":
+    try:
+        host_name = os.popen('hostname -I').read().strip()
+        print("Host: {}".format(host_name))
+    except Exception as e:
+        print("Couldn't get host name due to : {}".format(e))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "employee_management.settings")
     try:
         from django.core.management import execute_from_command_line
