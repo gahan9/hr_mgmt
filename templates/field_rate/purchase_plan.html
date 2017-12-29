@@ -1,6 +1,6 @@
 {% extends 'common/common.html' %}
 {% load rest_framework %}
-{% block content %}
+{% block anonymous_content %}
     <section>
         {% include 'common/message.html' %}
         {% if form.field_errors %}
@@ -35,13 +35,14 @@
 {% block extrajs %}
     <script>
         $(document).ready(function () {
-            var user_id = {{ user.id }};
-            var stage_val = {{ stage }};
+            {#var user_id = {{ user.id }};#}
+            {#var stage_val = {{ stage }};#}
             $('select[name=role]').parent().hide();
-            $('select[name=company_user]').parent().hide();
-            $('select[name=company_user]>option[value=user_id]').prop('selected', true);
-            console.log($('select[name=company_user]>option[value=user_id]').prop('selected', true).text())
-            debugger;
+            console.log("operation completed!");
+            {#$('select[name=company_user]').parent().hide();#}
+            {#$('select[name=company_user]>option[value=user_id]').prop('selected', true);#}
+            {#console.log($('select[name=company_user]>option[value=user_id]').prop('selected', true).text())#}
+            {#debugger;#}
         });
     </script>
 {% endblock %}
