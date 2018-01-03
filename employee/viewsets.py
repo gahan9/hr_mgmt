@@ -93,7 +93,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
         current_user = self.request.user
         if not current_user.is_superuser:
             if current_user.role in [1, 2]:
-                queryset = Survey.objects.filter(created_by=current_user, complete=True)
+                queryset = Survey.objects.filter(created_by=current_user)
             else:
                 queryset = Survey.objects.filter(created_by__rel_company_user=current_user.employee.company_name, complete=True)
             return queryset

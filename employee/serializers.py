@@ -24,8 +24,13 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 
 class ContentObjectRelatedField(serializers.RelatedField):
-    def to_internal_value(self, data):
-        return ContentType.objects.get(model=data)
+    def to_internal_value(self, content_type_key):
+        """
+
+        :param content_type_key: key of related content type
+        :return:
+        """
+        return ContentType.objects.get(pk=content_type_key)
 
     def to_representation(self, value):
         """
@@ -68,12 +73,12 @@ class TextSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     answer_type = serializers.ChoiceField(choices=QuestionDB.CHOICE, style={'base_template': 'select.html'})
-    content_type = ContentObjectRelatedField(read_only=True, default=ContentType.objects.get_for_model(MCQAnswer))
+    content_type = ContentObjectRelatedField(queryset=ContentType.objects.all())
 
     class Meta:
         model = QuestionDB
         fields = ["url", "id", "question", "answer_type", 'content_type', "asked_by"]
-        read_only_fields = ('asked_by', )
+        read_only_fields = ('asked_by',)
 
 
 class SurveySerializer(serializers.HyperlinkedModelSerializer):

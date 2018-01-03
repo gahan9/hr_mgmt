@@ -26,7 +26,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if not self.request.user.is_superuser:
             queryset = UserModel.objects.filter(employee__company_name=get_user_company(self.request.user.rel_company_user))
-            print(queryset)
+            # print(queryset)
             return queryset
         else:
             queryset = UserModel.objects.all()

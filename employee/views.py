@@ -282,21 +282,29 @@ class AddQuestion(APIView, LoginRequiredMixin):
 
     def post(self, request):
         current_user = self.request.user
-        mcq_obj = None
-        if int(request.data['answer_type']) == 0:
+        content_object = None
+        response_data = {field: value for field, value in request.data.items()}
+        answer_type = int(request.data['answer_type'])
+        if answer_type == 0:
+            # MCQ answer
             options = request.data.getlist('mytext[]')
-            mcq_obj = MCQAnswer.objects.create(option=options)
-        serializer = QuestionSerializer(data=request.data, context={'request': request})
+            content_object = MCQAnswer.objects.create(option=options)
+        elif answer_type == 1:
+            content_object = RatingAnswer.objects.create(rate_value=10)
+        elif answer_type == 2:
+            content_object = TextAnswer.objects.create()
+        response_data['content_type'] = content_object.id
+        serializer = QuestionSerializer(data=response_data, context={'request': request})
         if serializer.is_valid():
             que_obj = serializer.save()
             que_obj.asked_by.add(current_user)  # add user created in field
-            if mcq_obj:
-                que_obj.content_object = mcq_obj
+            if content_object:
+                que_obj.content_object = content_object
                 que_obj.save()
             message = "question created"
             messages.success(request, message=message)
         else:
-            messages.error(request, message="Something went wrong")
+            messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
         return Response({'serializer': serializer, 'style': self.style})
 
 

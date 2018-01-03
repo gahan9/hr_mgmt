@@ -47,9 +47,9 @@ class QuestionDB(models.Model):
     """
     Question database - stores all the question added from any company
     """
-    CHOICE = ((0, "MCQ"),  # content_type: 16
-              (1, "Rating"),  # content_type: 15
-              (2, "TextField"))  # content_type: 14
+    CHOICE = ((0, "MCQ"),  # content_type:
+              (1, "Rating"),  # content_type:
+              (2, "TextField"))  # content_type:
     question = models.TextField()
     answer_type = models.IntegerField(choices=CHOICE)
     benchmark = models.BooleanField(default=False)  # if True will be visible to every company
@@ -64,6 +64,12 @@ class QuestionDB(models.Model):
 
     def __str__(self):
         return self.question
+
+    def clean(self):
+        if self.answer_type == 1:
+            self.content_object = RatingAnswer.objects.create(rate_value=10)
+        elif self.answer_type == 2:
+            self.content_object = TextAnswer.objects.create()
 
     class Meta:
         verbose_name = "Question"
@@ -126,8 +132,8 @@ class Survey(models.Model):
 
 
 class SurveyResponse(models.Model):
-    related_survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    related_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    related_survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="rel_survey")
+    related_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="rel_employee")
     answers = models.TextField()
     complete = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
