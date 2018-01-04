@@ -1,3 +1,6 @@
+import json
+
+from django.contrib.admin.models import LogEntry
 from rest_framework import serializers
 
 from employee.models import *
@@ -36,14 +39,20 @@ class ContentObjectRelatedField(serializers.RelatedField):
         """
         Serialize tagged objects to a simple textual representation.
         """
-        if value.model_class() == MCQAnswer:
+        if isinstance(value, MCQAnswer):
             serializer = MCQSerializer(value, context=self.context)
-        elif value.model_class() == RatingAnswer:
+        elif isinstance(value, RatingAnswer):
             serializer = RatingSerializer(value, context=self.context)
-        elif value.model_class() == TextAnswer:
+        elif isinstance(value, TextAnswer):
             serializer = TextSerializer(value, context=self.context)
         else:
-            raise Exception("Unexpected object")
+            # print(value)
+            try:
+                # print(value.model)
+                return value.serializable_value
+            except Exception as e:
+                print(e)
+                raise Exception("Unexpected object: {}".format(value))
         return serializer.data
 
 
@@ -73,12 +82,20 @@ class TextSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     answer_type = serializers.ChoiceField(choices=QuestionDB.CHOICE, style={'base_template': 'select.html'})
-    content_type = ContentObjectRelatedField(queryset=ContentType.objects.all())
+    content_object = ContentObjectRelatedField(queryset=ContentType.objects.all(), required=False)
+    # option = serializers.ListField()
 
     class Meta:
         model = QuestionDB
-        fields = ["url", "id", "question", "answer_type", 'content_type', "asked_by"]
-        read_only_fields = ('asked_by',)
+        fields = ["url", "id", "question", "answer_type", 'content_type', 'content_object', "asked_by", 'object_id']
+        read_only_fields = ('asked_by', 'content_object')
+
+    def get_option(self, obj):
+        print("in get option........... ", self, obj)
+        return obj
+        # possible_fields = ['options', 'rate_value', 'text']
+        # choice_object = obj.content_object.objevct.get(id=obj.object_id)
+        # return choice_object._meta.fields if choice_object.name in possible_fields else getattr(choice_object, choice_object.name)
 
 
 class SurveySerializer(serializers.HyperlinkedModelSerializer):

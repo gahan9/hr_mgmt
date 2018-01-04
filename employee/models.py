@@ -65,12 +65,6 @@ class QuestionDB(models.Model):
     def __str__(self):
         return self.question
 
-    def clean(self):
-        if self.answer_type == 1:
-            self.content_object = RatingAnswer.objects.create(rate_value=10)
-        elif self.answer_type == 2:
-            self.content_object = TextAnswer.objects.create()
-
     class Meta:
         verbose_name = "Question"
         verbose_name_plural = "Question Bank"

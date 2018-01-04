@@ -36,6 +36,10 @@ Survey API Doc
 
 >authentication_require: Yes
 
+>Authorization:Token 6dff9272440827751408a84a25ba679db1ddc820
+
+>Content-Type:application/json
+
 >method: GET
 
 ##### Response: json
@@ -67,6 +71,10 @@ Survey API Doc
 
 >authentication_require: Yes
 
+>Authorization:Token 6dff9272440827751408a84a25ba679db1ddc820
+
+>Content-Type:application/json
+
 >method: GET
 
 ```json
@@ -77,12 +85,20 @@ Survey API Doc
             "employee_group": "North",  // employee group
             "question": [  // lists all the question objects linked to the survey
                 {
-                    "url": "http://0.0.0.0:8889/api/question_database/62/",  // url to the question (only for HR/admin)
-                    "id": 62,  // id of question
-                    "question": "Express you thought about company",  // question title
-                    "answer_type": 2,  // question's answer type
-                    "content_type": {},  //  N/A Handled in Backend
-                    "asked_by": []  //  N/A Handled in Backend
+                    "url": "http://192.168.5.9:8889/api/question_database/68/",
+                    "id": 68,  // question id
+                    "question": "status?",  // question title
+                    "answer_type": 0,  // answer type (0- MCQ, 1- Rating, 2- Text)
+                    "content_type": 13,  // N/A 
+                    "content_object": {
+                        "url": "http://192.168.5.9:8889/api/answers/mcq/17/",
+                        "id": 17,
+                        "option": "['done', 'to be done']"  // get_option from here if it is mcq (if answer type == 0)
+                    },
+                    "asked_by": [
+                        31  // N/A db id of user/HR who used this question 
+                    ],
+                    "object_id": 17  // N/A id of object in database
                 }
             ],
             "steps": 5,  // N/A steps completed in survey
@@ -96,7 +112,11 @@ Survey API Doc
 ### Post response of survey
 >url: http://0.0.0.0:8889/api/survey/response/
 
->authentication_require: to be discuss later (for now NO)
+>authentication_require: Yes
+
+>Authorization:Token 6dff9272440827751408a84a25ba679db1ddc820
+
+>Content-Type:application/json
 
 >method: POST
 

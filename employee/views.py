@@ -2,8 +2,6 @@ import codecs
 import csv
 import os
 from collections import OrderedDict
-from datetime import datetime
-
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -285,15 +283,16 @@ class AddQuestion(APIView, LoginRequiredMixin):
         content_object = None
         response_data = {field: value for field, value in request.data.items()}
         answer_type = int(request.data['answer_type'])
-        if answer_type == 0:
-            # MCQ answer
+        if answer_type == 0:  # MCQ answer
             options = request.data.getlist('mytext[]')
             content_object = MCQAnswer.objects.create(option=options)
-        elif answer_type == 1:
-            content_object = RatingAnswer.objects.create(rate_value=10)
-        elif answer_type == 2:
+            response_data['content_type'] = ContentType.objects.get_for_model(MCQAnswer).id
+        elif answer_type == 1:  # Rating answer
+            content_object = RatingAnswer.objects.create()
+            response_data['content_type'] = ContentType.objects.get_for_model(RatingAnswer).id
+        elif answer_type == 2:  # text answer
             content_object = TextAnswer.objects.create()
-        response_data['content_type'] = content_object.id
+            response_data['content_type'] = ContentType.objects.get_for_model(TextAnswer).id
         serializer = QuestionSerializer(data=response_data, context={'request': request})
         if serializer.is_valid():
             que_obj = serializer.save()
@@ -304,6 +303,9 @@ class AddQuestion(APIView, LoginRequiredMixin):
             message = "question created"
             messages.success(request, message=message)
         else:
+            if content_object:
+                print("deleting object....")
+                content_object.delete()
             messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
         return Response({'serializer': serializer, 'style': self.style})
 

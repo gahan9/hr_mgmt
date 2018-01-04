@@ -79,10 +79,18 @@ class MCQAnswerAdmin(admin.ModelAdmin):
             return "-"
 
 
+class RatingAnswerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'rate_value')
+
+
+class TextAnswerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'text')
+
+
 admin.site.register(FileUpload, FileUploadAdmin)
 admin.site.register(Employee, EmployeeDataAdmin)
 admin.site.register(QuestionDB, QuestionDBAdmin)
 admin.site.register(MCQAnswer, MCQAnswerAdmin)
-admin.site.register(RatingAnswer)
-admin.site.register(TextAnswer)
+admin.site.register(RatingAnswer, RatingAnswerAdmin)
+admin.site.register(TextAnswer, TextAnswerAdmin)
 admin.site.register(Survey, SurveyAdmin)
