@@ -83,16 +83,16 @@ class TextSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     answer_type = serializers.ChoiceField(choices=QuestionDB.CHOICE, style={'base_template': 'select.html'})
     content_object = ContentObjectRelatedField(queryset=ContentType.objects.all(), required=False)
-    # option = serializers.ListField()
+    option = serializers.SerializerMethodField()
 
     class Meta:
         model = QuestionDB
-        fields = ["url", "id", "question", "answer_type", 'content_type', 'content_object', "asked_by", 'object_id']
+        fields = ["url", "id", "question", "answer_type", 'content_type', 'content_object', 'option', "asked_by", 'object_id']
         read_only_fields = ('asked_by', 'content_object')
 
     def get_option(self, obj):
         print("in get option........... ", self, obj)
-        return obj
+        return []
         # possible_fields = ['options', 'rate_value', 'text']
         # choice_object = obj.content_object.objevct.get(id=obj.object_id)
         # return choice_object._meta.fields if choice_object.name in possible_fields else getattr(choice_object, choice_object.name)

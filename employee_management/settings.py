@@ -158,3 +158,5 @@ COUNTRIES_ONLY = ['AU', 'IN', 'NZ', 'US']
 # Custom User Model
 AUTH_USER_MODEL = 'main.UserModel'
 
+# Firebase Credential
+FIREBASE_CREDENTIAL_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'serviceAccountKey.json')

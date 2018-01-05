@@ -60,5 +60,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
 {% endblock %}
 {% block extrajs %} {% endblock %}
+{% block firebase_js %}
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js"></script>
+
+    <script>
+        var firebase = require("firebase/app");
+        require("firebase/auth");
+        require("firebase/database");
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyB7MnLsTu5UCQX-aAvZjr6SHYNW8JuZbPw",
+            authDomain: "chat-app-bac6d.firebaseapp.com",
+            databaseURL: "https://chat-app-bac6d.firebaseio.com",
+            projectId: "chat-app-bac6d",
+            storageBucket: "chat-app-bac6d.appspot.com",
+            messagingSenderId: "806879408111"
+        };
+        firebase.initializeApp(config);
+    </script>
+{% endblock %}
 </body>
 </html>

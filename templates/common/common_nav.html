@@ -1,9 +1,10 @@
+{% load static %}
 {% block navbar %}
     <nav id="navigation" class="navbar navbar-inverse navbar-fixed-top default" role="navigation">
         <div class="container" id="navbarSupportedContent">
             <div class="navbar-header">
                 <a href="{% url 'home' %}">
-                    <img class="navbar-item" src='http://127.0.0.1:8889/static/login/img/logo-white.png'
+                    <img class="navbar-item" src={% static '/login/img/logo-white.png' %}
                          style="height:70px;"/></a>
             </div>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
