@@ -11,20 +11,25 @@
 {% endblock %}
 
 {% block anonymous_content %}
-    <section id="contact" class="section">
+    <!-- Content -->
+    <div class="main-container">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="text-center"><h4>Introduction to FieldRate</h4></div>
-                    <iframe src="https://player.vimeo.com/video/232485795" width="500" height="338" frameborder="0"
-                            webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-                    <p><a href="https://vimeo.com/232485795">Water II</a> from <a
-                            href="https://vimeo.com/morganmaassen">Morgan Maassen</a> on <a href="https://vimeo.com">Vimeo</a>.
-                    </p>
+                <div class="col col-12 col-lg-6 col-md-6">
+                    <div class="text-center">
+                        <b>Introduction to Field Rate</b>
+                    </div>
+                    <video width="400" autoplay controls>
+                        <source src="http://techslides.com/demos/sample-videos/small.mp4" type="video/mp4">
+                        Your browser does not support HTML5 video.
+                    </video>
                 </div>
-                <div class="col-md-6">
-                    <div class="text-center"><h4><strong>Login</strong></h4></div>
-                    <div class="cform" id="login-form">
+                <div class="col col-12 col-lg-6 col-md-6">
+                    <div class="text-center">
+                        <b>Login</b>
+                    </div>
+                    <form action="" method="post" role="form">
+                            {% csrf_token %}
                         {% if form.non_field_errors %}
                             <ul class='form-errors'>
                                 {% for error in form.non_field_errors %}
@@ -32,25 +37,21 @@
                                 {% endfor %}
                             </ul>
                         {% endif %}
-                        <form action="" method="post" role="form" class="contactForm">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                {{ form.username }}
-                                <div class="validation"></div>
-                            </div>
-                            <div class="form-group">
-                                {{ form.password }}
-                                <div class="validation"></div>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-lg btn-theme">Login</button>
-                            </div>
-                            <hr>
-                        </form>
-                    </div>
+                        <div class="form-group">
+                            {{ form.username }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.password }}
+                        </div>
+                        <div class="form-group text-center">
+                            <button class="btn btn-theme">Login</button>
+                        </div>
+                    </form>
+{#                    <div class="text-center">#}
+{#                        <p>Not a Member Yet? <span><a href="#">Sign up now</a><span></p>#}
+{#                    </div>#}
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 {% endblock %}
-{% block footer %} {% endblock %}

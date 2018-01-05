@@ -1,46 +1,72 @@
 {% load static %}
 {% block navbar %}
-    <nav id="navigation" class="navbar navbar-inverse navbar-fixed-top default" role="navigation">
-        <div class="container" id="navbarSupportedContent">
-            <div class="navbar-header">
-                <a href="{% url 'home' %}">
-                    <img class="navbar-item" src={% static '/login/img/logo-white.png' %}
-                         style="height:70px;"/></a>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <nav class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="current"><a href="{% url 'home' %}">Home</a></li>
-                        <li class="current"><a href="{% url 'select_plan' 0 %}">Select-Plan</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        {% if user.is_superuser %}
-                            <li><a href="{% url "admin:index" %}">Admin</a></li>
-                            <li><a href="{% url "create_company" %}">Add Company</a></li>
-                        {% endif %}
-                        {% if user.role <= 2 %}
-                            <li><a href="{% url "create_user" %}">Create User</a></li>
-                        {% endif %}
-                        {% if user.role <= 1 %}
-                            <li><a href="{% url "create_user" %}">Create HR</a></li>
-                        {% endif %}
-                        {% if user.is_authenticated %}
-                            <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome, {{ user.first_name }}
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">{{ user.get_role_display }}</a></li>
-                                    {% if user.role == 1 %}
-                                        <li><a class="dropdown-item" href="{% url 'activity_log' %}">Activity Log</a></li>
-                                    {% endif %}
-                                    <li role="separator" class="divider"></li>
-                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                                </ul>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </nav>
+        <!-- Navigation -->
+		<div class="navbar-container">
+			<div class="container">
+				<nav class="navbar navbar-expand-lg navbar-dark bg-black">
+				  <a class="navbar-brand" href="#"><img src="{% static '/assets/logo/logo-white.png' %}" /></a>
+				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				  </button>
+				  <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+						<ul class="navbar-nav">
+						  <li class="nav-item active">
+							<div class="nav-item-child">
+								Welcome/ Username
+								<div class="avatar-container">
+                                    <img src="{% static '/assets/images/avatar.png' %}" />
+                                </div>
+							</div>
+                              <div class="nav-item-child">
+                                  <a href="{% url 'logout' %}">Logout</a>
+                              </div>
+						  </li>
+						</ul>
+				  </div>
+				</nav>
+			</div>
+		</div>
+{#    <nav id="navigation" class="navbar navbar-inverse navbar-fixed-top default" role="navigation">#}
+{#        <div class="container" id="navbarSupportedContent">#}
+{#            <div class="navbar-header">#}
+{#                <a href="{% url 'home' %}">#}
+{#                    <img class="navbar-item" src={% static '/login/img/logo-white.png' %}#}
+{#                         style="height:70px;"/></a>#}
+{#            </div>#}
+{#            <div class="collapse navbar-collapse" id="navbarSupportedContent">#}
+{#                <nav class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">#}
+{#                    <ul class="nav navbar-nav navbar-right">#}
+{#                        <li class="current"><a href="{% url 'home' %}">Home</a></li>#}
+{#                        <li class="current"><a href="{% url 'select_plan' 0 %}">Select-Plan</a></li>#}
+{#                        <li><a href="#contact">Contact</a></li>#}
+{#                        {% if user.is_superuser %}#}
+{#                            <li><a href="{% url "admin:index" %}">Admin</a></li>#}
+{#                            <li><a href="{% url "create_company" %}">Add Company</a></li>#}
+{#                        {% endif %}#}
+{#                        {% if user.role <= 2 %}#}
+{#                            <li><a href="{% url "create_user" %}">Create User</a></li>#}
+{#                        {% endif %}#}
+{#                        {% if user.role <= 1 %}#}
+{#                            <li><a href="{% url "create_user" %}">Create HR</a></li>#}
+{#                        {% endif %}#}
+{#                        {% if user.is_authenticated %}#}
+{#                            <li class="nav-item dropdown">#}
+{#                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome, {{ user.first_name }}#}
+{#                                    <span class="caret"></span>#}
+{#                                </a>#}
+{#                                <ul class="dropdown-menu">#}
+{#                                    <li><a class="dropdown-item" href="#">{{ user.get_role_display }}</a></li>#}
+{#                                    {% if user.role == 1 %}#}
+{#                                        <li><a class="dropdown-item" href="{% url 'activity_log' %}">Activity Log</a></li>#}
+{#                                    {% endif %}#}
+{#                                    <li role="separator" class="divider"></li>#}
+{#                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>#}
+{#                                </ul>#}
+{#                            </li>#}
+{#                        {% endif %}#}
+{#                    </ul>#}
+{#                </nav>#}
+{#            </div>#}
+{#        </div>#}
+{#    </nav>#}
 {% endblock %}
