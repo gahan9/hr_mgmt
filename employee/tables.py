@@ -1,4 +1,7 @@
 import django_tables2 as tables
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+
 from employee.models import *
 
 
@@ -47,12 +50,24 @@ class ActivityTable(tables.Table):
 class SurveyTable(tables.Table):
     """ survey table to view/manage surveys """
     id = tables.TemplateColumn("""
-        <a href="{% url 'add_survey' survey_id=record.id step=record.next_step %}">{{record.id}}</a>""")
+        <a style="text-decoration:None" href="{% url 'add_survey' survey_id=record.id step=record.next_step %}">{{record.id}}</a>""")
     steps = tables.TemplateColumn("""
-        {% if record.steps == 5 %} Published {% else %} {{record.steps}} out of 5 {% endif %}""")
+        <ul class="survey-progress">
+            {% load custom_tags %}
+            {% for i in 0|filter_range:record.steps %}
+                <li class="survey-form-complete"></li>
+            {% endfor %}
+            {% for j in record.steps|filter_range:5 %}
+                <li class="survey-form-incomplete"></li>
+            {% endfor %}
+        </ul>
+        """)
+    edit = tables.TemplateColumn("""
+        <a style="text-decoration:None" href="{% url 'add_survey' survey_id=record.id step=record.next_step %}"><img src="http://jarvis.py:8889/static/assets/images/editicon.png" width="25px" /></a>
+    """)
 
     class Meta:
         model = Survey
-        fields = ['id', 'name', 'question', 'date_created', 'employee_group', 'steps']
-        attrs = {'class': 'table table-sm'}
+        fields = ['id', 'name', 'question', 'date_created', 'employee_group', 'steps', 'edit', 'start_date']
+        attrs = {'class': 'table survey-table table-responsive'}
         order_by = ("-time_stamp",)

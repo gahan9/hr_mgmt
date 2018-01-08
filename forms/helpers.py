@@ -52,21 +52,24 @@ create_user_helper.layout = Layout(
 
 file_upload_helper = FormHelper()
 file_upload_helper.form_tag = True
-file_upload_helper.form_class = 'form-horizontal'
+file_upload_helper.form_class = 'form'
 file_upload_helper.form_method = 'POST'
 file_upload_helper.form_show_labels = False  # default = True
 file_upload_helper.layout = Layout(
     Div(
         Div(
             Field('file', css_class='form-control'),
+            css_class='col col-12 col-lg-3 col-md-3 col-sm-4',
+        ),
+        Div(
             Field('category', css_class='form-control', placeholder="Employee Group/Region"),
-            css_class="col-md-3"
+            css_class='col col-12 col-lg-3 col-md-3 col-sm-4',
         ),
         Div(
             FormActions(Submit('Upload', value="Upload", css_class="btn-theme"),),
-            css_class="col-md-3"
+            css_class='col col-12 col-lg-3 col-md-3 col-sm-4',
         ),
-        css_class="container")
+        css_class="row")
 )
 
 survey_helper = FormHelper()

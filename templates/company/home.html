@@ -1,34 +1,54 @@
 {% extends 'common/common.html' %}
 {% block includes %}
+    {% load static %}
     {% include 'common/common_nav.html' %}
 {% endblock %}
 
 {% block content %}
-<section>
-    <div class="card-header-pills">
-        <h2 class="text-center text-success">Welcome, {{ user.first_name }}</h2>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="list-group col-md-4">
-                <a class="list-group-item" href="{% url 'employee_data' %}">
-                    <h4 class="list-group-item-heading">Employee Data</h4>
-                    <p class="list-group-item-text">manage data</p>
-                </a>
-            </div>
-            <div class="list-group col-md-4">
-                <a class="list-group-item" href="{% url 'field_rate' %}">
-                    <h4 class="list-group-item-heading">Field Rate</h4>
-                    <p class="list-group-item-text">Field Rate</p>
-                </a>
-            </div>
-            <div class="list-group col-md-4">
-                <a class="list-group-item" href="{% url 'home' %}">
-                    <h4 class="list-group-item-heading">Settings</h4>
-                    <p class="list-group-item-text">settings</p>
-                </a>
+    <div class="main-container">
+        <div class="container">
+            <div class="row">
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="{% url 'employee_data' %}">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/employee_data.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Employe Data</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="{% url 'field_rate' %}">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/img1.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Field Rate</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="#">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/settingicon.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Settings</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="{% url 'file_upload' %}">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/uploadicon.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Upload Data</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</section>
 {% endblock %}

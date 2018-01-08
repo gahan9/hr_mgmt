@@ -106,9 +106,9 @@ class Survey(models.Model):
     """
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="survey_owner")
     name = models.CharField(max_length=50, verbose_name="Survey Name")
-    employee_group = models.CharField(max_length=70, verbose_name="Employee Group|Country-Region", blank=True, null=True)
+    employee_group = models.CharField(max_length=70, verbose_name="Region", blank=True, null=True)
     question = models.ManyToManyField(QuestionDB, blank=True, related_name="rel_question")
-    steps = models.SmallIntegerField(default=1)
+    steps = models.SmallIntegerField(default=1, verbose_name="Progress")
     complete = models.BooleanField(default=False)
     start_date = models.DateTimeField(default=default_start_time, blank=True, null=True)
     end_date = models.DateTimeField(default=default_end_time, blank=True, null=True)
@@ -120,6 +120,10 @@ class Survey(models.Model):
 
     def get_question(self):
         return [p.question for p in self.question.all()]
+
+    @property
+    def total_question(self):
+        return len(self.get_question())
 
     def __str__(self):
         return "{1}- {0}".format(self.name, self.id)

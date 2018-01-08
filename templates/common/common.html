@@ -2,19 +2,24 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    {% block head %}
+    {% block meta %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta name="description" content=""/>
+        <meta name="author" content=""/>
+    {% endblock %}
     {% block title %}<title>Field Rate</title> {% endblock %}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="description" content=""/>
-    <meta name="author" content=""/>
+
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon-white.png' %}"/>
     {% block css %}
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+        <link rel="stylesheet" href="{% static 'css/font-awesome/css/font-awesome.min.css' %}"/>
         <link rel="stylesheet" href="{% static 'css/bootstrap-tagsinput.css' %}"/>
         <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-        <link rel="stylesheet" href="{% static 'css/font-awesome/css/font-awesome.min.css' %}"/>
     {% endblock %}
     {% block extracss %} {% endblock %}
+    {% endblock %}
 </head>
 <body>
 
@@ -41,35 +46,35 @@
 
 {% block javascript %}
     <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/bootstrap-tagsinput.min.js' %}"></script>
     <script src="{% static 'js/moment.js' %}"></script>
-    <script src="{% static 'js/popper.min.js' %}"></script>
 {% endblock %}
 {% block extrajs %} {% endblock %}
-{% block firebase_js %}
-    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js"></script>
-
-    <script>
-        var firebase = require("firebase/app");
-        require("firebase/auth");
-        require("firebase/database");
-        // Initialize Firebase
-        var config = {
-            apiKey: "AIzaSyB7MnLsTu5UCQX-aAvZjr6SHYNW8JuZbPw",
-            authDomain: "chat-app-bac6d.firebaseapp.com",
-            databaseURL: "https://chat-app-bac6d.firebaseio.com",
-            projectId: "chat-app-bac6d",
-            storageBucket: "chat-app-bac6d.appspot.com",
-            messagingSenderId: "806879408111"
-        };
-        firebase.initializeApp(config);
-    </script>
-{% endblock %}
+{#{% block firebase_js %}#}
+{#    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>#}
+{#    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js"></script>#}
+{#    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-auth.js"></script>#}
+{#    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-database.js"></script>#}
+{#    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-firestore.js"></script>#}
+{#    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js"></script>#}
+{##}
+{#    <script>#}
+{#        var firebase = require("firebase/app");#}
+{#        require("firebase/auth");#}
+{#        require("firebase/database");#}
+{#        // Initialize Firebase#}
+{#        var config = {#}
+{#            apiKey: "AIzaSyB7MnLsTu5UCQX-aAvZjr6SHYNW8JuZbPw",#}
+{#            authDomain: "chat-app-bac6d.firebaseapp.com",#}
+{#            databaseURL: "https://chat-app-bac6d.firebaseio.com",#}
+{#            projectId: "chat-app-bac6d",#}
+{#            storageBucket: "chat-app-bac6d.appspot.com",#}
+{#            messagingSenderId: "806879408111"#}
+{#        };#}
+{#        firebase.initializeApp(config);#}
+{#    </script>#}
+{#{% endblock %}#}
 </body>
 </html>

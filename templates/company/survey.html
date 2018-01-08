@@ -1,26 +1,41 @@
 {% extends 'common/common.html' %}
+{% load static %}
 {% load render_table from django_tables2 %}
 {% load bootstrap3 %}
-{% load crispy_forms_tags %}
+{% load custom_tags %}
 {% block content %}
-    <section>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
-            <li class="breadcrumb-item active">Survey</li>
-        </ol>
-        <div class="container-fluid">
-            <a href="{% url 'add_survey' %}" class="breadcrumb-item navbar-right btn btn-success"> + Add Survey </a>
-        </div>
-        <div class="container-fluid">
-            {% include 'common/message.html' %}
-            {% if form %}
-                <form action="" method="get" class="form form-inline">
-                    {% bootstrap_form form layout='inline' %}
-                    {% bootstrap_button 'Search' %}
-                </form>
-            {% endif %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
+        <li class="breadcrumb-item active">Survey</li>
+    </ol>
+    <div class="main-container">
+        {% include 'common/message.html' %}
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="fieldrate-icon">
+                        <img src="{% static '/assets/images/img1.png' %}" class="pull-left"/>
+                    </div>
+                </div>
+                <div class="fieldrate-search-bar">
+                    {% if form %}
+                        <form action="" method="get" class="form form-inline">
+                            {% bootstrap_form form layout='inline' %}
+                            {% bootstrap_button 'Search' %}
+                        </form>
+                    {% endif %}
+    {#                        <input type="text" class="form-control" placeholder="Search"/>#}
+                </div>
+                <div class="col">
+                    <a href="{% url 'add_survey' %}">
+                        <div class="btn btn-dark">
+                            + Add New Survey
+                        </div>
+                    </a>
+                </div>
+            </div>
             {% render_table table %}
         </div>
-    </section>
+    </div>
 {% endblock %}

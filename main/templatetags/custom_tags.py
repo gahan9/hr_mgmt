@@ -14,3 +14,8 @@ def message_filter(msg, **kwargs):
 def get_display(arg, **kwargs):
     print(arg)
     return arg
+
+
+@register.filter
+def filter_range(start, end):
+    return range(start, end)

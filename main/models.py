@@ -90,6 +90,7 @@ class UserModel(AbstractUser):
     date_updated = models.DateTimeField(auto_now=True)
     is_blocked = models.BooleanField(default=False, verbose_name="Account Suspended", help_text="account is disabled by HR")
     has_plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True, blank=True)
+    # remark = models.TextField(blank=True, null=True)
     objects = MyUserManager()
 
     USERNAME_FIELD = 'contact_number'

@@ -3,33 +3,25 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
-    <section>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'employee_data' %}">Employee Data</a></li>
-            <li class="breadcrumb-item active">Upload File</li>
-        </ol>
-        <div class="container-fluid">
-            {% if form.errors %}
-                <div class="row">
-                    <ul class='form-errors'>
-                        {% for error in form.errors %}
-                            <li class="text-danger">{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-
-            {% include 'common/message.html' %}
-            <div class="container center-block col-md-5">
-                {% if user.role <= 2 %}
-                    {% crispy form form.helper %}
-                {% else %}
-                    <h4>You don't have rights to access this facility</h4>
-                {% endif %}
-            </div>
+    {% include 'common/message.html' %}
+    {% if form.errors %}
+        <div class="row">
+            <ul class='form-errors'>
+                {% for error in form.errors %}
+                    <li class="text-danger">{{ error }}</li>
+                {% endfor %}
+            </ul>
         </div>
-    </section>
+    {% endif %}
+    <div class="main-container">
+        <div class="container">
+            {% if user.role <= 2 %}
+                {% crispy form form.helper %}
+            {% else %}
+                <h4>You don't have rights to access this facility</h4>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
 {% block extrajs %}
     <script>
