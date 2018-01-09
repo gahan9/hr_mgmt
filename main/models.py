@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.files.storage import FileSystemStorage
 from django.db import models
@@ -164,5 +165,12 @@ class ActivityMonitor(models.Model):
 # method for creating user in firebase
 @receiver(post_save, sender=UserModel, dispatch_uid="create_firebase_account")
 def create_firebase_account(sender, instance, **kwargs):
+    print("In create firebase account")
     data = {}
-    data['']
+    data['uid'] = instance.id
+    data['display_name'] = instance.first_name
+    data['password'] = "{}@{}".format(instance.first_name, instance.contact_number)
+    data['phone_number'] = instance.contact_number
+    print("post_save : signal", sender, instance)
+    # DEFAULT_APP = firebase_admin.initialize_app(credentials.Certificate(FIREBASE_CREDENTIAL_JSON))
+    # auth.create_user(uid='mk3', display_name='Mark II', password='r@123456', phone_number=1111222333)

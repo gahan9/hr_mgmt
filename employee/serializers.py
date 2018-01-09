@@ -1,5 +1,6 @@
 import json
 
+import time
 from django.contrib.admin.models import LogEntry
 from rest_framework import serializers
 
@@ -103,26 +104,41 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     Survey serializer
     Relation: field question: many to many field
     """
-    name = serializers.CharField(max_length=100, style={
-        'placeholder': 'Give name to Survey', 'hide_label': True,
-        'autofocus': True, 'required': True}, required=True)
-    employee_group = serializers.CharField(max_length=100, style={
-        'placeholder': 'Select Employee Group', 'hide_label': True,
-        'autofocus': True}, required=False)
-    start_date = serializers.DateTimeField(style={
-        'placeholder': 'Select start date', 'hide_label': True,
-        'autofocus': True}, required=False)
+    name = serializers.CharField(
+        max_length=100,
+        style={'placeholder': 'Give name to Survey', 'hide_label': True, 'required': True,
+               # 'autofocus': True
+               },
+        required=True)
+    employee_group = serializers.CharField(
+        max_length=100,
+        style={'placeholder': 'Select Employee Group', 'hide_label': True,
+               # 'autofocus': True
+               }, required=False)
+    start_date = serializers.DateTimeField(
+        style={'placeholder': 'Select start date', 'hide_label': True,
+               # 'autofocus': True
+               }, required=False)
     end_date = serializers.DateTimeField(style={
-        'placeholder': 'Select End date', 'hide_label': True}, required=False)
+        'placeholder': 'Select End date'}, required=False)
     complete = serializers.BooleanField(style={
-        'placeholder': 'Completed??', 'hide_label': True}, required=False)
+        'placeholder': 'Completed??'}, required=False)
     question = QuestionSerializer(partial=True, allow_null=True, many=True)
     created_by = UserSerializer(read_only=True)
     current_time = serializers.SerializerMethodField(read_only=True)
     total_question = serializers.SerializerMethodField(read_only=True)
+    responded = serializers.SerializerMethodField(required=False)
+
+    def get_responded(self, obj):
+        current_user = self.context['request'].user
+        responded_survey_list = SurveyResponse.objects.filter(related_user=current_user)
+        if responded_survey_list:
+            return responded_survey_list[0].complete
+        else:
+            return False
 
     def get_current_time(self, obj):
-        return datetime.now().ctime()
+        return time.time()
 
     def get_total_question(self, obj):
         return len(obj.question.all())
@@ -187,7 +203,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         model = Survey
         fields = ["url", "id", "name", "employee_group", "question", "steps", "complete",
                   "start_date", "end_date", "created_by",
-                  "current_time", "total_question"
+                  "current_time", "total_question", "responded"
                   ]
         read_only_fields = ('steps',)
 
