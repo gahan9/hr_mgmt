@@ -103,8 +103,29 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     Survey serializer
     Relation: field question: many to many field
     """
+    name = serializers.CharField(max_length=100, style={
+        'placeholder': 'Give name to Survey', 'hide_label': True,
+        'autofocus': True, 'required': True}, required=True)
+    employee_group = serializers.CharField(max_length=100, style={
+        'placeholder': 'Select Employee Group', 'hide_label': True,
+        'autofocus': True}, required=False)
+    start_date = serializers.DateTimeField(style={
+        'placeholder': 'Select start date', 'hide_label': True,
+        'autofocus': True}, required=False)
+    end_date = serializers.DateTimeField(style={
+        'placeholder': 'Select End date', 'hide_label': True}, required=False)
+    complete = serializers.BooleanField(style={
+        'placeholder': 'Completed??', 'hide_label': True}, required=False)
     question = QuestionSerializer(partial=True, allow_null=True, many=True)
     created_by = UserSerializer(read_only=True)
+    current_time = serializers.SerializerMethodField(read_only=True)
+    total_question = serializers.SerializerMethodField(read_only=True)
+
+    def get_current_time(self, obj):
+        return datetime.now().ctime()
+
+    def get_total_question(self, obj):
+        return len(obj.question.all())
 
     def create(self, validated_data):
         """
@@ -165,7 +186,9 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Survey
         fields = ["url", "id", "name", "employee_group", "question", "steps", "complete",
-                  "start_date", "end_date", "created_by"]
+                  "start_date", "end_date", "created_by",
+                  "current_time", "total_question"
+                  ]
         read_only_fields = ('steps',)
 
 

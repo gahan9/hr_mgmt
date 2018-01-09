@@ -45,7 +45,7 @@ Survey API Doc
 ##### Response: json
 ```json
 {
-    "count": 1,  // total number of survey page available
+    "count": 1,  // total number of surveys
     "next": null,  // url to next page
     "previous": null,  // url to previous page
     "results": [  // contains entries of all survey in current page result
@@ -60,7 +60,9 @@ Survey API Doc
             "complete": true,  // N/A
             "start_date": "2017-12-28T23:59:00Z",  //  N/A not to start survey before this time
             "end_date": "2018-01-01T23:59:00Z",  //  N/A deadline to complete survey
-            "created_by": {}  //  N/A
+            "created_by": {},  //  N/A
+            "current_time": "Tue Jan  9 08:54:09 2018",
+            "total_question": 0
         }
     ]
 }
@@ -105,7 +107,9 @@ Survey API Doc
             "complete": true,  // N/A
             "start_date": "2017-12-28T23:59:00Z",  //  N/A not to start survey before this time
             "end_date": "2018-01-01T23:59:00Z",  //  N/A deadline to complete survey
-            "created_by": {}  // N/A
+            "created_by": {},  // N/A
+            "current_time": "Tue Jan  9 08:54:09 2018",
+            "total_question": 0
         }
 ```
 -----

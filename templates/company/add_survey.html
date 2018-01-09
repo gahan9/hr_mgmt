@@ -3,139 +3,185 @@
 {% load i18n %}
 {% load rest_framework %}
 {% block content %}
-    	<!-- Content -->
-		<div class="main-container">
-			<div class="container">
-				<div class="row" style="margin-bottom: 20px;">
-					<div class="col text-center">
-						<h2 class="page-title">Survey</h2>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col">
-						<div class="connecting-line"></div>
-						<ul class="nav nav-tabs" id="step-wizard" role="tablist">
-						  <li class="nav-item">
-							<a class="nav-link active step-complete" id="step-tab-1" data-toggle="tab" role="tab" aria-controls="step-1" aria-selected="true" href="#step-1"></a>
-						  </li>
-						  <li class="nav-item">
-							<a class="nav-link" id="step-tab-2" data-toggle="tab" role="tab" aria-controls="step-2" aria-selected="false" href="#step-2"></a>
-						  </li>
-						  <li class="nav-item">
-							<a class="nav-link" id="step-tab-3" data-toggle="tab" role="tab" aria-controls="step-3" aria-selected="false" href="#step-3"></a>
-						  </li>
-						  <li class="nav-item">
-							<a class="nav-link" id="step-tab-4" data-toggle="tab" role="tab" aria-controls="step-4" aria-selected="false" href="#step-4"></a>
-						  </li>
-						  <li class="nav-item">
-							<a class="nav-link" id="step-tab-5" data-toggle="tab" role="tab" aria-controls="step-5" aria-selected="false" href="#step-5"></a>
-						  </li>
-						</ul>
-					</div>
-				</div>
-				<div class="row" style="justify-content: center;">
-					<div class="col col-12 col-lg-6 col-md-8 text-center">
-						<div class="tab-content" id="myTabContent" style="margin-top: 30px;">
-						  <div class="tab-pane fade show active" id="step-1" role="tabpanel" aria-labelledby="step-tab-1">
-                            <form action="{% url 'add_survey' survey_id=0 step=1 %}" method="post" novalidate>
+    {{ step }}
+    {{ survey_id }}
+    <!-- Content -->
+    <div class="main-container">
+        <div class="container">
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col text-center">
+                    <h2 class="page-title">Survey</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="connecting-line"></div>
+                    <ul class="nav nav-tabs" id="step-wizard" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active step-complete" id="step-tab-1" data-toggle="tab" role="tab"
+                               aria-controls="step-1" aria-selected="true" href="#step-1"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="step-tab-2" data-toggle="tab" role="tab" aria-controls="step-2"
+                               aria-selected="false" href="#step-2"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="step-tab-3" data-toggle="tab" role="tab" aria-controls="step-3"
+                               aria-selected="false" href="#step-3"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="step-tab-4" data-toggle="tab" role="tab" aria-controls="step-4"
+                               aria-selected="false" href="#step-4"></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="step-tab-5" data-toggle="tab" role="tab" aria-controls="step-5"
+                               aria-selected="false" href="#step-5"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" style="justify-content: center;">
+                <div class="col col-12 col-lg-6 col-md-8 text-center">
+                    <div class="tab-content" id="myTabContent" style="margin-top: 30px;">
+                        <div class="tab-pane fade show active" id="step-1" role="tabpanel" aria-labelledby="step-tab-1">
+                            <form>
                                 {% csrf_token %}
                                 {% render_field serializer.name style=style %}
                             </form>
-						  </div>
-						  <div class="tab-pane fade show" id="step-2" role="tabpanel" aria-labelledby="step-tab-2">
-							<form>
-								<div class="form-group">
-									<select class="form-control">
-										<option value="0">Select Employee Group</option>
-									</select>
-								</div>
-							</form>
-						  </div>
-						  <div class="tab-pane fade show" id="step-3" role="tabpanel" aria-labelledby="step-tab-3">
-							<form onSubmit="return false;">
-								<div class="form-group">
-									<label class="text-left">Add question select from standard database, or type a question.Stand questions are English for now.?"</label>
-									<textarea class="form-control" rows="2"></textarea>
-								</div>
-								<div class="form-group">
-									<select class="form-control" id="question_type" onchange="selectQuestionType(this)">
-										<option value="0">Select Question Type</option>
-										<option value="mcq">MCQ</option>
-										<option value="text">Text</option>
-										<option value="rating">Rating</option>
-									</select>
-								</div>
-								<div class="form-group question_category hidden" id="mcq">
-									<input type="text" class="form-control" data-role="tagsinput" placeholder="options" />
-								</div>
-								<div class="form-group question_category hidden" id="text">
-									<input type="text" class="form-control" placeholder="Answer" />
-								</div>
-							</form>
-						  </div>
-						  <div class="tab-pane fade show" id="step-4" role="tabpanel" aria-labelledby="step-tab-4">
-							<form>
-								<div class="form-row">
-									<div class="col">
-										<input type="text" placeholder="Start Time" onfocus="(this.type='time')" class="form-control" />
-									</div>
-									<div class="col">
-										<input type="text" placeholder="End Time" onfocus="(this.type='time')" class="form-control" />
-									</div>
-								</div>
-							</form>
-						  </div>
-						  <div class="tab-pane fade show" id="step-5" role="tabpanel" aria-labelledby="step-tab-5">
-							<form>
-								<div class="form-group">
-									<button class="btn btn-theme" type="button">Save Survey</button>
-								</div>
-								<div class="form-group">
-									<button class="btn btn-theme" type="button">Create New Survey</button>
-								</div>
-							</form>
-						  </div>
-						  <div class="form-group" style="margin-top: 20px;">
-							<button class="btn btn-theme" type="button" id="next">Next</button>
-						  </div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+                        </div>
+                        <div class="tab-pane fade show" id="step-2" role="tabpanel" aria-labelledby="step-tab-2">
+                            <form>
+                                {% csrf_token %}
+                                {% render_field serializer.employee_group style=style %}
+                            </form>
+                        </div>
+                        <div class="tab-pane fade show" id="step-3" role="tabpanel" aria-labelledby="step-tab-3">
+                            <form onSubmit="return false;">
+                                <div class="form-group">
+                                    <label class="text-left">Add question select from standard database, or type a
+                                        question.Stand questions are English for now.?"</label>
+                                    <textarea class="form-control" rows="2"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-control" id="question_type" onchange="selectQuestionType(this)">
+                                        <option value="0">Select Question Type</option>
+                                        <option value="mcq">MCQ</option>
+                                        <option value="text">Text</option>
+                                        <option value="rating">Rating</option>
+                                    </select>
+                                </div>
+                                <div class="form-group question_category hidden" id="mcq">
+                                    <input type="text" class="form-control" data-role="tagsinput"
+                                           placeholder="options"/>
+                                </div>
+                                <div class="form-group question_category hidden" id="text">
+                                    <input type="text" class="form-control" placeholder="Answer"/>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade show" id="step-4" role="tabpanel" aria-labelledby="step-tab-4">
+                            <form>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <input type="text" placeholder="Start Time" onfocus="(this.type='time')"
+                                               class="form-control"/>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" placeholder="End Time" onfocus="(this.type='time')"
+                                               class="form-control"/>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade show" id="step-5" role="tabpanel" aria-labelledby="step-tab-5">
+                            <form>
+                                <div class="form-group">
+                                    <button class="btn btn-theme" type="button">Save Survey</button>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-theme" type="button">Create New Survey</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="form-group" style="margin-top: 20px;">
+                            <button class="btn btn-theme" type="button" id="next">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 {% block extrajs %}
-		<script type="text/javascript">
-			var tabCounter = 1;
-			$('#step-wizard a').on('click', function (e) {
-			  e.preventDefault();
-			  $(this).tab('show')
-			})
-			function selectQuestionType(element) {
-				$(".question_category").addClass("hidden");
-				$("#" + $(element).val()).removeClass("hidden");
-			}
-			$('#next').click(function() {
-			   {% comment %} $.ajax({
-                    url: '/',
-                    method: 'post',
-                    success: stpe()
-                    error: function()
+    <script type="text/javascript">
+        var tabCounter = 1;
+        $('#step-wizard a').on('click', function (e) {
+            e.preventDefault();
+            $(this).tab('show')
+        });
 
-                }){% endcomment %}
-				$("#step-wizard li:eq(" + (tabCounter) + ") a").tab('show');
-				$("#step-wizard li:eq(" + (tabCounter) + ") a").addClass("step-complete");
-				tabCounter++ ;
-				localStorage.setItem('stepnumber', tabCounter)
-			})
-            $(function () {
-                $("#step-wizard li:eq({{ step }}) a").tab('show');
-                $("#step-wizard li:eq(" + ({{ step }}) + ") a").addClass("step-complete");
-                for (var i=0; i< {{ step }}; i++) {
-                    $("#step-wizard li:eq(" + i + ") a").addClass("step-complete");
+        function selectQuestionType(element) {
+            $(".question_category").addClass("hidden");
+            $("#" + $(element).val()).removeClass("hidden");
+        }
 
+        $('#next').click(function () {
+            event.preventDefault();
+            redirect_url = '{% url 'add_survey' %}';
+            {#data = {'step': {{ step }}, 'survey_id': {{ survey_id }}};#}
+            data = {
+                "name": "",
+                "employee_group": "",
+                "question": [],
+                "complete": false,
+                "start_date": null,
+                "end_date": null
+            };
+            var csrftoken = Cookies.get('csrftoken');
+            console.log(redirect_url);
+            console.log(data);
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
                 }
-            })
-		</script>
+            });
+            $.ajax({
+                url: redirect_url,
+                method: 'POST',
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                data: data,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                success: function () {
+                    alert("Saved! It worked.");
+                    window.location.href = redirect_url;
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+                    window.location.href = "{% url 'add_survey' %}"
+                }
+            });
+            $("#step-wizard li:eq(" + (tabCounter) + ") a").tab('show');
+            $("#step-wizard li:eq(" + (tabCounter) + ") a").addClass("step-complete");
+            tabCounter++;
+            localStorage.setItem('stepnumber', tabCounter);
+        });
+        $(function () {
+            $("#step-wizard li:eq({{ step }}) a").tab('show');
+            $("#step-wizard li:eq(" + ({{ step }}) + ") a").addClass("step-complete");
+            for (var i = 0; i < {{ step }}; i++) {
+                $("#step-wizard li:eq(" + i + ") a").addClass("step-complete");
+
+            }
+        })
+    </script>
 {% endblock %}

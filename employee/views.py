@@ -312,7 +312,8 @@ class AddQuestion(APIView, LoginRequiredMixin):
 
 class AddSurvey(APIView):
     login_url = reverse_lazy('login')
-    template_name = 'company/add_survey.html'
+    # template_name = 'company/add_survey.html'
+    template_name = 'company/_add_survey.html'
     renderer_classes = [TemplateHTMLRenderer]
     style = {'template_pack': 'rest_framework/vertical/'}
 
@@ -325,11 +326,12 @@ class AddSurvey(APIView):
         else:
             serializer = SurveySerializer()
         if not step:  # initialize survey
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'step_range': range(step)})
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
         elif step == 2:  # handle employee group entry
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
         elif step == 3:  # handle question entry
             question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
+            print(question_set)
             try:
                 que_instance = QuestionDB.objects.filter(rel_question=Survey.objects.get(id=6))
             except Exception as e:
@@ -337,8 +339,9 @@ class AddSurvey(APIView):
                 que_instance = None
             serializer = QuestionSerializer()
             flag = "add_new" if 'add_new' in kwargs else None
+            question_id = [i.id for i in que_instance] if que_instance else None
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
-                             'question_set': question_set, 'flag': flag, 'que_id': [i.id for i in que_instance], 'step_range': range(step)})
+                             'question_set': question_set, 'flag': flag, 'que_id': question_id, 'step_range': range(step)})
         elif step == 4:
             try:
                 instance.start_date = default_start_time()
@@ -351,7 +354,7 @@ class AddSurvey(APIView):
 
     def post(self, request, **kwargs):
         print(kwargs)
-        step = int(kwargs['step']) if 'step' in kwargs else None
+        step = int(kwargs['step']) if 'step' in kwargs else 0
         survey_id = int(kwargs['survey_id']) if 'survey_id' in kwargs else None
         survey_id = None if survey_id == 0 else survey_id
         partial = False

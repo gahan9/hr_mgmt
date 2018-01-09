@@ -21,15 +21,16 @@ router.register(r'surveys', SurveyViewSet)
 # router.register(r'survey/{pk}/question/$', QuestionSet)
 
 urlpatterns = [
+    url(r'^api/v1/', include(router.urls)),
     url(r'^api/', include(router.urls)),
     url(r'^login/', django_login, {'template_name': 'common/login.html', 'authentication_form': LoginForm}, name='login'),
     url(r'^logout/', django_logout, {'next_page': '/login/'}, name='logout'),
     url(r'^create-company', views.CreateCompanyView.as_view(), name="create_company"),
     url(r'^select-plan/(?P<stage>\d+)/$', views.PlanSelector.as_view(), name="select_plan"),
     # custom implemented api
-    url(r'^api/survey/$', SurveyViewSet.as_view({'get': 'list', 'post': 'create'}), name="survey-list"),
-    url(r'^api/survey/(?P<pk>[^/.]+)/$', SurveyViewSet.as_view(
+    url(r'^api/v1/survey/$', SurveyViewSet.as_view({'get': 'list', 'post': 'create'}), name="survey-list"),
+    url(r'^api/v1/survey/(?P<pk>[^/.]+)/$', SurveyViewSet.as_view(
       {'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}),
       name="survey-detail"),
-    url(r'^api/survey/(?P<rel_question>\d+)/question/$', QuestionSet.as_view(), name="survey_question"),
+    url(r'^api/v1/survey/(?P<rel_question>\d+)/question/$', QuestionSet.as_view(), name="survey_question"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
