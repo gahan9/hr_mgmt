@@ -54,7 +54,7 @@ class QuestionDBAdmin(admin.ModelAdmin):
     manage questions of all companies
     """
     search_fields = ['question']
-    list_display = ('id', 'question', 'answer_type', 'content_type', 'used_by')
+    list_display = ('id', 'question', 'answer_type', 'options', 'used_by', 'benchmark')
 
     @staticmethod
     def used_by(obj):
@@ -90,7 +90,7 @@ class TextAnswerAdmin(admin.ModelAdmin):
 admin.site.register(FileUpload, FileUploadAdmin)
 admin.site.register(Employee, EmployeeDataAdmin)
 admin.site.register(QuestionDB, QuestionDBAdmin)
-admin.site.register(MCQAnswer, MCQAnswerAdmin)
-admin.site.register(RatingAnswer, RatingAnswerAdmin)
-admin.site.register(TextAnswer, TextAnswerAdmin)
+# admin.site.register(MCQAnswer, MCQAnswerAdmin)
+# admin.site.register(RatingAnswer, RatingAnswerAdmin)
+# admin.site.register(TextAnswer, TextAnswerAdmin)
 admin.site.register(Survey, SurveyAdmin)

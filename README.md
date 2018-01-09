@@ -87,20 +87,12 @@ Survey API Doc
             "employee_group": "North",  // employee group
             "question": [  // lists all the question objects linked to the survey
                 {
-                    "url": "http://192.168.5.9:8889/api/question_database/68/",
-                    "id": 68,  // question id
-                    "question": "status?",  // question title
-                    "answer_type": 0,  // answer type (0- MCQ, 1- Rating, 2- Text)
-                    "content_type": 13,  // N/A 
-                    "content_object": {
-                        "url": "http://192.168.5.9:8889/api/answers/mcq/17/",
-                        "id": 17,
-                        "option": "['done', 'to be done']"  // get_option from here if it is mcq (if answer type == 0)
-                    },
-                    "asked_by": [
-                        31  // N/A db id of user/HR who used this question 
-                    ],
-                    "object_id": 17  // N/A id of object in database
+                    "url": "http://jarvis.py:8889/api/question_database/74/",  // not available for user
+                    "id": 74,  // question_id
+                    "question": "a",   // question_title
+                    "answer_type": 1,  // rating
+                    "options": "10",  // scale of rating upto...
+                    "asked_by": []  // N/A
                 }
             ],
             "steps": 5,  // N/A steps completed in survey

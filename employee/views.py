@@ -282,7 +282,7 @@ class AddQuestion(APIView, LoginRequiredMixin):
         current_user = self.request.user
         content_object = None
         response_data = {field: value for field, value in request.data.items()}
-        answer_type = int(request.data['answer_type'])
+        answer_type = int(request.data['answer_type']) if 'answer_type' in request.data else None
         if answer_type == 0:  # MCQ answer
             options = request.data.getlist('mytext[]')
             content_object = MCQAnswer.objects.create(option=options)
@@ -330,7 +330,7 @@ class AddSurvey(APIView):
         elif step == 2:  # handle employee group entry
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
         elif step == 3:  # handle question entry
-            question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user))
+            question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user)) | QuestionDB.objects.filter(benchmark=True)
             print(question_set)
             try:
                 que_instance = QuestionDB.objects.filter(rel_question=Survey.objects.get(id=6))

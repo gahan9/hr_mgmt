@@ -51,13 +51,16 @@ class QuestionDB(models.Model):
               (1, "Rating"),  # content_type:
               (2, "TextField"))  # content_type:
     question = models.TextField()
-    answer_type = models.IntegerField(choices=CHOICE)
+    answer_type = models.IntegerField(choices=CHOICE, default=1)
     benchmark = models.BooleanField(default=False)  # if True will be visible to every company
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField(blank=True, null=True)
-    content_object = GenericForeignKey('content_type', 'object_id')
     asked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="is_asked_by", blank=True)
     created_on = models.DateTimeField(auto_now=True)
+    # options to hold rate_value
+    options = models.CharField(max_length=2, default=10, verbose_name="Rate Scale", help_text="Enter maximum value of rate scale up to 10")
+    # discontinued generic relation for temporary basis
+    # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    # object_id = models.PositiveIntegerField(blank=True, null=True)
+    # content_object = GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
         return self.question

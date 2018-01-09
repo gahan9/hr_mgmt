@@ -1,12 +1,15 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.files.storage import FileSystemStorage
 from django.db import models
-from django_countries.fields import CountryField
+from django.db.models.signals import post_save
+from django.dispatch.dispatcher import receiver
 from djmoney.models.fields import MoneyField
-from rest_framework.fields import JSONField
 
 from employee_management import settings
+
+import firebase_admin
+from firebase_admin import auth, credentials
+from employee_management.settings import FIREBASE_CREDENTIAL_JSON
 
 fs = FileSystemStorage(location='/var/www/html/field_rate/photos')
 
@@ -156,3 +159,10 @@ class ActivityMonitor(models.Model):
 
     class Meta:
         verbose_name_plural = "Activity Monitor"
+
+
+# method for creating user in firebase
+@receiver(post_save, sender=UserModel, dispatch_uid="create_firebase_account")
+def create_firebase_account(sender, instance, **kwargs):
+    data = {}
+    data['']
