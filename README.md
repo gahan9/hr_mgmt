@@ -136,10 +136,9 @@ Survey API Doc
 
 ```json
 {
-    "related_survey": null,  // id of survey
-    "related_user": null,  // id of user (given in login api- depend on authentication_requirement)
-    "answers": "",  // a list
-    "complete": false  // check True if completed all question
+    "related_survey": 1,  // id of survey
+    "answers": "[(1,5), (2,3)]",  // a list in string format [(question_id, rated_value),....]
+    "complete": true  // show status if survey is completed
 }
 ```
 

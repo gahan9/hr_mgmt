@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'formtools',
     'generic_relations',
     'djmoney',
+    'django_mysql',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 2,
+    'EXCEPTION_HANDLER': 'employee.utils.custom_exception_handler'
 }
 
 ROOT_URLCONF = 'employee_management.urls'

@@ -141,7 +141,8 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
 
     def get_responded(self, obj):
         current_user = self.context['request'].user
-        responded_survey_list = SurveyResponse.objects.filter(related_user=current_user)
+        responded_survey_list = SurveyResponse.objects.filter(related_user=current_user, related_survey=obj)
+        print("Current User {}\nresponse___{}".format(current_user, responded_survey_list))
         if responded_survey_list:
             return responded_survey_list[0].complete
         else:
@@ -217,16 +218,30 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Survey
-        fields = ["url", "id", "name", "employee_group", "question", "steps", "complete",
+        fields = ["url", "id", "name", "responded", "employee_group", "question", "steps", "complete",
                   "start_date", "end_date", "created_by",
                   "start_time", "end_time",
-                  "current_time", "total_question", "responded"
+                  "current_time", "total_question",
                   ]
         read_only_fields = ('steps',)
 
 
 class SurveyResponseSerializer(serializers.ModelSerializer):
     """ Serializer to take response of Survey """
+    # answers = serializers.ListField()
+
+    def validate(self, attrs):
+        attrs['related_user'] = self.context['request'].user
+        return attrs
+
+    def create(self, validated_data):
+        instance = super(SurveyResponseSerializer, self).create(validated_data)
+        instance.related_user = self.context['request'].user
+        print("-------------------", instance)
+        instance.save()
+        return instance
+
     class Meta:
         model = SurveyResponse
         fields = ["url", "id", "related_survey", "related_user", "answers", "complete"]
+        read_only_fields = ('related_user', )

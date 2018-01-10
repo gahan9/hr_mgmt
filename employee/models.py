@@ -138,8 +138,8 @@ class Survey(models.Model):
 
 class SurveyResponse(models.Model):
     related_survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="rel_survey", verbose_name="related_survey_id")
-    related_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="rel_employee", verbose_name="related_user_id")
-    answers = models.TextField()
+    related_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="rel_employee", verbose_name="related_user_id", blank=True, null=True)
+    answers = models.TextField(blank=True, null=True)
     complete = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
