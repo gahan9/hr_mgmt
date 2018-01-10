@@ -3,7 +3,7 @@
 {% load custom_tags %}
 {% block content %}
 <section>
-{% if user.role <= 1 %}
+{% if user.role <= 2 %}
     <div class="container col-xs-4 col-xs-offset-3">
         {% include 'common/message.html' %}
         <form action="" class="form-group" method="post" role="form" enctype="multipart/form-data">

@@ -393,6 +393,10 @@ class AddSurvey(APIView):
             return Response({'serializer': serializer, 'style': self.style})
 
 
+class CreateSurvey(AddSurvey):
+    template_name = 'company/add_survey.html'
+
+
 class CreateUserView(LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
     form_class = CreateUserForm

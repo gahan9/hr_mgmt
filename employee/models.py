@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from main.models import *
 
@@ -56,7 +57,10 @@ class QuestionDB(models.Model):
     asked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="is_asked_by", blank=True)
     created_on = models.DateTimeField(auto_now=True)
     # options to hold rate_value
-    options = models.CharField(max_length=2, default=10, verbose_name="Rate Scale", help_text="Enter maximum value of rate scale up to 10")
+    options = models.IntegerField(default=10, verbose_name="Rate Scale",
+                                  help_text="Enter maximum value of rate scale up to 10",
+                                  validators=[MaxValueValidator(10), MinValueValidator(1)]
+                                  )
     # discontinued generic relation for temporary basis
     # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # object_id = models.PositiveIntegerField(blank=True, null=True)
@@ -139,3 +143,16 @@ class SurveyResponse(models.Model):
     complete = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+
+
+class FileUpload(models.Model):
+    """ File Upload Model """
+    uploader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    file = models.FileField(upload_to='.', verbose_name="File")
+    added = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "{}".format(self.file)
+
+    class Meta:
+        verbose_name_plural = "Uploads"
