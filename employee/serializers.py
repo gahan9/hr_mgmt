@@ -85,11 +85,19 @@ class QuestionSerializer(serializers.ModelSerializer):
     # answer_type = serializers.ChoiceField(choices=QuestionDB.CHOICE, style={'base_template': 'select.html'})
     # content_object = ContentObjectRelatedField(queryset=ContentType.objects.all(), required=False)
     # option = serializers.SerializerMethodField()
+    question_id = serializers.SerializerMethodField(required=False, read_only=True)
+    question_title = serializers.SerializerMethodField(required=False, read_only=True)
 
     class Meta:
         model = QuestionDB
-        fields = ["url", "id", "question", "answer_type", 'options', "asked_by"]
+        fields = ["url", "question_id", "question_title", "answer_type", 'options', "asked_by"]
         read_only_fields = ('asked_by', 'content_object')
+
+    def get_question_id(self, obj):
+        return obj.id
+
+    def get_question_title(self, obj):
+        return obj.question
 
     def get_option(self, obj):
         print("in get option........... ", self, obj)
@@ -128,6 +136,8 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     current_time = serializers.SerializerMethodField(read_only=True)
     total_question = serializers.SerializerMethodField(read_only=True)
     responded = serializers.SerializerMethodField(required=False)
+    start_time = serializers.SerializerMethodField(read_only=True)
+    end_time = serializers.SerializerMethodField(read_only=True)
 
     def get_responded(self, obj):
         current_user = self.context['request'].user
@@ -136,6 +146,12 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             return responded_survey_list[0].complete
         else:
             return False
+
+    def get_start_time(self, obj):
+        return obj.start_date.strftime('%s')
+
+    def get_end_time(self, obj):
+        return obj.end_date.strftime('%s')
 
     def get_current_time(self, obj):
         return time.time()
@@ -203,6 +219,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         model = Survey
         fields = ["url", "id", "name", "employee_group", "question", "steps", "complete",
                   "start_date", "end_date", "created_by",
+                  "start_time", "end_time",
                   "current_time", "total_question", "responded"
                   ]
         read_only_fields = ('steps',)
