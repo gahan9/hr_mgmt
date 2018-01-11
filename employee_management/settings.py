@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'formtools',
     'generic_relations',
     'djmoney',
-    'django_mysql',
     'jsonfield',
 ]
 
