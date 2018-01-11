@@ -17,3 +17,4 @@ django-money==0.12.3
 firebase_token_generator
 firebase_admin
 pyasn1-modules==0.0.8
+django-jsonfield==1.0.1

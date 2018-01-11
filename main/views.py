@@ -23,11 +23,22 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by('employee__company_name', 'role')
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance.password = make_password(instance.password)
+        instance.save()
+
     def get_queryset(self):
-        if not self.request.user.is_superuser:
-            queryset = UserModel.objects.filter(employee__company_name=get_user_company(self.request.user.rel_company_user))
-            # print(queryset)
-            return queryset
+        current_user = self.request.user
+        if not current_user.is_superuser:
+            if current_user.role == 3:
+                queryset = UserModel.objects.filter(id=current_user.id)
+                return queryset
+            elif current_user.role < 3:
+                queryset = UserModel.objects.filter(
+                    employee__company_name=get_user_company(current_user))
+                # print(queryset)
+                return queryset
         else:
             queryset = UserModel.objects.all()
             return queryset

@@ -8,6 +8,10 @@ import random
 UserModel = get_user_model()
 
 
+def change_all_password():
+    UserModel.objects.filter(is_staff=False).update(password=make_password('1'))
+
+
 def dummy_employee(role=3):
     """
     test case to create user followed by it's employee detail

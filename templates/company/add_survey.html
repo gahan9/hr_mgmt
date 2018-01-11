@@ -46,13 +46,13 @@
                         <div class="tab-pane fade show active" id="step-1" role="tabpanel" aria-labelledby="step-tab-1">
                             <form>
                                 {% csrf_token %}
-                                {% render_field serializer.name style=style %}
+                                <input id="survey-name" type="text" class="form-control" placeholder="Give name to survey" />
                             </form>
                         </div>
                         <div class="tab-pane fade show" id="step-2" role="tabpanel" aria-labelledby="step-tab-2">
                             <form>
                                 {% csrf_token %}
-                                {% render_field serializer.employee_group style=style %}
+                                <input id="survey-group" type="text" class="form-control" placeholder="Employee Group" />
                             </form>
                         </div>
                         <div class="tab-pane fade show" id="step-3" role="tabpanel" aria-labelledby="step-tab-3">
@@ -116,6 +116,9 @@
 {% block extrajs %}
     <script type="text/javascript">
         var tabCounter = 1;
+        var csrftoken = Cookies.get('csrftoken');
+        var default_api_url = 'http://jarvis.py:8889' + '{% url 'survey_list' %}';
+        var wizard_url = "";
         $('#step-wizard a').on('click', function (e) {
             e.preventDefault();
             $(this).tab('show')
@@ -126,11 +129,38 @@
             $("#" + $(element).val()).removeClass("hidden");
         }
 
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        function setCSRF(xhr, settings) {
+            xhr.setRequestHeader("Authorization", "Token " + '1c457e820eec6445f44b90f7c63ad905bc90cc9f')
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+
+        function CustomRequest(content) {
+            $.ajax({
+                url: content.url,
+                method: content.method,
+                data: content.data,
+                beforeSend: setCSRF,
+                success: function (responseObj) {
+                    alert("Saved! It worked.");
+                    {#window.location.href = redirect_url;#}
+                    wizard_url = responseObj.url;
+                    console.log(wizard_url);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+                    {#window.location.href = "{% url 'add_survey' %}"#}
+                }
+            });
+        }
+
         $('#next').click(function () {
             event.preventDefault();
-            redirect_url = '{% url 'add_survey' %}';
-            {#data = {'step': {{ step }}, 'survey_id': {{ survey_id }}};#}
-            data = {
+            var data = {
                 "name": "",
                 "employee_group": "",
                 "question": [],
@@ -138,38 +168,26 @@
                 "start_date": null,
                 "end_date": null
             };
-            var csrftoken = Cookies.get('csrftoken');
-            console.log(redirect_url);
-            console.log(data);
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            console.log(default_api_url);
+            if (tabCounter === 1) {
+                var value0 = {
+                    url: wizard_url,
+                    method: 'POST',
+                    data: {"name": $('#survey-name').val()}
+                };
+                console.log(wizard_url);
+                console.log(value0.method);
+                console.log(value0.data);
+                CustomRequest(value0)
             }
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-            $.ajax({
-                url: redirect_url,
-                method: 'POST',
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-                data: data,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                success: function () {
-                    alert("Saved! It worked.");
-                    window.location.href = redirect_url;
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
-                    window.location.href = "{% url 'add_survey' %}"
-                }
-            });
+            else if (tabCounter === 2){
+                var value1 = {
+                    url: wizard_url,
+                    method: 'PATCH',
+                    data: {"employee_group": $('#survey-group').val()}
+                };
+                CustomRequest(value1)
+            }
             $("#step-wizard li:eq(" + (tabCounter) + ") a").tab('show');
             $("#step-wizard li:eq(" + (tabCounter) + ") a").addClass("step-complete");
             tabCounter++;

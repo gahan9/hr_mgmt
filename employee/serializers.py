@@ -112,12 +112,6 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     Survey serializer
     Relation: field question: many to many field
     """
-    name = serializers.CharField(
-        max_length=100,
-        style={'placeholder': 'Give name to Survey', 'hide_label': True, 'required': True,
-               # 'autofocus': True
-               },
-        required=True)
     employee_group = serializers.CharField(
         max_length=100,
         style={'placeholder': 'Select Employee Group', 'hide_label': True,
@@ -141,10 +135,12 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
 
     def get_responded(self, obj):
         current_user = self.context['request'].user
-        responded_survey_list = SurveyResponse.objects.filter(related_user=current_user, related_survey=obj)
-        print("Current User {}\nresponse___{}".format(current_user, responded_survey_list))
+        responded_survey_list = ['a']
+        # responded_survey_list = SurveyResponse.objects.filter(related_user=current_user, related_survey=obj)
+        # print("Current User {}\nresponse___{}".format(current_user, responded_survey_list))
         if responded_survey_list:
-            return responded_survey_list[0].complete
+            return True
+            # return responded_survey_list[0].complete
         else:
             return False
 
@@ -226,9 +222,18 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('steps',)
 
 
+class JSONSerializerField(serializers.Field):
+    """ Serializer for JSONField -- required to make field writable"""
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        return value
+
+
 class SurveyResponseSerializer(serializers.ModelSerializer):
     """ Serializer to take response of Survey """
-    # answers = serializers.ListField()
+    answers = serializers.JSONField()
 
     def validate(self, attrs):
         attrs['related_user'] = self.context['request'].user
