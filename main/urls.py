@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from django.contrib.auth.views import login as django_login, logout as django_logout
 from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
 from rest_framework import routers
 
 from main import views
@@ -22,7 +23,7 @@ router.register(r'surveys', SurveyViewSet)
 
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
-    url(r'^api/', include(router.urls)),
+    url(r'^api/', RedirectView.as_view(url='/api/v1/')),
     url(r'^login/', django_login, {'template_name': 'common/login.html', 'authentication_form': LoginForm}, name='login'),
     url(r'^logout/', django_logout, {'next_page': '/login/'}, name='logout'),
     url(r'^create-company', views.CreateCompanyView.as_view(), name="create_company"),
