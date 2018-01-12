@@ -1,7 +1,6 @@
-import json
-
 import time
-from django.contrib.admin.models import LogEntry
+from calendar import timegm
+
 from rest_framework import serializers
 
 from employee.models import *
@@ -145,10 +144,10 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             return False
 
     def get_start_time(self, obj):
-        return obj.start_date.strftime('%s')
+        return timegm(obj.start_date.utctimetuple())
 
     def get_end_time(self, obj):
-        return obj.end_date.strftime('%s')
+        return timegm(obj.end_date.utctimetuple())
 
     def get_current_time(self, obj):
         return time.time()
