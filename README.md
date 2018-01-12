@@ -137,7 +137,15 @@ Survey API Doc
 ```json
 {
     "related_survey": 1,  // id of survey
-    "answers": "[(1,5), (2,3)]",  // a list in string format [(question_id, rated_value),....]
+    "answers": {
+        "1": {  # key is question id
+            "r": 2  # rated value by user
+        },
+        "2": {  # key is question id
+            "m": "user entered message",  # optional message
+            "r": 2  # rated value by user
+        }
+    },
     "complete": true  // show status if survey is completed
 }
 ```
