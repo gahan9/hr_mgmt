@@ -29,9 +29,9 @@ urlpatterns = [
     url(r'^create-company', views.CreateCompanyView.as_view(), name="create_company"),
     url(r'^select-plan/(?P<stage>\d+)/$', views.PlanSelector.as_view(), name="select_plan"),
     # custom implemented api
-    url(r'^api/v1/surveys/$', SurveyViewSet.as_view({'get': 'list', 'post': 'create'}), name="survey_list"),
-    url(r'^api/v1/surveys/(?P<pk>[^/.]+)/$', SurveyViewSet.as_view(
+    url(r'^api/v1/survey/$', SurveyViewSet.as_view({'get': 'list', 'post': 'create'}), name="survey_list"),
+    url(r'^api/v1/survey/(?P<pk>[^/.]+)/$', SurveyViewSet.as_view(
       {'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}),
       name="survey-detail"),
-    url(r'^api/v1/surveys/(?P<rel_question>\d+)/question/$', QuestionSet.as_view(), name="survey_question"),
+    url(r'^api/v1/survey/(?P<rel_question>\d+)/question/$', QuestionSet.as_view(), name="survey_question"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
