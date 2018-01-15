@@ -233,6 +233,7 @@ class JSONSerializerField(serializers.Field):
 class SurveyResponseSerializer(serializers.ModelSerializer):
     """ Serializer to take response of Survey """
     answers = serializers.JSONField()
+    survey_id = serializers.PrimaryKeyRelatedField(source='related_survey', queryset=Survey.objects.filter(complete=True))
 
     def validate(self, attrs):
         attrs['related_user'] = self.context['request'].user
@@ -247,5 +248,5 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SurveyResponse
-        fields = ["url", "id", "related_survey", "related_user", "answers", "complete"]
+        fields = ["url", "id", "survey_id", "related_user", "answers", "complete"]
         read_only_fields = ('related_user', )
