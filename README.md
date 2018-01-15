@@ -136,7 +136,7 @@ Survey API Doc
 
 ```json
 {
-    "related_survey": 1,  // id of survey
+    "survey_id": 1,  // id of survey
     "answers": {
         "1": {  # key is question id
             "r": 2  # rated value by user
