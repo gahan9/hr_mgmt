@@ -134,12 +134,12 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
 
     def get_responded(self, obj):
         current_user = self.context['request'].user
-        responded_survey_list = ['a']
-        # responded_survey_list = SurveyResponse.objects.filter(related_user=current_user, related_survey=obj)
+        # responded_survey_list = ['a']
+        responded_survey_list = SurveyResponse.objects.filter(related_user=current_user, related_survey=obj)
         # print("Current User {}\nresponse___{}".format(current_user, responded_survey_list))
         if responded_survey_list:
-            return True
-            # return responded_survey_list[0].complete
+            # return True
+            return responded_survey_list[0].complete
         else:
             return False
 
