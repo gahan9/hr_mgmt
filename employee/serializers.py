@@ -133,12 +133,10 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     end_time = serializers.SerializerMethodField(read_only=True)
 
     def get_responded(self, obj):
+        """ Get if user has already responded for this survey object or not """
         current_user = self.context['request'].user
-        # responded_survey_list = ['a']
         responded_survey_list = SurveyResponse.objects.filter(related_user=current_user, related_survey=obj)
-        # print("Current User {}\nresponse___{}".format(current_user, responded_survey_list))
         if responded_survey_list:
-            # return True
             return responded_survey_list[0].complete
         else:
             return False
@@ -250,3 +248,14 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
         model = SurveyResponse
         fields = ["url", "id", "survey_id", "related_user", "answers", "complete"]
         read_only_fields = ('related_user', )
+
+
+class NewsFeedSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        attrs['created_by'] = self.context['request'].user
+        return attrs
+
+    class Meta:
+        model = NewsFeed
+        fields = ["url", "id", "title", "feed", "priority", "created_by", "date_created", "date_updated"]
+        read_only_fields = ('created_by', )

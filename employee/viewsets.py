@@ -106,3 +106,21 @@ class SurveyResponseViewSet(viewsets.ModelViewSet):
     """ API for saving response of survey """
     serializer_class = SurveyResponseSerializer
     queryset = SurveyResponse.objects.all()
+
+
+class NewsFeedViewSet(viewsets.ModelViewSet):
+    """ API for saving response of survey """
+    serializer_class = NewsFeedSerializer
+    queryset = NewsFeed.objects.all()
+
+    def get_queryset(self):
+        current_user = self.request.user
+        if not current_user.is_superuser:
+            if current_user.role in [1, 2]:
+                queryset = NewsFeed.objects.filter(created_by=current_user)
+            else:
+                queryset = NewsFeed.objects.filter(created_by__rel_company_user=current_user.employee.company_name)
+            return queryset
+        else:
+            queryset = NewsFeed.objects.all()
+            return queryset

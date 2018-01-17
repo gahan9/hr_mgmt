@@ -156,3 +156,16 @@ class FileUpload(models.Model):
 
     class Meta:
         verbose_name_plural = "Uploads"
+
+
+class NewsFeed(models.Model):
+    """ News Feed model to broadcast message to all employee """
+    title = models.CharField(max_length=50)
+    feed = models.TextField()
+    priority = models.IntegerField(blank=True, null=True, default=0)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "News Feed"

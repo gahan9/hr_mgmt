@@ -19,6 +19,7 @@ router.register(r'answers/rating', RatingAnswerViewSet)
 router.register(r'answers/text', TextAnswerViewSet)
 router.register(r'survey/response', SurveyResponseViewSet)
 router.register(r'survey', SurveyViewSet)
+router.register(r'news_feed', NewsFeedViewSet)
 # router.register(r'survey/{pk}/question/$', QuestionSet)
 
 urlpatterns = [
