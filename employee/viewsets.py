@@ -109,7 +109,7 @@ class SurveyResponseViewSet(viewsets.ModelViewSet):
 
 
 class NewsFeedViewSet(viewsets.ModelViewSet):
-    """ API for saving response of survey """
+    """ API for creating and listing news feed """
     serializer_class = NewsFeedSerializer
     queryset = NewsFeed.objects.all()
 
