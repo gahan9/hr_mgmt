@@ -1,3 +1,4 @@
+import json
 import time
 from calendar import timegm
 
@@ -235,6 +236,10 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs['related_user'] = self.context['request'].user
+        # this block is to store values in database in desire format
+        answers = attrs['answers']
+        result = {str(question_response.pop("q")): question_response for question_response in answers if "q" in question_response}
+        attrs['answers'] = result
         return attrs
 
     def create(self, validated_data):
