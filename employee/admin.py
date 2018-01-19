@@ -87,6 +87,10 @@ class TextAnswerAdmin(admin.ModelAdmin):
     list_display = ('id', 'text')
 
 
+class SurveyResponseAdmin(admin.ModelAdmin):
+    list_display = ('id', 'related_survey', 'answers', 'complete', 'related_user')
+
+
 admin.site.register(FileUpload, FileUploadAdmin)
 admin.site.register(Employee, EmployeeDataAdmin)
 admin.site.register(QuestionDB, QuestionDBAdmin)
@@ -94,3 +98,4 @@ admin.site.register(QuestionDB, QuestionDBAdmin)
 # admin.site.register(RatingAnswer, RatingAnswerAdmin)
 # admin.site.register(TextAnswer, TextAnswerAdmin)
 admin.site.register(Survey, SurveyAdmin)
+admin.site.register(SurveyResponse, SurveyResponseAdmin)
