@@ -260,11 +260,21 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
 
 
 class NewsFeedSerializer(serializers.ModelSerializer):
+    date_created_epoch = serializers.SerializerMethodField()
+    date_updated_epoch = serializers.SerializerMethodField()
+
     def validate(self, attrs):
         attrs['created_by'] = self.context['request'].user
         return attrs
 
+    def get_date_created_epoch(self, obj):
+        return timegm(obj.date_created.utctimetuple())
+
+    def get_date_updated_epoch(self, obj):
+        return timegm(obj.date_updated.utctimetuple())
+
     class Meta:
         model = NewsFeed
-        fields = ["url", "id", "title", "feed", "priority", "created_by", "date_created", "date_updated"]
+        fields = ["url", "id", "title", "feed", "priority", "created_by", "date_created", "date_updated",
+                  "date_created_epoch", "date_updated_epoch"]
         read_only_fields = ('created_by', )
