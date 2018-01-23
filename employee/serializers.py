@@ -137,6 +137,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         """ Get if user has already responded for this survey object or not """
         current_user = self.context['request'].user
         responded_survey_list = SurveyResponse.objects.filter(related_user=current_user, related_survey=obj)
+        # print(current_user, responded_survey_list)
         if responded_survey_list:
             return responded_survey_list[0].complete
         else:
@@ -238,14 +239,17 @@ class SurveyResponseSerializer(serializers.ModelSerializer):
         attrs['related_user'] = self.context['request'].user
         # this block is to store values in database in desire format
         answers = attrs['answers']
-        result = {str(question_response.pop("q")): question_response for question_response in answers if "q" in question_response}
+        result = {
+            str(question_response.pop("q")): question_response
+            for question_response in answers if "q" in question_response}
+        print(result)
         attrs['answers'] = result
+        print(attrs)
         return attrs
 
     def create(self, validated_data):
         instance = super(SurveyResponseSerializer, self).create(validated_data)
         instance.related_user = self.context['request'].user
-        print("-------------------", instance)
         instance.save()
         return instance
 
