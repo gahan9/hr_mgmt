@@ -5,9 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http.response import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from rest_framework import viewsets
+from rest_framework import viewsets, authentication, status, exceptions
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -157,3 +160,18 @@ class PlanSelector(APIView):
                 return Response(response_data)
         else:
             return HttpResponseRedirect(reverse_lazy('select_plan', kwargs={'stage': 0}))
+
+
+class CustomAuthentication(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        response_data = user.get_detail()
+        response_data['token'] = token.key
+        user_head = user.employee.added_by
+        response_data['hr_id'] = user_head.id
+        response_data['hr_name'] = user_head.first_name
+        return Response(response_data)

@@ -1,7 +1,7 @@
 Login API
 ===
 ### Validate user
->url: http://0.0.0.0:8889/api-token-auth/
+>url: http://192.168.5.9:8889/api-token-auth/
 
 > method: POST
 
@@ -9,7 +9,7 @@ Login API
 ```json
 {
 	"username":"9898989898",  // contact number of user
-	"password":"r@123456"  // password
+	"password":"1"  // password
 }
 ```
 
@@ -17,7 +17,13 @@ Login API
 ###### Success:
 ```json
 {
-    "token": "62029f285675b98d380096ca9c14917cced77bfc"
+    "first_name": "oliver",  // First Name of user
+    "role": 3,  // Role of user - By default all employee role will be 3
+    "hr_name": "Bruce",  // Name of HR 
+    "hr_id": 6,  // Id of HR
+    "token": "962cfc6f0d49e3cf91081ca378f6c9a803cb95d8",  // Token for user
+    "number": "9898989898",  // Primary Contact Number/ Phone number of user 
+    "last_name": "queen"  // Last Name of user
 }
 ```
 ###### Failure:

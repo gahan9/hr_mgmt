@@ -9,6 +9,7 @@ from employee.viewsets import *
 
 # register api with default router
 router = routers.DefaultRouter()
+# router.register(r'custom-auth', views.CustomAuthentication)
 router.register(r'users', views.UserViewSet)
 router.register(r'employee', EmployeeViewSet)
 router.register(r'plans', views.PlanViewSet)
