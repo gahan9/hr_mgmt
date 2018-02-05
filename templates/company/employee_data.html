@@ -1,33 +1,57 @@
 {% extends 'common/common.html' %}
+{% block includes %}
+    {% load static %}
+    {% include 'common/common_nav.html' %}
+{% endblock %}
 {% block content %}
-<section>
-<ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-    <li class="breadcrumb-item active"><a href="{% url 'employee_data' %}">Employee Data</a></li>
-</ol>
-<div class="container">
-    <div class="row">
-        <div class="list-group col-md-3">
-            <a class="list-group-item" href="{% url 'file_upload' %}">
-                <h4 class="list-group-item-heading">Upload Data</h4>
-            </a>
-        </div>
-        <div class="list-group col-md-3">
-            <a class="list-group-item" href="{% url 'view_data' %}">
-                <h4 class="list-group-item-heading">View Data</h4>
-            </a>
-        </div>
-        <div class="list-group col-md-3">
-            <a class="list-group-item" href="#">
-                <h4 class="list-group-item-heading">Transfer Data</h4>
-            </a>
-        </div>
-        <div class="list-group col-md-3">
-            <a class="list-group-item" href="#">
-                <h4 class="list-group-item-heading">Tips & Tricks</h4>
-            </a>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item active"><a href="{% url 'employee_data' %}">Employee Data</a></li>
+    </ol>
+    <div class="main-container">
+        <div class="container">
+            <div class="row">
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="{% url 'file_upload' %}">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/uploadicon.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Upload Data</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="{% url 'view_data' %}">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/icon@3x.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>View Data</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="#">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/transfer-1@2x.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Transfer Data</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
+                    <div class="categories">
+                        <a href="#">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/light-bulb-on@2x.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Tips & Tricks</h3>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</section>
 {% endblock %}

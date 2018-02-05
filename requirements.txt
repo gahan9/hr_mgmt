@@ -19,3 +19,4 @@ firebase_admin
 pyasn1-modules==0.0.8
 django-jsonfield==1.0.1
 Pillow==5.0.0
+django-autocomplete-light

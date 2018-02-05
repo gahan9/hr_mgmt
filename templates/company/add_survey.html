@@ -128,17 +128,14 @@
             $(".question_category").addClass("hidden");
             $("#" + $(element).val()).removeClass("hidden");
         }
-
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
-
         function setCSRF(xhr, settings) {
             xhr.setRequestHeader("Authorization", "Token " + '1c457e820eec6445f44b90f7c63ad905bc90cc9f')
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
         }
-
         function CustomRequest(content) {
             $.ajax({
                 url: content.url,
