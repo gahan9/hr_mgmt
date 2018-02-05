@@ -31,7 +31,9 @@ Login API
 {
     "non_field_errors": [
         "Unable to log in with provided credentials."
-    ]
+    ],
+    "status": 400,
+    "detail": "Unable to log in with provided credentials."
 }
 ```
 
