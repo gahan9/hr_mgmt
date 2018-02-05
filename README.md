@@ -21,6 +21,7 @@ Login API
     "role": 3,  // Role of user - By default all employee role will be 3
     "hr_name": "Bruce",  // Name of HR 
     "hr_id": 6,  // Id of HR
+    "id": 8, // ID of user/employee
     "token": "962cfc6f0d49e3cf91081ca378f6c9a803cb95d8",  // Token for user
     "number": "9898989898",  // Primary Contact Number/ Phone number of user 
     "last_name": "queen"  // Last Name of user

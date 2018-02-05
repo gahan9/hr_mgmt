@@ -106,7 +106,7 @@ class UserModel(AbstractUser):
         """
         :return: details of current user model
         """
-        return {'number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
+        return {'id': self.id, 'number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
 
     def __str__(self):
         return "{}- {}".format(self.contact_number, self.first_name)
