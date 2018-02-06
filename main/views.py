@@ -32,11 +32,12 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.password = make_password(instance.password)
             instance.save()
 
-    def perform_update(self, serializer):
-        instance = serializer.save()
-        if instance.password:
-            instance.password = make_password(instance.password)
-            instance.save()
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        if 'password' in kwargs:
+            kwargs['password'] = make_password(kwargs['password'])
+        print(kwargs)
+        return self.update(request, *args, **kwargs)
 
     def get_queryset(self):
         current_user = self.request.user
