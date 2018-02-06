@@ -36,13 +36,16 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=190, style={'input_type': 'password'}, required=False)
     profile_image = Base64ImageField(required=False)
 
+    def update(self, instance, validated_data):
+        return super(UserSerializer, self).update(instance, validated_data)
+
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data["password"])
         return super(UserSerializer, self).create(validated_data)
 
     class Meta:
         model = User
-        fields = ['url', 'contact_number', 'first_name', 'last_name', 'profile_image', 'email',
+        fields = ['url', 'id', 'contact_number', 'first_name', 'last_name', 'gender', 'profile_image', 'email',
                   'password', 'role', 'registration_date', 'has_plan']
         read_only_fields = ('contact_number', 'role', 'has_plan')
         # extra_kwargs = {'password': {'write_only': True}}

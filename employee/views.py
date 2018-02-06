@@ -103,7 +103,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
         no_of_user = 0
         failed_user = 0
         fieldnames = ['contact_number', 'first_name', 'last_name', 'email', 'alternate_email',
-                      'alternate_contact_no', 'job_title', 'street', 'zip_code', 'city', 'country',
+                      'alternate_contact_no', 'gender', 'job_title', 'street', 'zip_code', 'city', 'country',
                       'role', 'password', 'error_reason']
         try:
             csv_read = csv.DictReader(codecs.iterdecode(user_file, 'utf-8'))
@@ -119,6 +119,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
                         contact_number=row['contact_number'],
                         password=make_password(password),
                         email=row['email'],
+                        gender=row['gender'],
                         first_name=row['first_name'],
                         last_name=row['last_name'],
                         role=3  # employee

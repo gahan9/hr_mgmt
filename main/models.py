@@ -88,9 +88,15 @@ class UserModel(AbstractUser):
         (2, 'HR'),
         (3, 'Employee')
     )
+    GENDER_CHOICE = (
+        (1, 'Male'),
+        (2, 'Female'),
+        (3, 'Other')
+    )
     contact_number = models.CharField(max_length=12, unique=True, verbose_name="Contact Number")
     profile_image = models.ImageField(upload_to='media/uploads/', blank=True, null=True)
     role = models.IntegerField(choices=ROLE_CHOICES, default=3)
+    gender = models.IntegerField(choices=GENDER_CHOICE, default=1)
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
     registration_date = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -106,7 +112,7 @@ class UserModel(AbstractUser):
         """
         :return: details of current user model
         """
-        return {'id': self.id, 'number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
+        return {'id': self.id, 'contact_number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
 
     def __str__(self):
         return "{}- {}".format(self.contact_number, self.first_name)

@@ -28,8 +28,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         instance = serializer.save()
-        instance.password = make_password(instance.password)
-        instance.save()
+        if instance.password:
+            instance.password = make_password(instance.password)
+            instance.save()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if instance.password:
+            instance.password = make_password(instance.password)
+            instance.save()
 
     def get_queryset(self):
         current_user = self.request.user
