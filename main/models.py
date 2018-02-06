@@ -89,14 +89,14 @@ class UserModel(AbstractUser):
         (3, 'Employee')
     )
     GENDER_CHOICE = (
-        (1, 'Male'),
-        (2, 'Female'),
-        (3, 'Other')
+        ('M', 'Male'),
+        ('F', 'Female'),
+        # ('O', 'Other')
     )
     contact_number = models.CharField(max_length=12, unique=True, verbose_name="Contact Number")
     profile_image = models.ImageField(upload_to='media/uploads/', blank=True, null=True)
     role = models.IntegerField(choices=ROLE_CHOICES, default=3)
-    gender = models.IntegerField(choices=GENDER_CHOICE, default=1)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICE, default='M')
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
     registration_date = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)

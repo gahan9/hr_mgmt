@@ -36,7 +36,6 @@ class UserViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True
         if 'password' in kwargs:
             kwargs['password'] = make_password(kwargs['password'])
-        print(kwargs)
         return self.update(request, *args, **kwargs)
 
     def get_queryset(self):
