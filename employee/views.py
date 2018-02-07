@@ -2,6 +2,7 @@ import codecs
 import csv
 import os
 from collections import OrderedDict
+
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -322,26 +323,24 @@ class AddSurvey(APIView):
     def get(self, request, **kwargs):
         step = int(kwargs['step']) if 'step' in kwargs else 0
         survey_id = int(kwargs['survey_id']) if 'survey_id' in kwargs else None
+        question_set = QuestionDB.objects.filter(
+            asked_by__rel_company_user=get_user_company(request.user)) | QuestionDB.objects.filter(benchmark=True)
+        question_id = [i.id for i in question_set] if question_set else None
         if survey_id:
             instance = Survey.objects.get(id=survey_id)
             serializer = SurveySerializer(instance, context={'request': request})
         else:
             serializer = SurveySerializer()
         if not step:  # initialize survey
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
+            return Response({'serializer': serializer, 'style': self.style, 'step': step,
+                             'survey_id': survey_id, 'step_range': range(step),
+                             'question_set': question_set, 'que_id': question_id
+                             })
         elif step == 2:  # handle employee group entry
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
         elif step == 3:  # handle question entry
-            question_set = QuestionDB.objects.filter(asked_by__rel_company_user=get_user_company(request.user)) | QuestionDB.objects.filter(benchmark=True)
-            print(question_set)
-            try:
-                que_instance = QuestionDB.objects.filter(rel_question=Survey.objects.get(id=6))
-            except Exception as e:
-                print(e)
-                que_instance = None
             serializer = QuestionSerializer()
             flag = "add_new" if 'add_new' in kwargs else None
-            question_id = [i.id for i in que_instance] if que_instance else None
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
                              'question_set': question_set, 'flag': flag, 'que_id': question_id, 'step_range': range(step)})
         elif step == 4:
@@ -352,7 +351,8 @@ class AddSurvey(APIView):
             except NameError:
                 return HttpResponse("Don't be over smart...")
             return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
-        return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
+        return Response({'serializer': serializer, 'style': self.style, 'question_set': question_set, 'que_id': question_id,
+                         'step': step, 'survey_id': survey_id, 'step_range': range(step)})
 
     def post(self, request, **kwargs):
         print(kwargs)
@@ -527,3 +527,14 @@ class ActivityMonitorView(LoginRequiredMixin, SingleTableView):
         if self.queryset is None:
             self.queryset = ActivityMonitor.objects.filter(company_id=company_id)
         return super(ActivityMonitorView, self).get_queryset()
+
+
+class QuestionAutocomplete(object):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated():
+            return QuestionDB.objects.none()
+        qs = QuestionDB.objects.all()
+        if self.q:
+            qs = qs.filter(question__istartswith=self.q)
+        return qs

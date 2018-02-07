@@ -2,6 +2,7 @@ from braces.views._access import SuperuserRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.sites.shortcuts import get_current_site
 from django.http.response import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
@@ -178,7 +179,16 @@ class CustomAuthentication(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         response_data = user.get_detail()
         response_data['token'] = token.key
-        user_head = user.employee.added_by
-        response_data['hr_id'] = user_head.id
-        response_data['hr_name'] = user_head.first_name
-        return Response(response_data)
+        # print(dir(user.profile_image))
+        # print(user.profile_image.url)
+        response_data['profile_image'] = ''.join(['http://', get_current_site(request).domain, user.profile_image.url])
+        try:
+            user_head = user.employee.added_by
+            response_data['hr_id'] = user_head.id
+            response_data['hr_name'] = user_head.first_name
+            if user_head.profile_image:
+                response_data['hr_profile_image'] = ''.join(['http://', get_current_site(request).domain, user_head.profile_image.url])
+            return Response(response_data)
+        except Exception as e:
+            print("Auth Exception {} for user".format(e))
+            return Response(response_data)

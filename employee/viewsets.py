@@ -101,6 +101,31 @@ class SurveyViewSet(viewsets.ModelViewSet):
             queryset = Survey.objects.all()
             return queryset
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, partial=True)
+        data = request.data
+        if 'question' in data:
+            for question_id in request.data['question']:
+                que_obj = QuestionDB.objects.get(id=question_id)
+                instance.question.add(que_obj)
+            instance.steps = 3
+            instance.save()
+        else:
+            return super(SurveyViewSet, self).update(request, *args, **kwargs)
+        # print(data)
+        # serializer = self.get_serializer(instance, data=data, partial=partial)
+        # print(serializer)
+        # serializer.is_valid(raise_exception=True)
+        # self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
 
 class SurveyResponseViewSet(viewsets.ModelViewSet):
     """ API for saving response of survey """

@@ -1,6 +1,8 @@
 from django.conf.urls import url
 from django.conf.urls.static import static
 from django.conf import settings
+
+from employee.views import QuestionAutocomplete
 from . import views
 
 
@@ -22,4 +24,6 @@ urlpatterns = [
             url(r'^create_survey/$', views.CreateSurvey.as_view(), name="create_survey"),
             url(r'^create_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.CreateSurvey.as_view(), name="create_survey"),
             url(r'^create_survey/add_new_question/', views.AddQuestion.as_view(), name="create_new_question"),
+    url(r'^question-autocomplete/$', QuestionAutocomplete,
+        name='question-autocomplete',),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -19,6 +19,9 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    'dal',
+    'dal_select2',
+    'dal_queryset_sequence',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'main',
     'employee',
+    'chat',
     'django_tables2',
     'crispy_forms',
     'django_filters',
@@ -63,7 +67,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
-    'EXCEPTION_HANDLER': 'employee.utils.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'employee.utils.custom_exception_handler',
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 ROOT_URLCONF = 'employee_management.urls'

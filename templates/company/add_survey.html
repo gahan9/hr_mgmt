@@ -2,9 +2,14 @@
 {% load static %}
 {% load i18n %}
 {% load rest_framework %}
+{% block extracss %}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'MultiElementSelection/css/normalize.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'MultiElementSelection/css/demo.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'MultiElementSelection/css/component.css' %}"/>
+{% endblock %}
 {% block content %}
-    {{ step }}
-    {{ survey_id }}
     <!-- Content -->
     <div class="main-container">
         <div class="container">
@@ -41,27 +46,50 @@
                 </div>
             </div>
             <div class="row" style="justify-content: center;">
-                <div class="col col-12 col-lg-6 col-md-8 text-center">
+                <div id="variable-div" class="col col-12 col-lg-6 col-md-12 text-center">
                     <div class="tab-content" id="myTabContent" style="margin-top: 30px;">
                         <div class="tab-pane fade show active" id="step-1" role="tabpanel" aria-labelledby="step-tab-1">
                             <form>
                                 {% csrf_token %}
-                                <input id="survey-name" type="text" class="form-control" placeholder="Give name to survey" />
+                                <input id="survey-name" type="text" class="form-control"
+                                       placeholder="Give name to survey"/>
                             </form>
                         </div>
                         <div class="tab-pane fade show" id="step-2" role="tabpanel" aria-labelledby="step-tab-2">
                             <form>
                                 {% csrf_token %}
-                                <input id="survey-group" type="text" class="form-control" placeholder="Employee Group" />
+                                <input id="survey-group" type="text" class="form-control" placeholder="Employee Group"/>
                             </form>
                         </div>
-                        <div class="tab-pane fade show" id="step-3" role="tabpanel" aria-labelledby="step-tab-3">
-                            <form onSubmit="return false;">
+                        <div class="tab-pane fade show col-md-auto" id="step-3" role="tabpanel"
+                             aria-labelledby="step-tab-3">
+                            <form onSubmit="return false;" class="me-select">
+                                <ul id="me-select-list">
+                                    <li>
+                                        <label for="title">
+                                            <strong>
+                                                <span>Question Title</span>
+                                                <span>Rate Scale</span>
+                                            </strong>
+                                        </label>
+                                    </li>
+                                    {% for question in question_set %}
+                                        <li>
+                                            <input id="{{ question.id }}" class="question_set" type="checkbox">
+                                            <label for="{{ question.id }}">
+                                                <span>{{ question.question }}</span>
+                                                <span>{{ question.options }}</span>
+                                            </label>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <!--
                                 <div class="form-group">
-                                    <label class="text-left">Add question select from standard database, or type a
-                                        question.Stand questions are English for now.?"</label>
+                                    <label class="text-left">Add question: type a question</label>
                                     <textarea class="form-control" rows="2"></textarea>
                                 </div>
+                                -->
+                                <!--
                                 <div class="form-group">
                                     <select class="form-control" id="question_type" onchange="selectQuestionType(this)">
                                         <option value="0">Select Question Type</option>
@@ -70,6 +98,7 @@
                                         <option value="rating">Rating</option>
                                     </select>
                                 </div>
+                                -->
                                 <div class="form-group question_category hidden" id="mcq">
                                     <input type="text" class="form-control" data-role="tagsinput"
                                            placeholder="options"/>
@@ -83,12 +112,11 @@
                             <form>
                                 <div class="form-row">
                                     <div class="col">
-                                        <input type="text" placeholder="Start Time" onfocus="(this.type='time')"
-                                               class="form-control"/>
+                                        {% render_field serializer.start_date style=style %}
                                     </div>
                                     <div class="col">
-                                        <input type="text" placeholder="End Time" onfocus="(this.type='time')"
-                                               class="form-control"/>
+                                        {% render_field serializer.end_date style=style %}
+{#                                        <input type="text" placeholder="End Time" onfocus="(this.type='date')" class="form-control"/>#}
                                     </div>
                                 </div>
                             </form>
@@ -114,39 +142,85 @@
 
 {% endblock %}
 {% block extrajs %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+    <script src="{% static 'MultiElementSelection/js/magicselection.js' %}"></script>
+    <script src="{% static 'MultiElementSelection/js/modernizr.custom.js' %}"></script>
     <script type="text/javascript">
         var tabCounter = 1;
         var csrftoken = Cookies.get('csrftoken');
-        var default_api_url = 'http://jarvis.py:8889' + '{% url 'survey_list' %}';
-        var wizard_url = "";
+        var default_api_url = '/api/v1/survey/';
+        var wizard_url = "/api/v1/survey/";
+        var selected_question_set = [];
+
+        function DivChanger(flag) {
+            if (flag === "reset") {
+                var decide = document.getElementById("variable-div").classList.contains('col-lg-12');
+                if (decide === true) {
+                    document.getElementById("variable-div").className = "col col-12 col-lg-6 col-md-6 text-center";
+                }
+            }
+            else {
+                document.getElementById("variable-div").className = "col col-12 col-lg-12 col-md-12 text-center";
+            }
+        }
+
         $('#step-wizard a').on('click', function (e) {
             e.preventDefault();
-            $(this).tab('show')
+            $(this).tab('show');
+            var wizard_step = $(this).attr('id');
+            if (wizard_step === 'step-tab-2') {
+                tabCounter = 2;
+                DivChanger("reset")
+            }
+            else if (wizard_step === 'step-tab-3') {
+                tabCounter = 3;
+                DivChanger("set");
+            }
+            else if (wizard_step === 'step-tab-4') {
+                tabCounter = 4;
+                DivChanger("reset");
+            }
+            else if (wizard_step === 'step-tab-5') {
+                tabCounter = 5;
+                DivChanger("reset");
+            }
+            else {
+                DivChanger("reset")
+            }
         });
 
         function selectQuestionType(element) {
             $(".question_category").addClass("hidden");
             $("#" + $(element).val()).removeClass("hidden");
         }
+
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
+
         function setCSRF(xhr, settings) {
-            xhr.setRequestHeader("Authorization", "Token " + '1c457e820eec6445f44b90f7c63ad905bc90cc9f')
+            xhr.setRequestHeader("Authorization", "Token " + '24e36437933b9526aaf6c5d0d378465b15367934');
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
         }
+
         function CustomRequest(content) {
+
             $.ajax({
                 url: content.url,
                 method: content.method,
-                data: content.data,
+                data: JSON.stringify(content.data),
+                contentType: "application/json;charset=utf-8",
                 beforeSend: setCSRF,
                 success: function (responseObj) {
+                    {#var responseData = JSON.parse(responseObj);#}
                     alert("Saved! It worked.");
-                    {#window.location.href = redirect_url;#}
+                    console.log("Saved! It worked.");
+                    console.log(responseObj);
                     wizard_url = responseObj.url;
-                    console.log(wizard_url);
+                    localStorage.setItem("wizard_url", responseObj.url);
+                    localStorage.setItem("survey_id", responseObj.id);
+                    localStorage.setItem("obj", responseObj);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
@@ -170,33 +244,72 @@
                 var value0 = {
                     url: wizard_url,
                     method: 'POST',
-                    data: {"name": $('#survey-name').val()}
+                    data: {"name": $('#survey-name').val(), "steps": tabCounter}
                 };
-                console.log(wizard_url);
-                console.log(value0.method);
-                console.log(value0.data);
-                CustomRequest(value0)
+                var stage1_response = CustomRequest(value0);
+                console.log(stage1_response);
             }
-            else if (tabCounter === 2){
+            else if (tabCounter === 2) {
+                var survey_id = localStorage.getItem("survey_id");
+                var this_url = default_api_url + survey_id + "/";
                 var value1 = {
-                    url: wizard_url,
+                    url: this_url,
                     method: 'PATCH',
-                    data: {"employee_group": $('#survey-group').val()}
+                    data: {"employee_group": $('#survey-group').val(), "steps": tabCounter}
                 };
                 CustomRequest(value1)
+            }
+            else if (tabCounter === 3) {
+                var selected_questions = [];
+                $.each($('.selected'), function () {
+                    selected_questions.push($(this).find('input').attr('id'))
+                });
+                var value2 = {
+                    url: default_api_url + localStorage.getItem("survey_id") + "/",
+                    method: 'PATCH',
+                    data: {"question": selected_questions, "steps": tabCounter}
+                };
+                console.log(selected_questions);
+                console.log("tab-----");
+                console.log(tabCounter);
+                CustomRequest(value2);
+                DivChanger("reset");
             }
             $("#step-wizard li:eq(" + (tabCounter) + ") a").tab('show');
             $("#step-wizard li:eq(" + (tabCounter) + ") a").addClass("step-complete");
             tabCounter++;
-            localStorage.setItem('stepnumber', tabCounter);
+            localStorage.setItem('step_number', tabCounter);
         });
         $(function () {
             $("#step-wizard li:eq({{ step }}) a").tab('show');
             $("#step-wizard li:eq(" + ({{ step }}) + ") a").addClass("step-complete");
             for (var i = 0; i < {{ step }}; i++) {
                 $("#step-wizard li:eq(" + i + ") a").addClass("step-complete");
-
             }
-        })
+        });
+
+        (function () {
+            var selList = document.getElementById('me-select-list'),
+                items = selList.querySelectorAll('li');
+            // fill the initial checked elements (mozilla)
+            [].slice.call(items).forEach(function (el) {
+                el.parentNode.className = el.checked ? 'selected' : '';
+            });
+
+            function checkUncheck(el) {
+                el.parentNode.className = el.checked ? '' : 'selected';
+                el.checked = !el.checked;
+            }
+
+            new magicSelection(selList.querySelectorAll('li > input[type="checkbox"]'), {
+                onSelection: function (el) {
+                    checkUncheck(el);
+                },
+                onClick: function (el) {
+                    el.parentNode.className = el.checked ? 'selected' : '';
+                }
+            });
+
+        })();
     </script>
 {% endblock %}

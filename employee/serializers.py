@@ -118,7 +118,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
                # 'autofocus': True
                }, required=False)
     start_date = serializers.DateTimeField(
-        style={'placeholder': 'Select start date', 'hide_label': True,
+        style={'placeholder': 'Select start date',
                # 'autofocus': True
                }, required=False)
     end_date = serializers.DateTimeField(style={
@@ -165,11 +165,13 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         validated_data['created_by'] = requested_by
         # print(validated_data)
         steps = 1
-        steps = 2 if 'employee_group' in validated_data and validated_data['employee_group'] else steps
-        steps = 3 if steps == 2 and validated_data['question'] else steps
+        steps = 2 if 'employee_group' in validated_data and validated_data['employee_group'] else 1
+        steps = 3 if 'question' in validated_data and validated_data['question'] else 2
         if 'start_date' in validated_data and 'end_date' in validated_data:
-            steps = 4 if steps == 3 and validated_data['start_date'] and validated_data['end_date'] else steps
+            steps = 4 if validated_data['start_date'] and validated_data['end_date'] else 3
         que_lis = validated_data.pop('question') if 'question' in validated_data else []
+        print("==========LIST OF QUE============")
+        print(que_lis)
         existing_survey_instance = Survey.objects.filter(**validated_data)
         if existing_survey_instance:
             survey_instance = existing_survey_instance[0]
@@ -204,6 +206,10 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             if not attr == "question":
                 setattr(instance, attr, value)
         instance.save()
+        print(validated_data)
+        que_lis = validated_data.pop('question') if 'question' in validated_data else []
+        print("==========LIST OF QUE============")
+        print(que_lis)
         steps = 1
         steps = 2 if instance.employee_group else steps
         steps = 3 if steps == 2 and instance.question else steps
