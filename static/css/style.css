@@ -26,6 +26,13 @@ html, body {
 	min-height: calc(100% - 165px);
 	height: auto;
 }
+.main-sub-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: calc(100% - 229px);
+	height: auto;
+}
 video {
 	width: 100%;
 	height: auto;

@@ -169,7 +169,7 @@ def create_firebase_account(sender, instance, created, *args, **kwargs):
         data['email'] = instance.email
     if instance.profile_image:
         data['photo_url'] = "{}{}".format(HOST, instance.profile_image)
-    data['password'] = "{}@{}".format(instance.first_name, instance.contact_number)
+    data['password'] = "{}".format(instance.password)
     data['phone_number'] = "{}{}".format(country_code, instance.contact_number)
     print("post_save : signal", sender, instance, created, kwargs, args)
     try:
