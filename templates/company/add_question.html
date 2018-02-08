@@ -2,11 +2,11 @@
 {% load rest_framework %}
 {% block includes %} {% endblock %}
 {% block content %}
-    <div class="container">
+    <div class="main-container">
         {% include 'common/message.html' %}
         <form action="{% url 'add_new_question' %}" onsubmit="return closeSelf(this)" method="post" novalidate>
             {% csrf_token %}
-            {% render_field serializer.question style=style %}
+            {% render_field serializer.question_title style=style %}
             {% render_field serializer.options style=style %}
             <!--
 {#            {% render_field serializer.answer_type style=style %}#}
