@@ -117,20 +117,22 @@ class PlanSelector(APIView):
         response_data = {'serializer': serializer, 'style': self.style}
         stage = int(kwargs['stage']) if 'stage' in kwargs else 0
         response_data['stage'] = stage
-        print(">> KWARGS === {}".format(kwargs))
-        print(">> Request:POST::DATA === {}".format(request.data))
+        # print(">> KWARGS === {}".format(kwargs))
+        # print(">> Request:POST::DATA === {}".format(request.data))
         for field, value in request.data.items():
             if request.data[field]:
                 if field == "profile_image":
                     print(self.request.FILES)
                     response_data[field] = self.request.FILES[field]
+                elif field == "password":
+                    response_data[field] = computeMD5hash(self.request.FILES[field])
                 else:
                     response_data[field] = request.data[field]
         if stage == 1:
             plan_obj = Plan.objects.get(pk=response_data['has_plan'])
-            role_level = 1 if plan_obj.plan_name == 2 else 2
+            # role_level = 1 if plan_obj.plan_name == 2 else 2
             serializer = self.serializer_class(data=response_data)
-            serializer.initial_data.update({'role': role_level})
+            serializer.initial_data.update({'role': 2})
             if serializer.is_valid():
                 print("valid serializer")
                 user_serializer = serializer.save()
