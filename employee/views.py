@@ -428,7 +428,8 @@ class CreateUserView(LoginRequiredMixin, CreateView):
                                 alternate_email=form_data['alternate_email'],
                                 alternate_contact_no=form_data['alternate_contact_no'],
                                 street=form_data['street'], zip_code=form_data['zip_code'],
-                                city=form_data['city'], country=form_data['country']
+                                city=form_data['city'], country=form_data['country'],
+                                added_by=current_user
                                 )
         messages.success(self.request,
                          "HR {} {} created successfully.".format(user_obj.first_name, user_obj.last_name))
