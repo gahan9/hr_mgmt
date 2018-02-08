@@ -6,6 +6,7 @@ from django.test import TestCase
 
 from employee.models import Employee
 from main.models import Company, ActivityMonitor
+from main.utility import computeMD5hash
 
 UserModel = get_user_model()
 
@@ -25,7 +26,7 @@ class Test(object):
     def dummy_employee(self, role=3):
         user_obj = UserModel.objects.create(contact_number=self.number, email=self.email,
                                             first_name=self.name, last_name=self.name,
-                                            password=make_password(self.number), role=role, )
+                                            password=make_password(computeMD5hash(self.number)), role=role, )
 
         ActivityMonitor.objects.create(activity_type=0, performed_by=self.performer,
                                        affected_user=user_obj)
@@ -39,7 +40,7 @@ class Test(object):
     def dummy_company(self, role=1):
         user_obj = UserModel.objects.create(contact_number=self.number, email=self.email,
                                             first_name=self.name, last_name=self.name,
-                                            password=make_password(self.number),
+                                            password=make_password(computeMD5hash(self.number)),
                                             role=role,
                                             )
         company_obj = Company.objects.create(company_user=user_obj, name=self.company_name,

@@ -5,11 +5,13 @@ from employee.models import Employee, Company
 from main.models import ActivityMonitor
 import random
 
+from main.utility import computeMD5hash
+
 UserModel = get_user_model()
 
 
 def change_all_password():
-    UserModel.objects.filter(is_staff=False).update(password=make_password('1'))
+    UserModel.objects.filter(is_staff=False).update(password=make_password(computeMD5hash('1')))
 
 
 def dummy_employee(role=3):
@@ -24,7 +26,7 @@ def dummy_employee(role=3):
     performer = UserModel.objects.get(id=7)
     company = Company.objects.get(id=2)
     user_obj = UserModel.objects.create(contact_number=number, email=email, first_name=name, last_name=name,
-                                        password=make_password(number), role=role, )
+                                        password=make_password(computeMD5hash(number)), role=role, )
 
     ActivityMonitor.objects.create(company_id=company.id, activity_type=0, performed_by=performer.get_detail(), affected_user=user_obj.get_detail())
     Employee.objects.create(user=user_obj, company_name=company, job_title='job_title', alternate_email=email,

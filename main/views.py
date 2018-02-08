@@ -19,6 +19,7 @@ from rest_framework.views import APIView
 from employee.views import get_user_company
 from forms.common import *
 from main.serializers import *
+from main.utility import computeMD5hash
 
 User = get_user_model()
 
@@ -30,13 +31,13 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = serializer.save()
         if instance.password:
-            instance.password = make_password(instance.password)
+            instance.password = make_password(computeMD5hash(instance.password))
             instance.save()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         if 'password' in kwargs:
-            kwargs['password'] = make_password(kwargs['password'])
+            kwargs['password'] = make_password(computeMD5hash(kwargs['password']))
         return self.update(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -76,7 +77,7 @@ class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
         form_data = form.cleaned_data
         hr = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
                                       first_name=form_data['first_name'], last_name=form_data['last_name'],
-                                      password=make_password(form_data['password']),
+                                      password=make_password(computeMD5hash(form_data['password'])),
                                       is_hr=form_data['role'],
                                       )
         company_obj = Company.objects.create(company_user=hr, name=form_data['name'],
@@ -172,6 +173,7 @@ class PlanSelector(APIView):
 
 class CustomAuthentication(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
+        # request.data['password'] = computeMD5hash(request.data['password'])
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)

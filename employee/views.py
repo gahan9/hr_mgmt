@@ -24,6 +24,7 @@ from employee_management.settings import BASE_DIR
 from employee.tables import *
 from employee.serializers import *
 from forms.common import *
+from main.utility import computeMD5hash
 
 
 def get_user_company(user):
@@ -118,7 +119,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 try:
                     user_obj = UserModel.objects.create(
                         contact_number=row['contact_number'],
-                        password=make_password(password),
+                        password=make_password(computeMD5hash(password)),
                         email=row['email'],
                         gender=row['gender'],
                         first_name=row['first_name'],
@@ -412,7 +413,7 @@ class CreateUserView(LoginRequiredMixin, CreateView):
         set_role = 3 if form_data['role'] < current_user.role else form_data['role']
         user_obj = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
                                             first_name=form_data['first_name'], last_name=form_data['last_name'],
-                                            password=make_password(form_data['password']),
+                                            password=make_password(computeMD5hash(form_data['password'])),
                                             profile_image=self.request.FILES['profile_image'],
                                             role=set_role, has_plan=current_user.has_plan
                                             )

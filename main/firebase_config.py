@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import auth, credentials
 from employee_management.settings import FIREBASE_CREDENTIAL_JSON
+from main.utility import computeMD5hash
 
 DEFAULT_APP = firebase_admin.initialize_app(credentials.Certificate(FIREBASE_CREDENTIAL_JSON))
 
@@ -16,6 +17,6 @@ class FirebaseField(object):
             new_user = auth.get_user(uid)
         except auth.AuthError:
             # auth.create_user(uid='root', display_name='RoOt', password='r@123456', phone_number='+910000000000', email='root@quixom.com', disabled=False)
-            new_user = auth.create_user(uid='mk3', display_name='Mark II', password='r@123456', phone_number=1111222333)
+            new_user = auth.create_user(uid='mk3', display_name='Mark II', password=computeMD5hash('r@123456'), phone_number=1111222333)
         access_token = auth.create_custom_token(new_user.uid, developer_claims=None, app=None)
         return new_user, access_token

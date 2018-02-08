@@ -8,6 +8,7 @@ from django_countries.widgets import CountrySelectWidget
 from forms.helpers import *
 from main.models import *
 from employee.models import *
+from main.utility import computeMD5hash
 
 
 class LoginForm(AuthenticationForm):
@@ -24,6 +25,12 @@ class LoginForm(AuthenticationForm):
                                           'name': 'password', 'id': 'password',
                                           'type': 'password', 'placeholder': 'Password'}))
 
+    def clean(self):
+        if 'password' in self.cleaned_data:
+            password = computeMD5hash(self.cleaned_data.get('password'))
+            self.cleaned_data['password'] = password
+        return super(LoginForm, self).clean()
+
 
 class CreateCompanyForm(forms.ModelForm):
     """ Create Company """
@@ -39,6 +46,12 @@ class CreateCompanyForm(forms.ModelForm):
         self.fields['email'].required = True
         self.fields['alternate_email'].required = True
         self.fields['alternate_contact_no'].required = False
+
+    def clean(self):
+        if 'password' in self.cleaned_data:
+            password = computeMD5hash(self.cleaned_data.get('password'))
+            self.cleaned_data['password'] = password
+        return super(CreateCompanyForm, self).clean()
 
     class Meta:
         model = UserModel
@@ -68,6 +81,12 @@ class CreateUserForm(forms.ModelForm):
         self.fields['alternate_contact_no'].required = False
         self.fields['profile_image'].required = False
 
+    def clean(self):
+        if 'password' in self.cleaned_data:
+            password = computeMD5hash(self.cleaned_data.get('password'))
+            self.cleaned_data['password'] = password
+        return super(CreateUserForm, self).clean()
+
     class Meta:
         model = UserModel
         fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'password', 'email', 'role']
@@ -78,6 +97,12 @@ class EditUserForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EditUserForm, self).__init__(*args, **kwargs)
         self.helper = edit_user_helper
+
+    def clean(self):
+        if 'password' in self.cleaned_data:
+            password = computeMD5hash(self.cleaned_data.get('password'))
+            self.cleaned_data['password'] = password
+        return super(EditUserForm, self).clean()
 
     class Meta:
         model = UserModel

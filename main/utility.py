@@ -1,7 +1,20 @@
+import hashlib
+
 from django.db.models import FileField
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
+
+
+def computeMD5hash(my_string):
+    """
+    Encrypt plaintext to md5 checksum
+    :param my_string:
+    :return:
+    """
+    m = hashlib.md5()
+    m.update(my_string.encode('utf-8'))
+    return m.hexdigest()
 
 
 class ContentTypeRestrictedFileField(FileField):

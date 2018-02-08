@@ -9,6 +9,7 @@ from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 
 from main.models import Company, Plan, UserModel
+from main.utility import computeMD5hash
 
 User = get_user_model()
 
@@ -38,11 +39,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         if 'password' in validated_data:
-            validated_data['password'] = make_password(validated_data["password"])
+            validated_data['password'] = make_password(computeMD5hash(validated_data["password"]))
         return super(UserSerializer, self).update(instance, validated_data)
 
     def create(self, validated_data):
-        validated_data['password'] = make_password(validated_data["password"])
+        validated_data['password'] = make_password(computeMD5hash(validated_data["password"]))
         return super(UserSerializer, self).create(validated_data)
 
     class Meta:
