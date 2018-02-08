@@ -146,7 +146,11 @@
     <script src="{% static 'MultiElementSelection/js/magicselection.js' %}"></script>
     <script src="{% static 'MultiElementSelection/js/modernizr.custom.js' %}"></script>
     <script type="text/javascript">
-        var tabCounter = 1;
+        var tabCounter = {{ step }} + 1;
+        if (tabCounter === 0){
+            tabCounter = 1;
+        }
+        console.log(tabCounter);
         var csrftoken = Cookies.get('csrftoken');
         var user_token = '{{ user.auth_token.key }}';
         var default_api_url = '/api/v1/survey/';

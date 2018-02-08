@@ -50,7 +50,7 @@ class ActivityTable(tables.Table):
 class SurveyTable(tables.Table):
     """ survey table to view/manage surveys """
     id = tables.TemplateColumn("""
-        <a style="text-decoration:None" href="{% url 'add_survey' survey_id=record.id step=record.next_step %}">{{record.id}}</a>""")
+        <a style="text-decoration:None" href="{% url 'create_survey' survey_id=record.id step=record.steps %}">{{record.id}}</a>""")
     steps = tables.TemplateColumn("""
         <ul class="survey-progress">
             {% load custom_tags %}
@@ -63,7 +63,7 @@ class SurveyTable(tables.Table):
         </ul>
         """)
     edit = tables.TemplateColumn("""
-        <a style="text-decoration:None" href="{% url 'add_survey' survey_id=record.id step=record.next_step %}"><img src="http://jarvis.py:8889/static/assets/images/editicon.png" width="25px" /></a>
+        <a style="text-decoration:None" href="{% url 'create_survey' survey_id=record.id step=record.steps %}"><img src="http://jarvis.py:8889/static/assets/images/editicon.png" width="25px" /></a>
     """)
 
     class Meta:

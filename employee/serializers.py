@@ -219,7 +219,6 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
                   "start_time", "end_time",
                   "current_time", "total_question",
                   ]
-        read_only_fields = ('steps',)
 
 
 class JSONSerializerField(serializers.Field):

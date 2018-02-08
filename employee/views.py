@@ -338,7 +338,9 @@ class AddSurvey(APIView):
                              'question_set': question_set, 'que_id': question_id
                              })
         elif step == 2:  # handle employee group entry
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
+            return Response({'serializer': serializer, 'style': self.style,
+                             'step': step, 'survey_id': survey_id, 'question_set': question_set,
+                             'que_id': question_id, 'step_range': range(step)})
         elif step == 3:  # handle question entry
             serializer = QuestionSerializer()
             flag = "add_new" if 'add_new' in kwargs else None
@@ -351,7 +353,8 @@ class AddSurvey(APIView):
                 serializer = SurveySerializer(instance, context={'request': request})
             except NameError:
                 return HttpResponse("Don't be over smart...")
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id, 'step_range': range(step)})
+            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
+                             'step_range': range(step), 'question_set': question_set, 'que_id': question_id})
         return Response({'serializer': serializer, 'style': self.style, 'question_set': question_set, 'que_id': question_id,
                          'step': step, 'survey_id': survey_id, 'step_range': range(step)})
 
