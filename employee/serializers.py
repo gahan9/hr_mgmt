@@ -3,6 +3,7 @@ import time
 from calendar import timegm
 
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 
 from employee.models import *
 from main.serializers import UserSerializer, CompanySerializer
@@ -122,7 +123,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
                # 'autofocus': True
                }, required=False)
     end_date = serializers.DateTimeField(style={
-        'placeholder': 'Select End date'}, required=False)
+        'id': 'survey-end-date', 'placeholder': 'Select End date'}, required=False)
     complete = serializers.BooleanField(style={
         'placeholder': 'Completed??'}, required=False)
     question = QuestionSerializer(partial=True, allow_null=True, many=True, required=False)
@@ -164,20 +165,18 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         requested_by = self.context['request'].user
         validated_data['created_by'] = requested_by
         # print(validated_data)
-        steps = 1
-        steps = 2 if 'employee_group' in validated_data and validated_data['employee_group'] else 1
-        steps = 3 if 'question' in validated_data and validated_data['question'] else 2
-        if 'start_date' in validated_data and 'end_date' in validated_data:
-            steps = 4 if validated_data['start_date'] and validated_data['end_date'] else 3
+        # steps = 1
+        # steps = 2 if 'employee_group' in validated_data and validated_data['employee_group'] else 1
+        # steps = 3 if 'question' in validated_data and validated_data['question'] else 2
+        # if 'start_date' in validated_data and 'end_date' in validated_data:
+        #     steps = 4 if validated_data['start_date'] and validated_data['end_date'] else 3
         que_lis = validated_data.pop('question') if 'question' in validated_data else []
-        print("==========LIST OF QUE============")
-        print(que_lis)
         existing_survey_instance = Survey.objects.filter(**validated_data)
         if existing_survey_instance:
             survey_instance = existing_survey_instance[0]
             # print("existing survey: {}".format(survey_instance))
         else:
-            survey_instance = Survey(**validated_data, steps=steps)
+            survey_instance = Survey(**validated_data)
             survey_instance.save()
         # print(que_lis)
         for item in que_lis:
@@ -206,15 +205,11 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             if not attr == "question":
                 setattr(instance, attr, value)
         instance.save()
-        print(validated_data)
-        que_lis = validated_data.pop('question') if 'question' in validated_data else []
-        print("==========LIST OF QUE============")
-        print(que_lis)
-        steps = 1
-        steps = 2 if instance.employee_group else steps
-        steps = 3 if steps == 2 and instance.question else steps
-        steps = 4 if steps == 3 and instance.start_date and instance.end_date else steps
-        instance.steps = steps
+        # steps = 1
+        # steps = 2 if instance.employee_group else steps
+        # steps = 3 if steps == 2 and instance.question else steps
+        # steps = 4 if steps == 3 and instance.start_date and instance.end_date else steps
+        # instance.steps = steps
         return instance
 
     class Meta:

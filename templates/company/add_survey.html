@@ -112,27 +112,27 @@
                             <form>
                                 <div class="form-row">
                                     <div class="col">
-                                        {% render_field serializer.start_date style=style %}
+                                        <input id="survey-start-time" type="text" placeholder="Start Time" onfocus="(this.type='datetime-local')" class="form-control"/>
                                     </div>
                                     <div class="col">
-                                        {% render_field serializer.end_date style=style %}
-{#                                        <input type="text" placeholder="End Time" onfocus="(this.type='date')" class="form-control"/>#}
+{#                                        {% render_field serializer.end_date style=style %}#}
+                                        <input id="survey-end-time" type="text" placeholder="End Time" onfocus="(this.type='datetime-local')" class="form-control"/>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="tab-pane fade show" id="step-5" role="tabpanel" aria-labelledby="step-tab-5">
-                            <form>
-                                <div class="form-group">
-                                    <button class="btn btn-theme" type="button">Save Survey</button>
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn btn-theme" type="button">Create New Survey</button>
-                                </div>
-                            </form>
+{#                            <form>#}
+{#                                <div class="form-group">#}
+{#                                    <button id="survey-save" class="btn btn-theme" type="button">Save Survey</button>#}
+{#                                </div>#}
+{#                                <div class="form-group">#}
+{#                                    <button id="survey-save-next" class="btn btn-theme" type="button">Create New Survey</button>#}
+{#                                </div>#}
+{#                            </form>#}
                         </div>
                         <div class="form-group" style="margin-top: 20px;">
-                            <button class="btn btn-theme" type="button" id="next">Next</button>
+                            <button class="btn btn-theme" type="button" id="next">Save Progress</button>
                         </div>
                     </div>
                 </div>
@@ -148,9 +148,9 @@
     <script type="text/javascript">
         var tabCounter = 1;
         var csrftoken = Cookies.get('csrftoken');
+        var user_token = '{{ user.auth_token.key }}';
         var default_api_url = '/api/v1/survey/';
         var wizard_url = "/api/v1/survey/";
-        var selected_question_set = [];
 
         function DivChanger(flag) {
             if (flag === "reset") {
@@ -200,7 +200,7 @@
         }
 
         function setCSRF(xhr, settings) {
-            xhr.setRequestHeader("Authorization", "Token " + '24e36437933b9526aaf6c5d0d378465b15367934');
+            xhr.setRequestHeader("Authorization", "Token " + user_token);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
         }
 
@@ -214,16 +214,16 @@
                 beforeSend: setCSRF,
                 success: function (responseObj) {
                     {#var responseData = JSON.parse(responseObj);#}
-                    alert("Saved! It worked.");
                     console.log("Saved! It worked.");
                     console.log(responseObj);
                     wizard_url = responseObj.url;
                     localStorage.setItem("wizard_url", responseObj.url);
                     localStorage.setItem("survey_id", responseObj.id);
+                    localStorage.setItem("steps_completed", responseObj.steps);
                     localStorage.setItem("obj", responseObj);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+                    console.log("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
                     {#window.location.href = "{% url 'add_survey' %}"#}
                 }
             });
@@ -231,48 +231,65 @@
 
         $('#next').click(function () {
             event.preventDefault();
-            var data = {
-                "name": "",
-                "employee_group": "",
-                "question": [],
-                "complete": false,
-                "start_date": null,
-                "end_date": null
-            };
             console.log(default_api_url);
             if (tabCounter === 1) {
-                var value0 = {
+                // Create new survey state /or change name of current survey
+                var post_name = {
                     url: wizard_url,
                     method: 'POST',
-                    data: {"name": $('#survey-name').val(), "steps": tabCounter}
+                    data: {"name": $('#survey-name').val(), "steps": 1}
                 };
-                var stage1_response = CustomRequest(value0);
+                var stage1_response = CustomRequest(post_name);
                 console.log(stage1_response);
             }
             else if (tabCounter === 2) {
+                // Add employee group to selected survey
                 var survey_id = localStorage.getItem("survey_id");
                 var this_url = default_api_url + survey_id + "/";
-                var value1 = {
+                var patch_group = {
                     url: this_url,
                     method: 'PATCH',
-                    data: {"employee_group": $('#survey-group').val(), "steps": tabCounter}
+                    data: {"employee_group": $('#survey-group').val(), "steps": 2}
                 };
-                CustomRequest(value1)
+                CustomRequest(patch_group)
             }
             else if (tabCounter === 3) {
+                // Select Question Set for the survey
+                // Here Id of question will be passed as a list and question object will be bind at backend/view
                 var selected_questions = [];
                 $.each($('.selected'), function () {
                     selected_questions.push($(this).find('input').attr('id'))
                 });
-                var value2 = {
+                var path_question_set = {
                     url: default_api_url + localStorage.getItem("survey_id") + "/",
                     method: 'PATCH',
-                    data: {"question": selected_questions, "steps": tabCounter}
+                    data: {"question": selected_questions, "steps": 3}
                 };
-                console.log(selected_questions);
-                console.log("tab-----");
-                console.log(tabCounter);
-                CustomRequest(value2);
+                CustomRequest(path_question_set);
+                DivChanger("reset");
+            }
+            else if (tabCounter === 4) {
+                var start_time = $('#survey-start-time').val();
+                var end_time = $('#survey-end-time').val();
+                var patch_duration = {
+                    url: default_api_url + localStorage.getItem("survey_id") + "/",
+                    method: 'PATCH',
+                    data: {"start_date": start_time,
+                        "end_date": end_time,
+                        "steps": 4}
+                };
+                CustomRequest(patch_duration);
+                DivChanger("reset");
+            }
+            else if (tabCounter === 5) {
+                var complete_survey = {
+                    url: default_api_url + localStorage.getItem("survey_id") + "/",
+                    method: 'PATCH',
+                    data: {"complete": true,
+                        "steps": 5}
+                };
+                CustomRequest(complete_survey);
+                window.location.href = "{% url 'survey_manage' %}";
                 DivChanger("reset");
             }
             $("#step-wizard li:eq(" + (tabCounter) + ") a").tab('show');
@@ -289,9 +306,9 @@
         });
 
         (function () {
+            // this function is for step 3 when multiple question are to be selected
             var selList = document.getElementById('me-select-list'),
                 items = selList.querySelectorAll('li');
-            // fill the initial checked elements (mozilla)
             [].slice.call(items).forEach(function (el) {
                 el.parentNode.className = el.checked ? 'selected' : '';
             });
