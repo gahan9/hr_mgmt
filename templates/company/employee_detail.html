@@ -9,9 +9,9 @@
         <li class="breadcrumb-item"><a href="{% url 'employee_data' %}">Employee Data</a></li>
         <li class="breadcrumb-item active">View Data</li>
     </ol>
+    {% include 'common/message.html' %}
     <div class="main-sub-container">
         <div class="container-fluid">
-            {% include 'common/message.html' %}
             <div class="container">
                 {% if form %}
                     <form action="" method="get" class="form form-inline">

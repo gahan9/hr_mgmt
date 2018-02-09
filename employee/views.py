@@ -11,11 +11,13 @@ from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.http import HttpResponse, FileResponse
 from django.http.response import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_tables2.views import SingleTableView
 from rest_framework.authtoken.models import Token
+from rest_framework.generics import get_object_or_404
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -262,9 +264,9 @@ class SurveyManager(LoginRequiredMixin, AddFormMixin, SingleTableView):
 
     def get_queryset(self):
         if not self.request.user.is_superuser:
-            self.queryset = Survey.objects.filter(created_by=self.request.user)
+            self.queryset = self.model.objects.filter(created_by=self.request.user)
         else:
-            self.queryset = Survey.objects.all()
+            self.queryset = self.model.objects.all()
         return super(SurveyManager, self).get_queryset()
 
     def get_form_fields(self):
@@ -570,4 +572,92 @@ class PasswordResetView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
                                                       performed_by=self.request.user.get_detail(),
                                                       affected_user=user_object.get_detail())
         return super(PasswordResetView, self).form_valid(form)
+
+
+class NewsFeedManager(LoginRequiredMixin, AddFormMixin, SingleTableView):
+    login_url = reverse_lazy('login')
+    template_name = 'company/news_feed.html'
+    model = NewsFeed
+    table_class = NewsFeedTable
+    table_pagination = {'per_page': 15}
+    search_fields = ['title', 'feed']
+    ordering = ['-date_created']
+
+    def get_queryset(self):
+        if not self.request.user.is_superuser:
+            self.queryset = self.model.objects.filter(created_by=self.request.user)
+        else:
+            self.queryset = self.model.objects.all()
+        return super(NewsFeedManager, self).get_queryset()
+
+    def get_form_fields(self):
+        return self.search_fields
+
+
+class CreateNewsFeed(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    serializer_class = NewsFeedSerializer
+    model = NewsFeed
+    success_url = reverse_lazy('manage_news_feed')
+    template_name = 'company/create_news_feed.html'
+    style = {'template_pack': 'rest_framework/vertical/'}
+
+    def get(self, request):
+        serializer = self.serializer_class()
+        return Response({'serializer': serializer})
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+        if not serializer.is_valid():
+            return Response({'serializer': serializer})
+        serializer.save()
+        return redirect(self.success_url)
+
+
+class NewsFeedDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Delete NewsFeed from system
+    """
+    login_url = reverse_lazy('login')
+    model = NewsFeed
+    success_message = "'%(title)s'  deleted..."
+    success_url = reverse_lazy("manage_news_feed")
+
+    def delete(self, request, *args, **kwargs):
+        current_user = request.user
+        company_id = get_user_company(current_user).id
+        selected_object = self.get_object()
+        value_set = [selected_object.title, selected_object.feed]
+        del_msg = "{}".format(value_set)
+        activity_obj = ActivityMonitor.objects.create(remarks=del_msg, activity_type=2,
+                                                      company_id=company_id,
+                                                      performed_by=request.user.get_detail())
+        print(activity_obj)
+        message = 'NewsFeed: {} (Feed: {}) deleted successfully'.format(selected_object.title, selected_object.feed)
+        messages.success(request, message)
+        return super(NewsFeedDeleteView, self).delete(request, *args, **kwargs)
+
+
+class SurveyDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Delete Survey from system
+    """
+    login_url = reverse_lazy('login')
+    model = Survey
+    success_message = "'%(name)s'  deleted..."
+    success_url = reverse_lazy("survey_manage")
+
+    def delete(self, request, *args, **kwargs):
+        current_user = request.user
+        company_id = get_user_company(current_user).id
+        selected_object = self.get_object()
+        value_set = [selected_object.name, selected_object.steps]
+        del_msg = "{}".format(value_set)
+        activity_obj = ActivityMonitor.objects.create(remarks=del_msg, activity_type=2,
+                                                      company_id=company_id,
+                                                      performed_by=request.user.get_detail())
+        print(activity_obj)
+        message = 'Survey: {} deleted successfully'.format(selected_object.name)
+        messages.success(request, message)
+        return super(SurveyDeleteView, self).delete(request, *args, **kwargs)
 

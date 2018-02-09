@@ -277,4 +277,4 @@ class NewsFeedSerializer(serializers.ModelSerializer):
         model = NewsFeed
         fields = ["url", "id", "title", "feed", "priority", "created_by", "date_created", "date_updated",
                   "date_created_epoch", "date_updated_epoch"]
-        read_only_fields = ('created_by', )
+        read_only_fields = ('created_by', 'priority')

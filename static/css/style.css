@@ -252,8 +252,13 @@ video {
 }
 
 .avatar-limit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 40px;
     height: 40px;
+    background: transparent;
+    margin-left: 10px;
 }
 
 .avatar-container {

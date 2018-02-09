@@ -8,6 +8,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
         <li class="breadcrumb-item active">FieldRate</li>
     </ol>
+    {% include 'common/message.html' %}
     <div class="main-sub-container">
         <div class="container">
             <div class="row">
@@ -23,7 +24,7 @@
                 </div>
                 <div class="col col-12 col-lg-3 col-md-3 col-sm-4">
                     <div class="categories">
-                        <a href="#">
+                        <a href="{% url 'manage_news_feed' %}">
                             <div class="category-img-container">
                                 <img src="{% static '/assets/images/newspaper@2x.png' %}" class="img-responsive"/>
                             </div>

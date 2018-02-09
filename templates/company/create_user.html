@@ -2,9 +2,9 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
+    {% include 'common/message.html' %}
     {% if user.role <= 2 %}
         <div class="main-container">
-            {% include 'common/message.html' %}
             <form action="" class="form-group" method="post" role="form" enctype="multipart/form-data">
                 <div class="container">
                     {% crispy form form.helper %}

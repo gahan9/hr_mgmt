@@ -40,9 +40,11 @@ class ActivityTable(tables.Table):
     """
     activity table to view activity performed by company admin in portal
     """
+
     class Meta:
         model = ActivityMonitor
-        fields = ['id', 'performed_by', 'activity_type', 'affected_user', 'bulk_create', 'status', 'time_stamp', 'remarks']
+        fields = ['id', 'performed_by', 'activity_type', 'affected_user', 'bulk_create', 'status', 'time_stamp',
+                  'remarks']
         attrs = {'class': 'table table-sm'}
         order_by = ("-time_stamp",)
 
@@ -62,12 +64,34 @@ class SurveyTable(tables.Table):
             {% endfor %}
         </ul>
         """)
-    edit = tables.TemplateColumn("""
-        <a style="text-decoration:None" href="{% url 'create_survey' survey_id=record.id step=record.steps %}"><img src="http://jarvis.py:8889/static/assets/images/editicon.png" width="25px" /></a>
+    edit = tables.TemplateColumn("""{% load static %}
+        <a style="text-decoration:None" href="{% url 'create_survey' survey_id=record.id step=record.steps %}">
+        <img src="{% static '/assets/images/editicon.png' %}" width="25px" /></a>
     """)
+    delete = tables.TemplateColumn("""{% load static %}
+        <form action="{% url 'delete_survey' pk=record.id %}" method="POST"> {% csrf_token %}
+            <input class="btn btn-default btn-danger" type="submit" value="Delete">            </input>
+        </form>""")
 
     class Meta:
         model = Survey
-        fields = ['id', 'name', 'question', 'date_created', 'employee_group', 'steps', 'edit', 'start_date']
+        fields = ['id', 'name', 'question', 'date_created', 'employee_group', 'steps',
+                  'edit', 'start_date', 'delete']
         attrs = {'class': 'table survey-table table-responsive'}
         order_by = ("-time_stamp",)
+
+
+class NewsFeedTable(tables.Table):
+    """ survey table to view/manage surveys """
+    id = tables.TemplateColumn("""
+        <a style="text-decoration:None" href="#">{{record.id}}</a>""")
+    delete = tables.TemplateColumn("""{% load static %}
+            <form action="{% url 'delete_news_feed' pk=record.id %}" method="POST"> {% csrf_token %}
+                <input class="btn btn-default btn-danger" type="submit" value="Delete">            </input>
+            </form>""")
+
+    class Meta:
+        model = NewsFeed
+        fields = ['id', 'title', 'feed', 'date_created', 'delete']
+        attrs = {'class': 'table survey-table table-responsive'}
+        order_by = ("-date_created",)

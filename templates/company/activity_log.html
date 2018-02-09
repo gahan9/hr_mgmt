@@ -11,8 +11,8 @@
         <li class="breadcrumb-item"><a href="{% url 'employee_data' %}">Employee Data</a></li>
         <li class="breadcrumb-item active">View Data</li>
     </ol>
+    {% include 'common/message.html' %}
     <div class="container-fluid">
-        {% include 'common/message.html' %}
         {% if form %}
             <form action="" method="get" class="form form-inline">
                 {% bootstrap_form form layout='inline' %}

@@ -1,13 +1,13 @@
 {% extends 'common/common.html' %}
 {% load static %}
-{% load render_table from django_tables2 %}
 {% load bootstrap3 %}
+{% load render_table from django_tables2 %}
 {% load custom_tags %}
 {% block content %}
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
         <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
-        <li class="breadcrumb-item active">Survey</li>
+        <li class="breadcrumb-item active">News Feed</li>
     </ol>
     {% include 'common/message.html' %}
     <div class="main-sub-container">
@@ -15,8 +15,8 @@
             <div class="row">
                 <div class="col">
                     <div class="fieldrate-icon">
-                        <a href="{% url 'survey_manage' %}">
-                            <img src="{% static '/assets/images/img1.png' %}" class="pull-left"/>
+                        <a href="{% url 'manage_news_feed' %}">
+                            <img src="{% static '/assets/images/newspaper.png' %}" class="pull-left" width="30px"/>
                         </a>
                     </div>
                 </div>
@@ -29,16 +29,9 @@
                     {% endif %}
                 </div>
                 <div class="col">
-                    <a href="{% url 'create_survey' %}">
+                    <a href="{% url 'create_news_feed' %}">
                         <div class="btn btn-dark">
-                            + Add New Survey
-                        </div>
-                    </a>
-                </div>
-                <div class="col">
-                    <a id="add_id_question">
-                        <div class="btn btn-dark">
-                            +Add New Question
+                            + New Broadcast News
                         </div>
                     </a>
                 </div>
@@ -46,13 +39,4 @@
             {% render_table table %}
         </div>
     </div>
-{% endblock %}
-{% block extrajs %}
-    <script>
-        $(document).ready(function () {
-            $(document).on('click', '#add_id_question', function (event) {
-                MyWindow = window.open("{% url 'add_new_question' %}", 'MyWindow', "width=600,height=300");
-            });
-        });
-    </script>
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'common/common.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% load rest_framework %}
+{% block content %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'manage_news_feed' %}">News Feed</a></li>
+        <li class="breadcrumb-item active">New News Feed</li>
+    </ol>
+    {% include 'common/message.html' %}
+    <div class="main-sub-container">
+        <form action="{% url 'create_news_feed' %}" method="POST">
+            {% csrf_token %}
+            {% render_form serializer %}
+            <input type="submit" value="Save" class="btn btn-theme">
+        </form>
+
+    </div>
+{% endblock %}

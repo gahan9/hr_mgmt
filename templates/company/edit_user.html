@@ -2,9 +2,9 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
+    {% include 'common/message.html' %}
     <div class="main-container">
         <div class="container">
-            {% include 'common/message.html' %}
             <form action="" class="form-group" method="post" role="form">
                 {% crispy form form.helper %}
                 {% if pass_key %}

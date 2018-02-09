@@ -37,14 +37,13 @@
                                 </div>
                             </li>
                         {% endif %}
-                        <li class="nav-item active">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item active">
                             <div class="nav-item-child">
                                 Welcome,{{ user.first_name }}
                                 <a href="{% url "edit_user_profile" pk=user.id %}">
                                     {% if user.profile_image %}
-                                        <div class="container">
-                                            <img class="avatar-limit" src="{{ user.profile_image.url }}"/>
-                                        </div>
+                                        <img class="avatar-limit" src="{{ user.profile_image.url }}"/>
                                     {% else %}
                                         <div class="avatar-container">
                                             <img src="{% static '/assets/images/avatar.png' %}"/>
@@ -53,11 +52,10 @@
                                     {% endif %}
                                 </a>
                             </div>
-                            {% if user.is_authenticated %}
-                                <div class="nav-item-child">
-                                    <a href="{% url 'logout' %}">Logout</a>
-                                </div>
-                            {% endif %}
+                            <div class="nav-item-child">
+                                <a href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        {% endif %}
                         </li>
                     </ul>
                 </div>
