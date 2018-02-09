@@ -12,21 +12,25 @@
                 </ul>
             </div>
         {% endif %}
-        <div class="container-fluid col-xs-4 col-xs-offset-3">
-            {% if stage == 0 %}
-                <h3>Select Plan</h3>
-                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {% render_form serializer %}
-                    <button type="submit" class="btn btn-success">Proceed</button>
-                </form>
-            {% elif stage == 1 %}
-                <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {% render_form serializer %}
-                    <button type="submit" class="btn btn-success">Proceed</button>
-                </form>
-            {% endif %}
+        <div class="main-container">
+            <div class="container col-md-auto">
+                {% if stage == 0 %}
+                    <h3>Select Plan</h3>
+                    <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post"
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% render_form serializer %}
+                        <button type="submit" class="btn btn-theme">Proceed</button>
+                    </form>
+                {% elif stage == 1 %}
+                    <form action="{% url 'select_plan' stage=stage|add:"1" %}" method="post"
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% render_form serializer %}
+                        <button type="submit" class="btn btn-theme">Proceed</button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
     </section>
 

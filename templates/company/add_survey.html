@@ -6,12 +6,16 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"/>
     <link rel="stylesheet" type="text/css" href="{% static 'MultiElementSelection/css/normalize.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'MultiElementSelection/css/demo.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'MultiElementSelection/css/component.css' %}"/>
 {% endblock %}
 {% block content %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'survey_manage' %}">Manage Surveys</a></li>
+    </ol>
     <!-- Content -->
-    <div class="main-container">
+    <div class="main-sub-container">
         <div class="container">
             <div class="row" style="margin-bottom: 20px;">
                 <div class="col text-center">
@@ -49,15 +53,13 @@
                 <div id="variable-div" class="col col-12 col-lg-6 col-md-12 text-center">
                     <div class="tab-content" id="myTabContent" style="margin-top: 30px;">
                         <div class="tab-pane fade show active" id="step-1" role="tabpanel" aria-labelledby="step-tab-1">
-                            <form>
-                                {% csrf_token %}
+                            <form id="survey-step1">
                                 <input id="survey-name" type="text" class="form-control"
                                        placeholder="Give name to survey"/>
                             </form>
                         </div>
                         <div class="tab-pane fade show" id="step-2" role="tabpanel" aria-labelledby="step-tab-2">
                             <form>
-                                {% csrf_token %}
                                 <input id="survey-group" type="text" class="form-control" placeholder="Employee Group"/>
                             </form>
                         </div>
@@ -132,7 +134,7 @@
 {#                            </form>#}
                         </div>
                         <div class="form-group" style="margin-top: 20px;">
-                            <button class="btn btn-theme" type="button" id="next">Save Progress</button>
+                            <button class="btn btn-theme" type="submit" id="next">Save Progress</button>
                         </div>
                     </div>
                 </div>
@@ -231,6 +233,10 @@
                 }
             });
         }
+         $('#survey-step1').submit(function(e) {
+            e.preventDefault();
+            console.log('submited');
+         });
 
         $('#next').click(function () {
             event.preventDefault();

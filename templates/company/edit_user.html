@@ -2,22 +2,28 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
-<section>
-    <div class="container col-xs-4 col-xs-offset-3">
-        {% include 'common/message.html' %}
-        {% if form.field_errors %}
-            <div class="row">
-                <ul class='form-errors'>
-                    {% for error in form.field_errors %}
-                        <li class="text-danger">{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
-        <form action="" class="form-group" method="post" role="form" >
-            {% crispy form form.helper %}
-            <input type="submit" class="btn btn-theme" value="Save" />
-        </form>
+    <div class="main-container">
+        <div class="container">
+            {% include 'common/message.html' %}
+            <form action="" class="form-group" method="post" role="form">
+                {% crispy form form.helper %}
+                {% if pass_key %}
+                <div class="row">
+                    <a class="btn btn-amber" href="{% url 'password_reset' pk=pass_key %}">
+                        Reset Password
+                    </a>
+                </div>
+                {% endif %}
+                <input type="submit" class="btn btn-theme" value="Save"/>
+            </form>
+        </div>
     </div>
-</section>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        $(document).ready(function () {
+            $('select[name=role]').parent().hide();
+            console.log("operation completed!");
+        });
+    </script>
 {% endblock %}

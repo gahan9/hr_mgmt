@@ -3,17 +3,13 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'employee_data' %}">Employee Data</a></li>
+        <li class="breadcrumb-item active">Upload Data</li>
+    </ol>
     {% include 'common/message.html' %}
-    {% if form.errors %}
-        <div class="row">
-            <ul class='form-errors'>
-                {% for error in form.errors %}
-                    <li class="text-danger">{{ error }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-    <div class="main-container">
+    <div class="main-sub-container">
         <div class="container">
             {% if user.role <= 2 %}
                 {% crispy form form.helper %}

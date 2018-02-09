@@ -20,11 +20,13 @@
                                 </div>
                             </li>
                         {% endif %}
+                        {% if not user.is_authenticated %}
                             <li class="nav-item">
                                 <div class="nav-item-child">
                                     <a href="{% url 'select_plan' 0 %}">Select-Plan &nbsp;</a>
                                 </div>
                             </li>
+                        {% endif %}
                         {% if user.is_superuser %}
                             <li class="nav-item">
                                 <div class="nav-item-child">
@@ -37,10 +39,19 @@
                         {% endif %}
                         <li class="nav-item active">
                             <div class="nav-item-child">
-                                Welcome, {{ user.first_name }}
-                                <div class="avatar-container">
-                                    <img src="{% static '/assets/images/avatar.png' %}"/>
-                                </div>
+                                Welcome,{{ user.first_name }}
+                                <a href="{% url "edit_user_profile" pk=user.id %}">
+                                    {% if user.profile_image %}
+                                        <div class="container">
+                                            <img class="avatar-limit" src="{{ user.profile_image.url }}"/>
+                                        </div>
+                                    {% else %}
+                                        <div class="avatar-container">
+                                            <img src="{% static '/assets/images/avatar.png' %}"/>
+
+                                        </div>
+                                    {% endif %}
+                                </a>
                             </div>
                             {% if user.is_authenticated %}
                                 <div class="nav-item-child">

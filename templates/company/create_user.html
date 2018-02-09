@@ -2,15 +2,15 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
-<section>
-{% if user.role <= 2 %}
-    <div class="container col-xs-4 col-xs-offset-3">
-        {% include 'common/message.html' %}
-        <form action="" class="form-group" method="post" role="form" enctype="multipart/form-data">
-            {% crispy form form.helper %}
-            <input type="submit" class="btn btn-theme" value="Save" />
-        </form>
-    </div>
-</section>
-{% endif %}
+    {% if user.role <= 2 %}
+        <div class="main-container">
+            {% include 'common/message.html' %}
+            <form action="" class="form-group" method="post" role="form" enctype="multipart/form-data">
+                <div class="container">
+                    {% crispy form form.helper %}
+                </div>
+                <input type="submit" class="btn btn-theme" value="Save"/>
+            </form>
+        </div>
+    {% endif %}
 {% endblock %}

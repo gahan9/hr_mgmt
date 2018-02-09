@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django import forms
+from django.contrib.auth.hashers import make_password
 from django.forms.models import ModelForm
 from django_countries import countries
 from django_countries.fields import LazyTypedMultipleChoiceField
@@ -100,13 +101,30 @@ class EditUserForm(ModelForm):
 
     def clean(self):
         if 'password' in self.cleaned_data:
-            password = computeMD5hash(self.cleaned_data.get('password'))
+            password = make_password(computeMD5hash(self.cleaned_data.get('password')))
             self.cleaned_data['password'] = password
         return super(EditUserForm, self).clean()
 
     class Meta:
         model = UserModel
-        fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'email', 'role']
+        fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'email']
+
+
+class ResetPasswordForm(ModelForm):
+    """ Reset Password of user"""
+    def __init__(self, *args, **kwargs):
+        super(ResetPasswordForm, self).__init__(*args, **kwargs)
+        self.helper = password_reset_helper
+
+    def clean(self):
+        if 'password' in self.cleaned_data:
+            password = make_password(computeMD5hash(self.cleaned_data.get('password')))
+            self.cleaned_data['password'] = password
+        return super(ResetPasswordForm, self).clean()
+
+    class Meta:
+        model = UserModel
+        fields = ['password']
 
 
 class EditEmployeeForm(ModelForm):

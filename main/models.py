@@ -178,5 +178,6 @@ def create_firebase_account(sender, instance, created, *args, **kwargs):
         print("app already exist....")
         pass
     if created:
-        user_create_response = auth.create_user(**data)
-        print(user_create_response)
+        pass
+        # user_create_response = auth.create_user(**data)
+        # print(user_create_response)

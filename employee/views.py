@@ -274,18 +274,20 @@ class SurveyManager(LoginRequiredMixin, AddFormMixin, SingleTableView):
 class AddQuestion(APIView, LoginRequiredMixin):
     """    Add Question pop up    """
     login_url = reverse_lazy('login')
+    serializer_class = QuestionSerializer
     template_name = 'company/add_question.html'
     renderer_classes = [TemplateHTMLRenderer]
     style = {'template_pack': 'rest_framework/vertical/'}
 
     def get(self, *args, **kwargs):
-        serializer = QuestionSerializer()
-        return Response({'serializer': serializer, 'style': self.style})
+        return Response({'serializer': self.serializer_class(), 'style': self.style})
 
     def post(self, request):
         current_user = self.request.user
         content_object = None
         response_data = {field: value for field, value in request.data.items()}
+        """
+        # Below block is disabled.. it is for choosing various answer type of question
         answer_type = int(request.data['answer_type']) if 'answer_type' in request.data else None
         if answer_type == 0:  # MCQ answer
             options = request.data.getlist('mytext[]')
@@ -297,13 +299,14 @@ class AddQuestion(APIView, LoginRequiredMixin):
         elif answer_type == 2:  # text answer
             content_object = TextAnswer.objects.create()
             response_data['content_type'] = ContentType.objects.get_for_model(TextAnswer).id
+        """
         serializer = QuestionSerializer(data=response_data, context={'request': request})
         if serializer.is_valid():
             que_obj = serializer.save()
             que_obj.asked_by.add(current_user)  # add user created in field
             if content_object:
                 que_obj.content_object = content_object
-                que_obj.save()
+            que_obj.save()
             message = "question created"
             messages.success(request, message=message)
         else:
@@ -480,6 +483,11 @@ class EditUserView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = EditUserForm
     success_message = "Details updated successfully."
 
+    def get_context_data(self, **kwargs):
+        context = super(EditUserView, self).get_context_data(**kwargs)
+        context.update({"pass_key": self.kwargs['pk']})
+        return context
+
     def form_valid(self, form, **kwargs):
         current_user = self.request.user
         user_object = UserModel.objects.get(id=self.kwargs['pk'])
@@ -543,3 +551,23 @@ class QuestionAutocomplete(object):
         if self.q:
             qs = qs.filter(question__istartswith=self.q)
         return qs
+
+
+class PasswordResetView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    login_url = reverse_lazy('login')
+    template_name = 'company/edit_user.html'
+    model = UserModel
+    success_url = reverse_lazy('view_data')
+    form_class = ResetPasswordForm
+    success_message = "Details updated successfully."
+
+    def form_valid(self, form, **kwargs):
+        current_user = self.request.user
+        user_object = UserModel.objects.get(id=self.kwargs['pk'])
+        company_id = get_user_company(current_user).id
+        activity_obj = ActivityMonitor.objects.create(activity_type=1, remarks="Password Changed",
+                                                      company_id=company_id,
+                                                      performed_by=self.request.user.get_detail(),
+                                                      affected_user=user_object.get_detail())
+        return super(PasswordResetView, self).form_valid(form)
+

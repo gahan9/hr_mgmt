@@ -15,6 +15,7 @@ urlpatterns = [
         url(r'^upload_file/', views.FileUploadView.as_view(), name="file_upload"),
         url(r'^view_data/', views.EmployeeDataList.as_view(), name="view_data"),
         url(r'^edit_user_profile/(?P<pk>\d+)/$', views.EditUserView.as_view(), name="edit_user_profile"),
+        url(r'^password_reset/(?P<pk>\d+)/$', views.PasswordResetView.as_view(), name="password_reset"),
         url(r'^edit_employee_profile/(?P<pk>\d+)/$', views.EditEmployeeView.as_view(), name="edit_employee_profile"),
     url(r'^field-rate/', views.FieldRateView.as_view(), name="field_rate"),
         url(r'^survey/', views.SurveyManager.as_view(), name="survey_manage"),

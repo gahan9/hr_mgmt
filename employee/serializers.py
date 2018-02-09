@@ -91,7 +91,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QuestionDB
-        fields = ["url", "question_id", "question_title", "answer_type", 'options', "asked_by"]
+        fields = ["url", "question_id", "question", "question_title", "answer_type", 'options', "asked_by"]
         read_only_fields = ('asked_by', 'content_object')
 
     def get_question_id(self, obj):

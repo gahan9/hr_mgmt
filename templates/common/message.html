@@ -9,4 +9,22 @@
             {% endfor %}
         </div>
     {% endif %}
+    {% if form.errors %}
+        <div class="container">
+            <ul class='form-errors'>
+                {% for error in form.errors %}
+                    <li class="text-danger">{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if form.field_errors %}
+        <div class="container">
+            <ul class='form-errors'>
+                {% for error in form.field_errors %}
+                    <li class="text-danger">{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 {% endblock %}

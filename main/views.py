@@ -31,13 +31,13 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = serializer.save()
         if instance.password:
-            instance.password = make_password(computeMD5hash(instance.password))
+            instance.password = make_password(instance.password)
             instance.save()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         if 'password' in kwargs:
-            kwargs['password'] = make_password(computeMD5hash(kwargs['password']))
+            kwargs['password'] = make_password(kwargs['password'])
         return self.update(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -117,17 +117,18 @@ class PlanSelector(APIView):
         response_data = {'serializer': serializer, 'style': self.style}
         stage = int(kwargs['stage']) if 'stage' in kwargs else 0
         response_data['stage'] = stage
-        # print(">> KWARGS === {}".format(kwargs))
-        # print(">> Request:POST::DATA === {}".format(request.data))
+        print(">> KWARGS === {}".format(kwargs))
+        print(">> Request:POST::DATA === {}".format(request.data.items()))
         for field, value in request.data.items():
             if request.data[field]:
                 if field == "profile_image":
                     print(self.request.FILES)
                     response_data[field] = self.request.FILES[field]
-                elif field == "password":
-                    response_data[field] = computeMD5hash(self.request.FILES[field])
+                # elif field == "password":
+                #     response_data[field] = computeMD5hash(self.request.data[field])
                 else:
-                    response_data[field] = request.data[field]
+                    response_data[field] = self.request.data[field]
+        print(response_data)
         if stage == 1:
             plan_obj = Plan.objects.get(pk=response_data['has_plan'])
             # role_level = 1 if plan_obj.plan_name == 2 else 2
@@ -185,13 +186,16 @@ class CustomAuthentication(ObtainAuthToken):
         response_data['token'] = token.key
         # print(dir(user.profile_image))
         # print(user.profile_image.url)
-        response_data['profile_image'] = ''.join(['http://', get_current_site(request).domain, user.profile_image.url])
+        response_data['profile_image'] = ''.join(
+            ['http://', get_current_site(request).domain, user.profile_image.url]
+        ) if user.profile_image else ''
         try:
             user_head = user.employee.added_by
             response_data['hr_id'] = user_head.id
             response_data['hr_name'] = user_head.first_name
-            if user_head.profile_image:
-                response_data['hr_profile_image'] = ''.join(['http://', get_current_site(request).domain, user_head.profile_image.url])
+            response_data['hr_profile_image'] = ''.join(
+                ['http://', get_current_site(request).domain, user_head.profile_image.url]
+            ) if user_head.profile_image else ''
             return Response(response_data)
         except Exception as e:
             print("Auth Exception {} for user".format(e))

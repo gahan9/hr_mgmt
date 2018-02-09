@@ -34,8 +34,23 @@ class PlanSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """ User serializer """
     has_plan = PrimaryKeyRelatedField(queryset=Plan.objects.all())
-    password = serializers.CharField(max_length=190, style={'input_type': 'password'}, required=False)
-    profile_image = Base64ImageField(required=False)
+    contact_number = serializers.IntegerField(
+        style={'placeholder': 'Contact Number', 'hide_label': True})
+    first_name = serializers.CharField(
+        style={'placeholder': 'First Name', 'hide_label': True})
+    last_name = serializers.CharField(
+        style={'placeholder': 'Last Name', 'hide_label': True})
+    email = serializers.CharField(
+        style={'placeholder': 'Email Address', 'hide_label': True})
+    gender = serializers.ChoiceField(
+        choices=UserModel.GENDER_CHOICE,
+        style={'placeholder': 'Select Gender', 'hide_label': True})
+    password = serializers.CharField(
+        max_length=190,
+        style={'input_type': 'password', 'placeholder': 'Password', 'hide_label': True})
+    profile_image = Base64ImageField(
+        required=False,
+        style={'class': 'form-control clearablefileinput', 'placeholder': 'Profile Image'})
 
     def update(self, instance, validated_data):
         if 'password' in validated_data:
@@ -50,7 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['url', 'id', 'contact_number', 'first_name', 'last_name', 'gender', 'profile_image', 'email',
                   'password', 'role', 'registration_date', 'has_plan']
-        read_only_fields = ('role', 'has_plan')
+        read_only_fields = ['has_plan']
         # extra_kwargs = {'password': {'write_only': True}}
         write_only_fields = ('password', )
 
