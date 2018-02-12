@@ -11,5 +11,7 @@ class ChatView(LoginRequiredMixin, APIView):
     style = {'template_pack': 'rest_framework/vertical/'}
 
     def get(self, request):
-        serializer = self.serializer_class()
-        return Response({'serializer': serializer})
+        response_data = {}
+        if request.user.role <= 2:
+            response_data['employees'] = UserModel.objects.filter(employee__added_by=request.user)
+        return Response(response_data)

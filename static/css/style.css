@@ -10,6 +10,7 @@ a:link, a:visited {
     color: navajowhite;
     text-decoration: none;
 }
+
 .breadcrumb-item a:hover {
     color: #ab3c00;
 }
@@ -270,6 +271,30 @@ video {
     border-radius: 50%;
     background: #bc8e76;
     margin-left: 10px;
+}
+
+.chat-avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #bc8e76;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.chat-avatar-limit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    background: transparent;
+    margin-left: 10px;
+    border-radius: 50%;
+    margin-right: 10px;
 }
 
 .avatar-container img {

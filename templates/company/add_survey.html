@@ -189,7 +189,7 @@
             }
             else if (wizard_step === 'step-tab-4') {
                 tabCounter = 4;
-                DivChanger("reset");
+                DivChanger("set");
             }
             else if (wizard_step === 'step-tab-5') {
                 tabCounter = 5;
@@ -285,7 +285,7 @@
                     data: {"question": selected_questions, "steps": 3}
                 };
                 CustomRequest(path_question_set);
-                DivChanger("reset");
+                {#DivChanger("reset");#}
             }
             else if (tabCounter === 4) {
                 var start_time = $('#survey-start-time').val();
