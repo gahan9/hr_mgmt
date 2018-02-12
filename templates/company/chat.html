@@ -1,0 +1,144 @@
+{% extends 'common/common.html' %}
+{% load static %}
+{% block content %}
+    <!-- Content -->
+    <div class="main-container">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col" style="display: flex;">
+                    <div class="fieldrate-icon">
+                        <img src="{% static '/assets/images/img1.png' %}"/>
+                    </div>
+                    <div class="fieldrate-icon" style="margin-left: 10px;">
+                        <img src="{% static '/assets/images/chaticon.png' %}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-container">
+                <div class="row">
+                    <div class="col col-12 hidden-xs-down col-lg-3 col-md-3 no-padding">
+                        <ul class="chat">
+                            <li>Chat</li>
+                            <li>Search</li>
+                        </ul>
+                        <table class="table table-responsive chat-table">
+                            <thead class="thead-inverse">
+                            <tr>
+                                <td>Country</td>
+                                <td>State</td>
+                                <td>City</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>India</td>
+                                <td>Gujarat</td>
+                                <td>Ahemdabad</td>
+                            </tr>
+                            <tr>
+                                <td>India</td>
+                                <td>Gujarat</td>
+                                <td>Ahemdabad</td>
+                            </tr>
+                            <tr>
+                                <td>India</td>
+                                <td>Gujarat</td>
+                                <td>Ahemdabad</td>
+                            </tr>
+                            <tr>
+                                <td>India</td>
+                                <td>Gujarat</td>
+                                <td>Ahemdabad</td>
+                            </tr>
+                            <tr>
+                                <td>India</td>
+                                <td>Gujarat</td>
+                                <td>Ahemdabad</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col col-12 chat-body col-lg-6 col-md-6 no-padding">
+                        <ul class="chat" style="justify-content: flex-end">
+                            <li>Name</li>
+                        </ul>
+                        <div class="form-group chat-text-box">
+                            <input type="text" class="form-control"/>
+                            <ul>
+                                <li><img src="{% static '/assets/images/attachment.png' %}"/></li>
+                                <li>Send</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col col-12 col-lg-3 col-md-3 no-padding">
+                        <ul class="chat">
+                            <li>Online User</li>
+                        </ul>
+                        <ul class="list-group">
+                            <li class="list-group-item">Cras justo odio</li>
+                            <li class="list-group-item">Dapibus ac facilisis in</li>
+                            <li class="list-group-item">Morbi leo risus</li>
+                            <li class="list-group-item">Porta ac consectetur ac</li>
+                            <li class="list-group-item">Vestibulum at eros</li>
+                            <li class="list-group-item">Vestibulum at eros</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- 				<div class="row">
+                                <div id="mySidenav" class="sidenav">
+                                  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                                  <table class="table table-responsive chat-table">
+                                            <thead class="thead-inverse">
+                                                <tr>
+                                                    <td>Country</td>
+                                                    <td>State</td>
+                                                    <td>City</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>India</td>
+                                                    <td>Gujarat</td>
+                                                    <td>Ahemdabad</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>India</td>
+                                                    <td>Gujarat</td>
+                                                    <td>Ahemdabad</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>India</td>
+                                                    <td>Gujarat</td>
+                                                    <td>Ahemdabad</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>India</td>
+                                                    <td>Gujarat</td>
+                                                    <td>Ahemdabad</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>India</td>
+                                                    <td>Gujarat</td>
+                                                    <td>Ahemdabad</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+                            </div>
+             -->
+        </div>
+    </div>
+{% endblock %}
+{% block extrajs %}
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+{% endblock %}
