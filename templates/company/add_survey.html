@@ -148,15 +148,21 @@
     <script src="{% static 'MultiElementSelection/js/magicselection.js' %}"></script>
     <script src="{% static 'MultiElementSelection/js/modernizr.custom.js' %}"></script>
     <script type="text/javascript">
+        var survey_id = '{{ survey_id }}';
+        console.log(survey_id);
         var tabCounter = {{ step }} + 1;
         if (tabCounter === 0){
             tabCounter = 1;
+        }
+        var step_number = localStorage.getItem('step_number');
+        if (step_number > tabCounter){
+            tabCounter = step_number;
         }
         console.log(tabCounter);
         var csrftoken = Cookies.get('csrftoken');
         var user_token = '{{ user.auth_token.key }}';
         var default_api_url = '/api/v1/survey/';
-        var wizard_url = "/api/v1/survey/";
+        var wizard_url = "";
         function DivChanger(flag) {
             if (flag === "reset") {
                 var decide = document.getElementById("variable-div").classList.contains('col-lg-12');
@@ -221,11 +227,16 @@
                     {#var responseData = JSON.parse(responseObj);#}
                     console.log("Saved! It worked.");
                     console.log(responseObj);
+                    console.log(wizard_url);
                     wizard_url = responseObj.url;
+                    localStorage.setItem("obj", responseObj);
                     localStorage.setItem("wizard_url", responseObj.url);
                     localStorage.setItem("survey_id", responseObj.id);
+                    localStorage.setItem("name", responseObj.name);
+                    localStorage.setItem("employee_group", responseObj.employee_group);
+                    localStorage.setItem("start_date", responseObj.start_date);
+                    localStorage.setItem("end_date", responseObj.end_date);
                     localStorage.setItem("steps_completed", responseObj.steps);
-                    localStorage.setItem("obj", responseObj);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     console.log("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
@@ -235,9 +246,8 @@
         }
          $('#survey-step1').submit(function(e) {
             e.preventDefault();
-            console.log('submited');
+            console.log('submitted');
          });
-
         $('#next').click(function () {
             event.preventDefault();
             console.log(default_api_url);
@@ -307,11 +317,30 @@
             localStorage.setItem('step_number', tabCounter);
         });
         $(function () {
-            $("#step-wizard li:eq({{ step }}) a").tab('show');
-            $("#step-wizard li:eq(" + ({{ step }}) + ") a").addClass("step-complete");
-            for (var i = 0; i < {{ step }}; i++) {
+            if (wizard_url === "" && survey_id !== "None"){
+                wizard_url = default_api_url + survey_id + '/';
+                console.log(wizard_url);
+                var get_data = {
+                    url: wizard_url,
+                    method: 'GET'
+                };
+                CustomRequest(get_data);
+                var steps_completed = parseInt(localStorage.getItem('steps_completed'), 10);
+                $('#survey-name').val(localStorage.getItem('name'));
+                if (steps_completed >= 2){
+                    $('#survey-group').val(localStorage.getItem('employee_group'));
+                }
+                $('#survey-start-time').val(localStorage.getItem('start_date'));
+                $('#survey-end-time').val(localStorage.getItem('end_date'));
+                // wizard_url = default_api_url;
+            }
+
+            $("#step-wizard li:eq("+ (tabCounter-1) +") a").tab('show');
+            $("#step-wizard li:eq(" + (tabCounter-1) + ") a").addClass("step-complete");
+            for (var i = 0; i < (tabCounter-1); i++) {
                 $("#step-wizard li:eq(" + i + ") a").addClass("step-complete");
             }
+
         });
 
         (function () {
