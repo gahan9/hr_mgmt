@@ -1,7 +1,12 @@
 __pycache__
 .idea/
+*.pyc
 userfiles
 employee/migrations
 main/migrations
 logs/
 server_dump/
+employee_management/serviceAccountKey.json
+static/MDB-Free.zip
+static/MultiElementSelection.zip
+static/bootstrap-datetimepicker-master.zip
