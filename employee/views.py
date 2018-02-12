@@ -319,7 +319,7 @@ class AddQuestion(APIView, LoginRequiredMixin):
         return Response({'serializer': serializer, 'style': self.style})
 
 
-class AddSurvey(APIView):
+class AddSurvey(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('login')
     # template_name = 'company/add_survey.html'
     template_name = 'company/_add_survey.html'
@@ -405,6 +405,7 @@ class AddSurvey(APIView):
 
 
 class CreateSurvey(AddSurvey):
+    login_url = reverse_lazy('login')
     template_name = 'company/add_survey.html'
 
 
@@ -594,7 +595,8 @@ class NewsFeedManager(LoginRequiredMixin, AddFormMixin, SingleTableView):
         return self.search_fields
 
 
-class CreateNewsFeed(APIView):
+class CreateNewsFeed(LoginRequiredMixin, APIView):
+    login_url = reverse_lazy('login')
     renderer_classes = [TemplateHTMLRenderer]
     serializer_class = NewsFeedSerializer
     model = NewsFeed
