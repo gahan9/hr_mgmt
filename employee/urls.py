@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^delete_user/(?P<pk>\d+)/$', views.EmployeeDeleteView.as_view(), name="delete_user"),
     url(r'^activity_log/$', views.ActivityMonitorView.as_view(), name="activity_log"),
     url(r'^employee_data/', views.EmployeeDataView.as_view(), name="employee_data"),
+    url(r'^settings/', views.SettingsView.as_view(), name="settings"),
         url(r'^upload_file/', views.FileUploadView.as_view(), name="file_upload"),
         url(r'^view_data/', views.EmployeeDataList.as_view(), name="view_data"),
         url(r'^edit_user_profile/(?P<pk>\d+)/$', views.EditUserView.as_view(), name="edit_user_profile"),

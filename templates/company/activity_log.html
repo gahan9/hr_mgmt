@@ -5,21 +5,23 @@
 {% load custom_tags %}
 {% block content %}
 
-<section>
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'employee_data' %}">Employee Data</a></li>
-        <li class="breadcrumb-item active">View Data</li>
-    </ol>
-    {% include 'common/message.html' %}
-    <div class="container-fluid">
-        {% if form %}
-            <form action="" method="get" class="form form-inline">
-                {% bootstrap_form form layout='inline' %}
-                {% bootstrap_button 'Search' %}
-            </form>
-        {% endif %}
-        {% render_table table %}
-    </div>
-</section>
+    <section>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'settings' %}">Settings</a></li>
+            <li class="breadcrumb-item active">Activity Record</li>
+        </ol>
+        {% include 'common/message.html' %}
+        <div class="main-sub-container">
+            {% if form %}
+                <form action="" method="get" class="form form-inline">
+                    {% bootstrap_form form layout='inline' %}
+                    {% bootstrap_button 'Search' %}
+                </form>
+            {% endif %}
+            <div class="container">
+                {% render_table table %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

@@ -534,7 +534,7 @@ class ActivityMonitorView(LoginRequiredMixin, SingleTableView):
     login_url = reverse_lazy('login')
     table_class = ActivityTable
     model = ActivityMonitor
-    template_name = "company/employee_detail.html"
+    template_name = "company/activity_log.html"
     table_pagination = {'per_page': 15}
 
     def get_queryset(self):
@@ -663,3 +663,7 @@ class SurveyDeleteView(LoginRequiredMixin, DeleteView):
         messages.success(request, message)
         return super(SurveyDeleteView, self).delete(request, *args, **kwargs)
 
+
+class SettingsView(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    template_name = 'company/settings.html'

@@ -3,6 +3,11 @@
 {% load custom_tags %}
 {% block content %}
     {% include 'common/message.html' %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'settings' %}">Settings</a></li>
+        <li class="breadcrumb-item active">Create User</li>
+    </ol>
     {% if user.role <= 2 %}
         <div class="main-container">
             <form action="" class="form-group" method="post" role="form" enctype="multipart/form-data">

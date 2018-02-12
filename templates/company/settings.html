@@ -1,0 +1,49 @@
+{% extends 'common/common.html' %}
+{% load static %}
+{% block content %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item active">Settings</li>
+    </ol>
+    <div class="main-sub-container">
+        <div class="container">
+            <div class="row">
+                <div class="col col-12 col-lg-4 col-md-4 col-sm-4">
+                    <div class="categories">
+                        <a href="{% url "edit_user_profile" pk=user.id %}">
+                            <div class="category-img-container">
+                                {% if user.profile_image %}
+                                    <img class="img-responsive" src="{{ user.profile_image.url }}"/>
+                                {% else %}
+                                    <img class="img-responsive" src="{% static '/assets/images/avatar@3x.png' %}"/>
+                                {% endif %}
+                            </div>
+                        </a>
+                        <h3>Profile Update</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-4 col-md-4 col-sm-4">
+                    <div class="categories">
+{#                        <a href="{% if user.role <= 2 %}{% url 'create_user' %}{% else %} # {% endif %}">#}
+                        <a href="{% url 'create_user' %}">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/employee_data.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Create User</h3>
+                    </div>
+                </div>
+                <div class="col col-12 col-lg-4 col-md-4 col-sm-4">
+                    <div class="categories">
+                        <a href="{% url 'activity_log' %}">
+                            <div class="category-img-container">
+                                <img src="{% static '/assets/images/settingicon.png' %}" class="img-responsive"/>
+                            </div>
+                        </a>
+                        <h3>Activity Log</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
