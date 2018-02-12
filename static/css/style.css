@@ -291,9 +291,9 @@ video {
     align-items: center;
     width: 25px;
     height: 25px;
-    background: transparent;
-    margin-left: 10px;
     border-radius: 50%;
+    background: #bc8e76;
+    margin-left: 10px;
     margin-right: 10px;
 }
 

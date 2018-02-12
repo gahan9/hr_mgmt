@@ -89,9 +89,8 @@
                                     <div class="row">
                                         <a href="{% url "edit_user_profile" pk=employee.id %}">
                                             {% if employee.profile_image %}
-                                                <div class="chat-avatar-container">
-                                                    <img class="chat-avatar-limit"
-                                                         src="{{ employee.profile_image.url }}"/>
+                                                <div class="chat-avatar-limit">
+                                                    <img class="img-responsive chat-avatar-limit" src="{{ employee.profile_image.url }}"/>
                                                 </div>
                                             {% else %}
                                                 <div class="chat-avatar-container">

@@ -13,7 +13,7 @@
                         <a href="{% url "edit_user_profile" pk=user.id %}">
                             <div class="category-img-container">
                                 {% if user.profile_image %}
-                                    <img class="img-responsive" src="{{ user.profile_image.url }}"/>
+                                    <img class="img-responsive rounded-circle" src="{{ user.profile_image.url }}"/>
                                 {% else %}
                                     <img class="img-responsive" src="{% static '/assets/images/avatar@3x.png' %}"/>
                                 {% endif %}
@@ -37,7 +37,7 @@
                     <div class="categories">
                         <a href="{% url 'activity_log' %}">
                             <div class="category-img-container">
-                                <img src="{% static '/assets/images/settingicon.png' %}" class="img-responsive"/>
+                                <img src="{% static '/assets/images/activity_log.png' %}" class="img-responsive"/>
                             </div>
                         </a>
                         <h3>Activity Log</h3>
