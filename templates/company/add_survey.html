@@ -13,6 +13,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
         <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
         <li class="breadcrumb-item"><a href="{% url 'survey_manage' %}">Manage Surveys</a></li>
+        <li class="breadcrumb-item active">({{ survey_id }}: {{ step }})</li>
     </ol>
     <!-- Content -->
     <div class="main-sub-container">
@@ -148,14 +149,15 @@
     <script src="{% static 'MultiElementSelection/js/magicselection.js' %}"></script>
     <script src="{% static 'MultiElementSelection/js/modernizr.custom.js' %}"></script>
     <script type="text/javascript">
-        var survey_id = '{{ survey_id }}';
-        console.log(survey_id);
+        var context_survey_id = '{{ survey_id }}';
+        var context_steps = {{ step }};
+        console.log(context_survey_id);
         var tabCounter = {{ step }} + 1;
         if (tabCounter === 0){
             tabCounter = 1;
         }
         var step_number = localStorage.getItem('step_number');
-        if (step_number > tabCounter){
+        if (step_number > tabCounter && context_steps !== 0){
             tabCounter = step_number;
         }
         console.log(tabCounter);
@@ -229,6 +231,9 @@
                     console.log(responseObj);
                     console.log(wizard_url);
                     wizard_url = responseObj.url;
+                    console.log(responseObj.id);
+                    console.log(responseObj.name);
+                    console.log(wizard_url);
                     localStorage.setItem("obj", responseObj);
                     localStorage.setItem("wizard_url", responseObj.url);
                     localStorage.setItem("survey_id", responseObj.id);
@@ -254,7 +259,7 @@
             if (tabCounter === 1) {
                 // Create new survey state /or change name of current survey
                 var post_name = {
-                    url: wizard_url,
+                    url: default_api_url,
                     method: 'POST',
                     data: {"name": $('#survey-name').val(), "steps": 1}
                 };
@@ -310,6 +315,7 @@
                 CustomRequest(complete_survey);
                 window.location.href = "{% url 'survey_manage' %}";
                 DivChanger("reset");
+                localStorage.clear();
             }
             $("#step-wizard li:eq(" + (tabCounter) + ") a").tab('show');
             $("#step-wizard li:eq(" + (tabCounter) + ") a").addClass("step-complete");
@@ -317,17 +323,23 @@
             localStorage.setItem('step_number', tabCounter);
         });
         $(function () {
-            if (wizard_url === "" && survey_id !== "None"){
-                wizard_url = default_api_url + survey_id + '/';
+            var steps_completed = '';
+            if (wizard_url === "" && context_survey_id !== "None"){
+                wizard_url = default_api_url + context_survey_id + '/';
                 console.log(wizard_url);
                 var get_data = {
                     url: wizard_url,
                     method: 'GET'
                 };
                 CustomRequest(get_data);
-                var steps_completed = parseInt(localStorage.getItem('steps_completed'), 10);
+                if (wizard_url === ""){
+                    steps_completed = '{{ steps }}';
+                }
+                else {
+                    steps_completed = parseInt(localStorage.getItem('steps_completed'), 10);
+                }
                 $('#survey-name').val(localStorage.getItem('name'));
-                if (steps_completed >= 2){
+                if (localStorage.getItem('employee_group') !== "undefined"){
                     $('#survey-group').val(localStorage.getItem('employee_group'));
                 }
                 $('#survey-start-time').val(localStorage.getItem('start_date'));

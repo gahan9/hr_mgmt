@@ -29,7 +29,7 @@
                     {% endif %}
                 </div>
                 <div class="col">
-                    <a href="{% url 'create_survey' %}">
+                    <a href="{% url 'create_survey' %}" id="add-new-survey">
                         <div class="btn btn-dark">
                             + Add New Survey
                         </div>
@@ -52,6 +52,9 @@
         $(document).ready(function () {
             $(document).on('click', '#add_id_question', function (event) {
                 MyWindow = window.open("{% url 'add_new_question' %}", 'MyWindow', "width=600,height=300");
+            });
+            $('#add-new-survey').click(function (data) {
+                localStorage.clear();
             });
         });
     </script>
