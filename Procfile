@@ -1,1 +1,1 @@
-web: gunicorn employee_management.wsgi
+web: python employee_management.wsgi
