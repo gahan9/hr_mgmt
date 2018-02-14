@@ -3,7 +3,6 @@ import base64
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.files.base import ContentFile
-from pyparsing import basestring
 from requests.compat import basestring
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
