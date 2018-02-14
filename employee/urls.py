@@ -32,4 +32,5 @@ urlpatterns = [
             url(r'^create_survey/add_new_question/', views.AddQuestion.as_view(), name="create_new_question"),
     url(r'^question_autocomplete/$', QuestionAutocomplete,
         name='question_autocomplete',),
+    url(r'sample', views.SampleView.as_view(), name="sample")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

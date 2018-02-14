@@ -8,6 +8,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from main.models import *
 from jsonfield import JSONField
 
+
 def default_start_time():
     return datetime.now()
 

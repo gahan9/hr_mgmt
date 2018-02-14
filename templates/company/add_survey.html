@@ -115,24 +115,26 @@
                             <form>
                                 <div class="form-row">
                                     <div class="col">
-                                        <input id="survey-start-time" type="text" placeholder="Start Time" onfocus="(this.type='datetime-local')" class="form-control"/>
+                                        <input id="survey-start-time" type="text" placeholder="Start Time"
+                                               onfocus="(this.type='datetime-local')" class="form-control"/>
                                     </div>
                                     <div class="col">
-{#                                        {% render_field serializer.end_date style=style %}#}
-                                        <input id="survey-end-time" type="text" placeholder="End Time" onfocus="(this.type='datetime-local')" class="form-control"/>
+                                        {#                                        {% render_field serializer.end_date style=style %}#}
+                                        <input id="survey-end-time" type="text" placeholder="End Time"
+                                               onfocus="(this.type='datetime-local')" class="form-control"/>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div class="tab-pane fade show" id="step-5" role="tabpanel" aria-labelledby="step-tab-5">
-{#                            <form>#}
-{#                                <div class="form-group">#}
-{#                                    <button id="survey-save" class="btn btn-theme" type="button">Save Survey</button>#}
-{#                                </div>#}
-{#                                <div class="form-group">#}
-{#                                    <button id="survey-save-next" class="btn btn-theme" type="button">Create New Survey</button>#}
-{#                                </div>#}
-{#                            </form>#}
+                            {#                            <form>#}
+                            {#                                <div class="form-group">#}
+                            {#                                    <button id="survey-save" class="btn btn-theme" type="button">Save Survey</button>#}
+                            {#                                </div>#}
+                            {#                                <div class="form-group">#}
+                            {#                                    <button id="survey-save-next" class="btn btn-theme" type="button">Create New Survey</button>#}
+                            {#                                </div>#}
+                            {#                            </form>#}
                         </div>
                         <div class="form-group" style="margin-top: 20px;">
                             <button class="btn btn-theme" type="submit" id="next">Save Progress</button>
@@ -152,12 +154,12 @@
         var context_survey_id = '{{ survey_id }}';
         var context_steps = {{ step }};
         console.log(context_survey_id);
-        var tabCounter = {{ step }} + 1;
-        if (tabCounter === 0){
+        var tabCounter = {{ step }} +1;
+        if (tabCounter === 0) {
             tabCounter = 1;
         }
         var step_number = localStorage.getItem('step_number');
-        if (step_number > tabCounter){
+        if (step_number > tabCounter) {
             tabCounter = step_number;
         }
         console.log(tabCounter);
@@ -165,6 +167,7 @@
         var user_token = '{{ user.auth_token.key }}';
         var default_api_url = '/api/v1/survey/';
         var wizard_url = "";
+
         function DivChanger(flag) {
             if (flag === "reset") {
                 var decide = document.getElementById("variable-div").classList.contains('col-lg-12');
@@ -249,10 +252,11 @@
                 }
             });
         }
-         $('#survey-step1').submit(function(e) {
+
+        $('#survey-step1').submit(function (e) {
             e.preventDefault();
             console.log('submitted');
-         });
+        });
         $('#next').click(function () {
             event.preventDefault();
             console.log(default_api_url);
@@ -298,9 +302,11 @@
                 var patch_duration = {
                     url: default_api_url + localStorage.getItem("survey_id") + "/",
                     method: 'PATCH',
-                    data: {"start_date": start_time,
+                    data: {
+                        "start_date": start_time,
                         "end_date": end_time,
-                        "steps": 4}
+                        "steps": 4
+                    }
                 };
                 CustomRequest(patch_duration);
                 DivChanger("reset");
@@ -309,8 +315,10 @@
                 var complete_survey = {
                     url: default_api_url + localStorage.getItem("survey_id") + "/",
                     method: 'PATCH',
-                    data: {"complete": true,
-                        "steps": 5}
+                    data: {
+                        "complete": true,
+                        "steps": 5
+                    }
                 };
                 CustomRequest(complete_survey);
                 window.location.href = "{% url 'survey_manage' %}";
@@ -322,9 +330,34 @@
             tabCounter++;
             localStorage.setItem('step_number', tabCounter);
         });
+
+        function value_setter(value, location) {
+            if (localStorage.getItem(value)) {
+                if (localStorage.getItem(value) !== "undefined") {
+                    $(location).val(localStorage.getItem(value));
+                }
+            }
+        }
+
         $(function () {
             var steps_completed = '';
-            if (wizard_url === "" && context_survey_id !== "None"){
+            /*
+            if (wizard_url === "") {
+                steps_completed = '{ step }}';
+            }
+            else {
+                steps_completed = parseInt(localStorage.getItem('steps_completed'), 10);
+            }
+            if (steps_completed >= 1) {
+                value_setter('name', '#survey-name');
+                value_setter('start_date', '#survey-start-time');
+                value_setter('end_date', '#survey-end-time');
+            }
+            if (steps_completed >= 2) {
+                value_setter('employee_group', '#survey-group');
+            }
+            */
+            if (wizard_url === "" && context_survey_id !== "None") {
                 wizard_url = default_api_url + context_survey_id + '/';
                 console.log(wizard_url);
                 var get_data = {
@@ -332,24 +365,17 @@
                     method: 'GET'
                 };
                 CustomRequest(get_data);
-                if (wizard_url === ""){
-                    steps_completed = '{{ steps }}';
-                }
-                else {
-                    steps_completed = parseInt(localStorage.getItem('steps_completed'), 10);
-                }
-                $('#survey-name').val(localStorage.getItem('name'));
-                if (localStorage.getItem('employee_group') !== "undefined"){
-                    $('#survey-group').val(localStorage.getItem('employee_group'));
-                }
-                $('#survey-start-time').val(localStorage.getItem('start_date'));
-                $('#survey-end-time').val(localStorage.getItem('end_date'));
+
+                value_setter('name', '#survey-name');
+                value_setter('employee_group', '#survey-group');
+                value_setter('start_date', '#survey-start-time');
+                value_setter('end_date', '#survey-end-time');
                 // wizard_url = default_api_url;
             }
 
-            $("#step-wizard li:eq("+ (tabCounter-1) +") a").tab('show');
-            $("#step-wizard li:eq(" + (tabCounter-1) + ") a").addClass("step-complete");
-            for (var i = 0; i < (tabCounter-1); i++) {
+            $("#step-wizard li:eq(" + (tabCounter - 1) + ") a").tab('show');
+            $("#step-wizard li:eq(" + (tabCounter - 1) + ") a").addClass("step-complete");
+            for (var i = 0; i < (tabCounter - 1); i++) {
                 $("#step-wizard li:eq(" + i + ") a").addClass("step-complete");
             }
 

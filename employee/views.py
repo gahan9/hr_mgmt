@@ -1,8 +1,10 @@
 import codecs
 import csv
+import json
 import os
 from collections import OrderedDict
 
+from braces.views import JSONResponseMixin
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,6 +16,7 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
+from django.views.generic.detail import BaseDetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_tables2.views import SingleTableView
 from rest_framework.authtoken.models import Token
@@ -667,3 +670,10 @@ class SurveyDeleteView(LoginRequiredMixin, DeleteView):
 class SettingsView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
     template_name = 'company/settings.html'
+
+
+class SampleView(JSONResponseMixin, BaseDetailView):
+    def get(self, request, *args, **kwargs):
+        with open(os.path.join(settings.MEDIA_ROOT, 'structure.json'), 'r') as fp:
+            content = json.load(fp)
+        return self.render_json_response(content)
