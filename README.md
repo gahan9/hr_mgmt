@@ -1,15 +1,16 @@
-Login API
-===
-### Validate user
->url: http://192.168.5.9:8889/api-token-auth/
+> DOMAIN : http://192.168.5.47
 
-> method: POST
+Login API
+=========
+### Validate user
+> url: <DOMAIN>/api-token-auth/
+> > method: POST
 
 ##### POST DATA:
 ```json
 {
 	"username":"9898989898",  // contact number of user
-	"password":"1"  // password
+	"password":"c4ca4238a0b923820dcc509a6f75849b"  // password (hash of plaintext)
 }
 ```
 
@@ -17,14 +18,17 @@ Login API
 ###### Success:
 ```json
 {
+    "contact_number": "9898989898",  // Primary Contact Number/ Phone number of user
+    "id": 8, // ID of user/employee 
     "first_name": "oliver",  // First Name of user
+    "last_name": "queen",  // Last Name of user
+    "profile_image": "http://192.168.5.47:8889/files/media/uploads/temp_l5hdp4b.jpeg",  // User's profile image
     "role": 3,  // Role of user - By default all employee role will be 3
     "hr_name": "Bruce",  // Name of HR 
     "hr_id": 6,  // Id of HR
-    "id": 8, // ID of user/employee
-    "token": "962cfc6f0d49e3cf91081ca378f6c9a803cb95d8",  // Token for user
-    "number": "9898989898",  // Primary Contact Number/ Phone number of user 
-    "last_name": "queen"  // Last Name of user
+    "hr_profile_image": "", // HR profile image empty string if profile_image not available
+    "token": "962cfc6f0d49e3cf91081ca378f6c9a803cb95d8"  // Token for user
+
 }
 ```
 ###### Failure:
@@ -39,9 +43,9 @@ Login API
 ```
 
 Survey API Doc
-======
+==============
 ### Get list of available surveys
->url: http://192.168.5.9:8889/api/survey/
+>url: <DOMAIN>/api/survey/
 
 >authentication_require: Yes
 
@@ -147,12 +151,12 @@ Survey API Doc
 {
     "survey_id": 1,  // id of survey
     "answers": {
-        "1": {  # key is question id
-            "r": 2  # rated value by user
+        "1": {  // key is question id
+            "r": 2  // rated value by user
         },
-        "2": {  # key is question id
-            "m": "user entered message",  # optional message
-            "r": 2  # rated value by user
+        "2": {  // key is question id
+            "m": "user entered message",  // optional message
+            "r": 2  // rated value by user
         }
     },
     "complete": true  // show status if survey is completed

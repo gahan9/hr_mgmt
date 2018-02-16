@@ -1,5 +1,8 @@
 {% extends 'common/common.html' %}
 {% load static %}
+{% block extracss %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+{% endblock %}
 {% block content %}
     <!-- Content -->
     <ol class="breadcrumb">
@@ -69,13 +72,13 @@
                     </div>
                     <div class="col col-12 chat-body col-lg-6 col-md-6 no-padding">
                         <ul class="chat" style="justify-content: flex-end">
-                            <li>Name</li>
+                            <li id="current-chat-session">Name</li>
                         </ul>
                         <div class="form-group chat-text-box">
-                            <input type="text" class="form-control"/>
+                            <input type="text" class="form-control" id="new_message_area"/>
                             <ul>
                                 <li><img src="{% static '/assets/images/attachment.png' %}"/></li>
-                                <li>Send</li>
+                                <li id="send_message">Send</li>
                             </ul>
                         </div>
                     </div>
@@ -85,20 +88,20 @@
                         </ul>
                         <ul class="list-group">
                             {% for employee in employees %}
-                                <li class="list-group-item">
+                                <li class="list-group-item" id="{{ employee.get_full_name }}" value="{{ employee.id }}"
+                                    onclick="initiateChat(this.value, this.id)">
                                     <div class="row">
-                                        <a href="{% url "edit_user_profile" pk=employee.id %}">
-                                            {% if employee.profile_image %}
-                                                <div class="chat-avatar-limit">
-                                                    <img class="img-responsive chat-avatar-limit" src="{{ employee.profile_image.url }}"/>
-                                                </div>
-                                            {% else %}
-                                                <div class="chat-avatar-container">
-                                                    <img src="{% static '/assets/images/avatar.png' %}" width="15px"/>
-                                                </div>
-                                            {% endif %}
-                                        </a>
-                                        {{ employee.get_full_name }} ({{ employee.contact_number }})
+                                        {% if employee.profile_image %}
+                                            <div class="chat-avatar-limit">
+                                                <img class="img-responsive chat-avatar-limit"
+                                                     src="{{ employee.profile_image.url }}"/>
+                                            </div>
+                                        {% else %}
+                                            <div class="chat-avatar-container">
+                                                <img src="{% static '/assets/images/avatar.png' %}" width="15px"/>
+                                            </div>
+                                        {% endif %}
+                                        <span>{{ employee.get_full_name }} ({{ employee.contact_number }})</span>
                                     </div>
                                 </li>
                             {% endfor %}
@@ -153,7 +156,31 @@
     </div>
 {% endblock %}
 {% block extrajs %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-messaging.js"></script>
+
     <script>
+        var currentUserId = '{{ user.id }}';  // current logged in user ID
+        var currentUserName = '{{ user.first_name }}';  // current logged in user ID
+        var chatRecord = {};
+        var receiverId = '';
+        // Initialize Firebase
+        //  Replace with your project's customized code snippet
+        var config = {
+            apiKey: "AIzaSyDpToIqwQ8GR7JVA1qLQTzp9eTHMrFWoZU",
+            authDomain: "shareabook-aed46.firebaseapp.com",
+            databaseURL: "https://shareabook-aed46.firebaseio.com",
+            storageBucket: "shareabook-aed46.appspot.com"
+        };
+        firebase.initializeApp(config);
+
+        var database = firebase.database();
+
         function openNav() {
             document.getElementById("mySidenav").style.width = "250px";
         }
@@ -161,5 +188,68 @@
         function closeNav() {
             document.getElementById("mySidenav").style.width = "0";
         }
+
+        // writeUserData('32', "Stephen", "8888888802", "")
+        function writeUserData(userId, name, phoneNo, imageUrl) {
+            firebase.database().ref('Users/' + userId).set({
+                userId: userId,
+                name: name,
+                phoneNo: phoneNo,
+                profileImage: imageUrl
+            });
+        }
+
+        function writeMessage(senderId, receiverId, message) {
+            console.log(senderId, receiverId, message);
+
+            // Get a key for a new Post.
+            var rootRef = firebase.database().ref();
+            var Event = rootRef.child('Messages/' + receiverId + "_" + senderId + '/Event');
+            var chatRoom = rootRef.child('Messages/' + receiverId + "_" + senderId + '/Chat/');
+            var newPostKey = chatRoom.push().key;
+            var newMessage = chatRoom.push();
+            var messageData = {
+                message: message,
+                receiverId: receiverId,
+                senderId: senderId,
+                timeStamp: JSON.stringify((new Date).getTime())
+            };
+            newMessage.set(messageData);
+            var eventData = {
+                hr_event: "sent"
+            };
+            Event.set(eventData)
+        }
+
+        function retrieveMessage(senderId, receiverId) {
+            var ref = firebase.database().ref('Messages/' + receiverId + "_" + senderId);
+            ref.on("value", function (snapshot) {
+                chatRecord = snapshot.val();
+                console.log(chatRecord);
+            }, function (errorObject) {
+                alert("Couldn't retrieve data!!!");
+                console.log("The read failed: " + errorObject.code);
+            });
+        }
+
+        function displayMessage(senderId, receiverId) {
+            retrieveMessage(senderId, receiverId);
+            {#alert(chatRecord);#}
+        }
+
+        function initiateChat(userId, userName) {
+            receiverId = JSON.stringify(userId);
+            var success_message = "chat successfully initialized with " + userName;
+            toastr["success"](success_message, "Chat Initialized");
+            $('#current-chat-session').text(userName);
+            console.log(receiverId);
+            displayMessage(currentUserId, receiverId)
+        }
+
+        $('#send_message').on("click", function () {
+            var new_message = $('#new_message_area').val();
+            writeMessage(currentUserId, receiverId, new_message);
+            toastr["success"]("Message Sent")
+        });
     </script>
 {% endblock %}
