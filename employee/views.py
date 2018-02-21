@@ -500,7 +500,7 @@ class EditUserView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         company_id = get_user_company(current_user).id
         activity_obj = ActivityMonitor.objects.create(activity_type=1,
                                                       company_id=company_id,
-                                                      performed_by=self.request.user.get_detail(),
+                                                      performed_by=current_user.get_detail(),
                                                       affected_user=user_object.get_detail())
         return super(EditUserView, self).form_valid(form)
 

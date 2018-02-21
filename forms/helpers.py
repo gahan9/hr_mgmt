@@ -92,7 +92,7 @@ edit_user_helper.form_method = 'POST'
 edit_user_helper.layout = Layout(
     Div(
         Field('contact_number', css_class='form-control', placeholder='Primary Mobile Number (for username)'),
-        # Field('profile_image', css_class='form-control', placeholder='Company Logo'),
+        Field('profile_image', css_class='form-control', placeholder='Profile Image'),
         Field('first_name', css_class='form-control', placeholder='First Name'),
         Field('last_name', css_class='form-control', placeholder='Last Name'),
         Field('email', css_class='form-control', placeholder='Email'),

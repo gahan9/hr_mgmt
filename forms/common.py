@@ -107,7 +107,7 @@ class EditUserForm(ModelForm):
 
     class Meta:
         model = UserModel
-        fields = ['contact_number', 'first_name', 'last_name', 'email']
+        fields = ['contact_number', 'first_name', 'last_name', 'email', 'profile_image']
 
 
 class ResetPasswordForm(ModelForm):

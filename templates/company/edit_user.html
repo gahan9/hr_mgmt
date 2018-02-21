@@ -5,7 +5,7 @@
     {% include 'common/message.html' %}
     <div class="main-container">
         <div class="container">
-            <form action="" class="form-group" method="post" role="form">
+            <form action="" class="form-group" method="post" role="form" enctype="multipart/form-data">
                 {% crispy form form.helper %}
                 {% if pass_key %}
                 <div class="row">
