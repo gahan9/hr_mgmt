@@ -28,7 +28,7 @@
             </div>
             <div class="chat-container">
                 <div class="row">
-                    <div class="col col-12 hidden-xs-down col-lg-3 col-md-3 no-padding">
+                    <!--<div class="col col-12 hidden-xs-down col-lg-3 col-md-3 no-padding">
                         <ul class="chat">
                             <li>Chat</li>
                             <li>Search</li>
@@ -69,11 +69,19 @@
                             </tr>
                             </tbody>
                         </table>
-                    </div>
-                    <div class="col col-12 chat-body col-lg-6 col-md-6 no-padding">
+                    </div>-->
+                    <div class="col col-12 chat-body col-lg-9 col-md-9 no-padding">
                         <ul class="chat" style="justify-content: flex-end">
+{#                            <li id="search-chat">Search</li>#}
+                            <li>
+                                <div>
+                                    <img class="chat-avatar-limit" id="current-chat-session-image" src="{% static '/assets/images/avatar@2x.png' %}"/>
+                                </div>
+                            </li>
                             <li id="current-chat-session">Name</li>
                         </ul>
+                        <div class="chat-message-container">
+                        </div>
                         <div class="form-group chat-text-box">
                             <input type="text" class="form-control" id="new_message_area"/>
                             <ul>
@@ -88,8 +96,10 @@
                         </ul>
                         <ul class="list-group">
                             {% for employee in employees %}
-                                <li class="list-group-item" id="{{ employee.get_full_name }}" value="{{ employee.id }}"
-                                    onclick="initiateChat(this.value, this.id)">
+                                <li class="list-group-item" id="{{ employee.id }}" data-name="{{ employee.get_full_name }}" value="{{ employee.id }}"
+                                    data-profile="{% if employee.profile_image %}{{ employee.profile_image.url }}{% else %}{% static '/assets/images/avatar.png' %}{% endif %}"
+                                    onclick="initiateChat(this)">
+                                <a href="#" class="no-style-a">
                                     <div class="row">
                                         {% if employee.profile_image %}
                                             <div class="chat-avatar-limit">
@@ -103,6 +113,7 @@
                                         {% endif %}
                                         <span>{{ employee.get_full_name }} ({{ employee.contact_number }})</span>
                                     </div>
+                                </a>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -156,6 +167,7 @@
     </div>
 {% endblock %}
 {% block extrajs %}
+    <script src="{% static 'js/handlebars-v4.0.11.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-app.js"></script>
@@ -165,6 +177,8 @@
     <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-messaging.js"></script>
 
     <script>
+        toastr.options.preventDuplicates = true;
+        toastr.options.progressBar = true;
         var currentUserId = '{{ user.id }}';  // current logged in user ID
         var currentUserName = '{{ user.first_name }}';  // current logged in user ID
         var chatRecord = {};
@@ -218,7 +232,10 @@
             var eventData = {
                 hr_event: "sent"
             };
-            Event.set(eventData)
+            Event.set(eventData);
+            {#toastr.remove();#}
+            $('#new_message_area').val('');
+            toastr["success"]("message sent successfully", "Message Sent");
         }
 
         function retrieveMessage(senderId, receiverId) {
@@ -227,29 +244,57 @@
                 chatRecord = snapshot.val();
                 console.log(chatRecord);
             }, function (errorObject) {
-                alert("Couldn't retrieve data!!!");
+                toastr.warning("Couldn't retrieve data!!!");
                 console.log("The read failed: " + errorObject.code);
             });
         }
 
+        function setHandleBar(hbSelector, domSelector, results) {
+            var theTemplateScript = hbSelector.html();
+            var theTemplate = Handlebars.compile(theTemplateScript);
+            var context = {'result': results, 'base_root': BASE_ROOT};
+            var theCompiledHtml = theTemplate(context);
+            if (e_type === 'SearchEnquiry') {
+                domSelector.append(theCompiledHtml);
+            } else {
+                domSelector.html(theCompiledHtml);
+            }
+            return true
+        }
         function displayMessage(senderId, receiverId) {
             retrieveMessage(senderId, receiverId);
+            toastr.info("Chat Initiated");
             {#alert(chatRecord);#}
         }
 
-        function initiateChat(userId, userName) {
+        function initiateChat(event) {
+            var userId = event.value;
+            var userName = event.dataset['name'];
+            var userProfile = event.dataset["profile"];
             receiverId = JSON.stringify(userId);
             var success_message = "chat successfully initialized with " + userName;
-            toastr["success"](success_message, "Chat Initialized");
+            // toastr["success"](success_message, "Chat Initialized");
             $('#current-chat-session').text(userName);
+            $('#current-chat-session-image').attr('src', userProfile);
             console.log(receiverId);
             displayMessage(currentUserId, receiverId)
         }
 
         $('#send_message').on("click", function () {
             var new_message = $('#new_message_area').val();
-            writeMessage(currentUserId, receiverId, new_message);
-            toastr["success"]("Message Sent")
+            if (currentUserId && receiverId) {
+                if (new_message) {
+                    writeMessage(currentUserId, receiverId, new_message);
+                }
+                else{
+                    {#toastr.remove();#}
+                    toastr.warning('Empty message', 'Message sent failed!')
+                }
+            }
+            else{
+                {#toastr.remove();#}
+                toastr.error('Chat is not Initiated', 'Message sent failed!')
+            }
         });
     </script>
 {% endblock %}

@@ -4,6 +4,7 @@ from .local_settings import DATABASES
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -147,11 +148,13 @@ LOGIN_REDIRECT_URL = 'home'
 MEDIA_URL = '/files/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "userfiles")
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
-STATIC_ROOT = '/assets/'
-STATIC_ROOT_DIR = os.path.join(BASE_DIR, 'assets')
+# STATIC_ROOT = '/assets/'
+# STATIC_ROOT_DIR = os.path.join(BASE_DIR, 'assets')
 
 # File upload handlers
 FILE_UPLOAD_HANDLERS = [
