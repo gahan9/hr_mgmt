@@ -129,13 +129,16 @@ class ResetPasswordForm(ModelForm):
 
 class EditEmployeeForm(ModelForm):
     """ Edit associated employee profile data of user """
+    user_gender = forms.CharField()
+
     def __init__(self, *args, **kwargs):
         super(EditEmployeeForm, self).__init__(*args, **kwargs)
         self.helper = edit_employee_data_helper
 
     class Meta:
         model = Employee
-        fields = ['alternate_contact_no', 'alternate_email', 'job_title', 'street', 'zip_code', 'city', 'country']
+        fields = ['user', 'user_gender',
+                  'alternate_contact_no', 'alternate_email', 'job_title', 'street', 'zip_code', 'city', 'country']
 
 
 class FileUploadForm(forms.ModelForm):
