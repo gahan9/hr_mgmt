@@ -3,12 +3,9 @@ import time
 from calendar import timegm
 
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
 
 from employee.models import *
 from main.serializers import UserSerializer, CompanySerializer
-
-User = get_user_model()
 
 
 class EmployeeSerializer(serializers.ModelSerializer):

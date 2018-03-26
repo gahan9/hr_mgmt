@@ -1,7 +1,7 @@
 import hashlib
-
+from django import forms
+from django.contrib.auth.hashers import make_password
 from django.db.models import FileField
-from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
@@ -15,6 +15,10 @@ def computeMD5hash(my_string):
     m = hashlib.md5()
     m.update(my_string.encode('utf-8'))
     return m.hexdigest()
+
+
+def set_password_hash(password):
+    return make_password(computeMD5hash(password))
 
 
 class ContentTypeRestrictedFileField(FileField):

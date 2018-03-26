@@ -1,21 +1,16 @@
-import os
-
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.forms import model_to_dict
+from django.utils import timezone
+
+from rest_framework.authtoken.models import Token
+
 from djmoney.models.fields import MoneyField
 
 from employee_management import settings
-
-import firebase_admin
-from firebase_admin import auth, credentials
-from employee_management.settings import FIREBASE_CREDENTIAL_JSON
-
-fs = FileSystemStorage(location='/var/www/html/field_rate/photos')
 
 
 class MyUserManager(UserManager):
@@ -25,24 +20,20 @@ class MyUserManager(UserManager):
             raise ValueError('Users must have an contact number')
         user = self.model(contact_number=contact_number)
         user.set_password(password)
-        if "first_name" in kwargs.keys():
-            user.first_name = kwargs['first_name']
-        if "last_name" in kwargs.keys():
-            user.last_name = kwargs['last_name']
+        user.first_name = kwargs.get('first_name', None)
+        user.last_name = kwargs.get('last_name', None)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, contact_number, password, email, **kwargs):
         """ Creates and saves a superuser with the given contact_number and password. """
-        u = self.create_user(contact_number, password=password, email=email)
+        u = self.create_user(contact_number, password=password, email=email, **kwargs)
         u.is_admin = True
         u.is_staff = True
         u.is_superuser = True
         u.role = 1  # Head HR
-        if "first_name" in kwargs.keys():
-            u.first_name = kwargs['first_name']
-        if "last_name" in kwargs.keys():
-            u.last_name = kwargs['last_name']
+        u.first_name = kwargs.get('first_name', None)
+        u.last_name = kwargs.get('last_name', None)
         u.save(using=self._db)
         return u
 
@@ -61,15 +52,16 @@ class Plan(models.Model):
     )
     plan_validity = models.IntegerField(default=180, help_text="Days after plan expires")  # plan validity days
 
+    @property
     def get_price(self):
         return "{} {}".format(self.plan_price.currency, self.plan_price.amount)
 
+    @property
     def get_plan_details(self):
-        return {'name': self.get_plan_name_display(), 'price': self.get_price(),
-                'period': "{} days".format(self.plan_validity)}
+        return model_to_dict(self)
 
     def __str__(self):
-        return "{}".format(self.get_plan_details())
+        return "{}".format(self.get_plan_details)
 
     @property
     def is_taken_company(self):
@@ -110,17 +102,30 @@ class UserModel(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
     @property
+    def is_hr(self):
+        return bool(self.role >= 2)
+
+    @property
+    def is_owner(self):
+        return bool(self.role >= 1)
+
+    @property
     def get_creator(self):
         if hasattr(self, 'employee'):
+            # get details of creator (HR) if user is employee
             _record_creator = self.employee.added_by
             return {
                 'hr_id': _record_creator.id,
                 'hr_name': _record_creator.first_name,
                 'hr_profile_image': _record_creator.profile_image.url if _record_creator.profile_image else None,
             }
-
         else:
             return model_to_dict(self)
+
+    @property
+    def get_auth_token(self):
+        token, created = Token.objects.get_or_create(user=self)
+        return token
 
     def get_detail(self):
         """
@@ -173,6 +178,9 @@ class ActivityMonitor(models.Model):
 """
 @receiver(post_save, sender=UserModel, dispatch_uid="create_firebase_account")
 def create_firebase_account(sender, instance, created, *args, **kwargs):
+    import firebase_admin
+    from firebase_admin import auth, credentials
+    from employee_management.settings import FIREBASE_CREDENTIAL_JSON
     HOST = "http://{}:8889".format(os.popen('hostname -I').read().strip())
     print("In create firebase account")
     data = {}

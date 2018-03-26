@@ -1,14 +1,13 @@
 from braces.views._access import SuperuserRequiredMixin
+
 from django.contrib import messages
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.http.response import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from rest_framework import viewsets, authentication, status, exceptions
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.authtoken.models import Token
+
+from rest_framework import viewsets
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
@@ -19,7 +18,7 @@ from rest_framework.views import APIView
 from employee.views import get_user_company
 from forms.common import *
 from main.serializers import *
-from main.utility import computeMD5hash
+from main.utility import *
 
 User = get_user_model()
 
@@ -77,7 +76,7 @@ class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
         form_data = form.cleaned_data
         hr = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
                                       first_name=form_data['first_name'], last_name=form_data['last_name'],
-                                      password=make_password(computeMD5hash(form_data['password'])),
+                                      password=set_password_hash(form_data['password']),
                                       is_hr=form_data['role'],
                                       )
         company_obj = Company.objects.create(company_user=hr, name=form_data['name'],
@@ -129,7 +128,7 @@ class PlanSelector(APIView):
                     response_data[field] = self.request.data[field]
         print(response_data)
         if stage == 1:
-            plan_obj = Plan.objects.get(pk=response_data['has_plan'])
+            # plan_obj = Plan.objects.get(pk=response_data['has_plan'])
             # role_level = 1 if plan_obj.plan_name == 2 else 2
             serializer = self.serializer_class(data=response_data)
             serializer.initial_data.update({'role': 2})
@@ -146,8 +145,8 @@ class PlanSelector(APIView):
                 if company_serializer.is_valid():
                     company_serializer.save()
                 else:
-                    messages.error(request,
-                                   message="Error: Something bad happened. Reason: {}".format(company_serializer.errors))
+                    msg = "Error: Something bad happened. Reason: {}".format(company_serializer.errors)
+                    messages.error(request, message=msg)
                     response_data['stage'] -= 1
                     return Response(response_data)
                 response_data['stage'] = 5
@@ -155,7 +154,8 @@ class PlanSelector(APIView):
                 messages.success(request, message="Plan activated Successfully!")
                 return Response(response_data)
             else:
-                messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
+                msg = "Error: Something bad happened. Reason: {}".format(serializer.errors)
+                messages.error(request, message=msg)
                 response_data['stage'] -= 1
                 return Response(response_data)
                 # return HttpResponseRedirect(reverse_lazy('select_plan', kwargs={'stage': 0}))

@@ -1,17 +1,15 @@
+import os
 import codecs
 import csv
-import json
-import os
 from collections import OrderedDict
 
 from braces.views import JSONResponseMixin
 from django.contrib import messages
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -19,8 +17,7 @@ from django.views.generic import TemplateView, FormView
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django_tables2.views import SingleTableView
-from rest_framework.authtoken.models import Token
-from rest_framework.generics import get_object_or_404
+
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -29,7 +26,7 @@ from employee_management.settings import BASE_DIR
 from employee.tables import *
 from employee.serializers import *
 from forms.common import *
-from main.utility import computeMD5hash
+from main.utility import *
 
 
 def get_user_company(user):
@@ -109,6 +106,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
         count = 0
         no_of_user = 0
         failed_user = 0
+        # fieldnames to read from csv file
         fieldnames = ['contact_number', 'first_name', 'last_name', 'email', 'alternate_email',
                       'alternate_contact_no', 'gender', 'job_title', 'street', 'zip_code', 'city', 'country',
                       'role', 'password', 'error_reason']
@@ -116,19 +114,18 @@ class FileUploadView(LoginRequiredMixin, FormView):
             csv_read = csv.DictReader(codecs.iterdecode(user_file, 'utf-8'))
             failure_store_location, file_name = self.server_dump_setup()
             for row in csv_read:
-                password_generated = row['first_name'] + "@" + row['contact_number']
-                if "password" in row.keys():
-                    password = row['password'] if row['password'] else password_generated
-                else:
-                    password = password_generated
+                _contact_number = row.get('contact_number', '')
+                password_generated = row.get('first_name', '') + "@" + _contact_number
+                _pass = row.get('password', None)
+                password = _pass if _pass else password_generated
                 try:
                     user_obj = UserModel.objects.create(
-                        contact_number=row['contact_number'],
-                        password=make_password(computeMD5hash(password)),
-                        email=row['email'],
-                        gender=row['gender'],
-                        first_name=row['first_name'],
-                        last_name=row['last_name'],
+                        contact_number=_contact_number,
+                        password=set_password_hash(password),
+                        email=row.get('email', None),
+                        gender=row.get('gender', 'M'),
+                        first_name=row.get('first_name'),
+                        last_name=row.get('last_name'),
                         role=3  # employee
                     )
                     ActivityMonitor.objects.create(activity_type=0, company_id=current_user_company.id,
@@ -425,7 +422,7 @@ class CreateUserView(LoginRequiredMixin, CreateView):
         set_role = 3 if form_data['role'] < current_user.role else form_data['role']
         user_obj = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
                                             first_name=form_data['first_name'], last_name=form_data['last_name'],
-                                            password=make_password(computeMD5hash(form_data['password'])),
+                                            password=set_password_hash(form_data['password']),
                                             profile_image=self.request.FILES['profile_image'],
                                             role=set_role, has_plan=current_user.has_plan
                                             )

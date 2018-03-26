@@ -1,15 +1,10 @@
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from django.contrib.auth.hashers import make_password
-from django.forms.models import ModelForm
-from django_countries import countries
-from django_countries.fields import LazyTypedMultipleChoiceField
-from django_countries.widgets import CountrySelectWidget
-
 from forms.helpers import *
+
 from main.models import *
 from employee.models import *
-from main.utility import computeMD5hash
+from main.utility import *
 
 
 class LoginForm(AuthenticationForm):
@@ -93,7 +88,7 @@ class CreateUserForm(forms.ModelForm):
         fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'password', 'email', 'role']
 
 
-class EditUserForm(ModelForm):
+class EditUserForm(forms.ModelForm):
     """ Edit employee data of form """
     def __init__(self, *args, **kwargs):
         super(EditUserForm, self).__init__(*args, **kwargs)
@@ -101,7 +96,7 @@ class EditUserForm(ModelForm):
 
     def clean(self):
         if 'password' in self.cleaned_data:
-            password = make_password(computeMD5hash(self.cleaned_data.get('password')))
+            password = set_password_hash(self.cleaned_data.get('password'))
             self.cleaned_data['password'] = password
         return super(EditUserForm, self).clean()
 
@@ -110,7 +105,7 @@ class EditUserForm(ModelForm):
         fields = ['contact_number', 'first_name', 'last_name', 'email', 'profile_image']
 
 
-class ResetPasswordForm(ModelForm):
+class ResetPasswordForm(forms.ModelForm):
     """ Reset Password of user"""
     def __init__(self, *args, **kwargs):
         super(ResetPasswordForm, self).__init__(*args, **kwargs)
@@ -118,7 +113,7 @@ class ResetPasswordForm(ModelForm):
 
     def clean(self):
         if 'password' in self.cleaned_data:
-            password = make_password(computeMD5hash(self.cleaned_data.get('password')))
+            password = set_password_hash(self.cleaned_data.get('password'))
             self.cleaned_data['password'] = password
         return super(ResetPasswordForm, self).clean()
 
@@ -127,7 +122,7 @@ class ResetPasswordForm(ModelForm):
         fields = ['password']
 
 
-class EditEmployeeForm(ModelForm):
+class EditEmployeeForm(forms.ModelForm):
     """ Edit associated employee profile data of user """
     user_gender = forms.CharField()
 
