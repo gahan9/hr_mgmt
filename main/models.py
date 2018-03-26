@@ -6,6 +6,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
+from django.forms import model_to_dict
 from djmoney.models.fields import MoneyField
 
 from employee_management import settings
@@ -108,6 +109,19 @@ class UserModel(AbstractUser):
     USERNAME_FIELD = 'contact_number'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
+    @property
+    def get_creator(self):
+        if hasattr(self, 'employee'):
+            _record_creator = self.employee.added_by
+            return {
+                'hr_id': _record_creator.id,
+                'hr_name': _record_creator.first_name,
+                'hr_profile_image': _record_creator.profile_image.url if _record_creator.profile_image else None,
+            }
+
+        else:
+            return model_to_dict(self)
+
     def get_detail(self):
         """
         :return: details of current user model
@@ -156,6 +170,7 @@ class ActivityMonitor(models.Model):
 
 
 # method for creating user in firebase
+"""
 @receiver(post_save, sender=UserModel, dispatch_uid="create_firebase_account")
 def create_firebase_account(sender, instance, created, *args, **kwargs):
     HOST = "http://{}:8889".format(os.popen('hostname -I').read().strip())
@@ -181,3 +196,4 @@ def create_firebase_account(sender, instance, created, *args, **kwargs):
         pass
         # user_create_response = auth.create_user(**data)
         # print(user_create_response)
+"""

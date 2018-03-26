@@ -69,7 +69,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.renderers.AdminRenderer',
     # ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
+    'PAGE_SIZE': 20,
     'EXCEPTION_HANDLER': 'employee.utils.custom_exception_handler',
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }

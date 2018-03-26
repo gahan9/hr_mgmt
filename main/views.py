@@ -28,18 +28,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by('employee__company_name', 'role')
 
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        if instance.password:
-            instance.password = make_password(instance.password)
-            instance.save()
-
-    def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        if 'password' in kwargs:
-            kwargs['password'] = make_password(kwargs['password'])
-        return self.update(request, *args, **kwargs)
-
     def get_queryset(self):
         current_user = self.request.user
         if not current_user.is_superuser:
@@ -176,7 +164,6 @@ class PlanSelector(APIView):
 
 class CustomAuthentication(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        # request.data['password'] = computeMD5hash(request.data['password'])
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -184,18 +171,16 @@ class CustomAuthentication(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         response_data = user.get_detail()
         response_data['token'] = token.key
-        # print(dir(user.profile_image))
-        # print(user.profile_image.url)
         response_data['profile_image'] = ''.join(
             ['http://', get_current_site(request).domain, user.profile_image.url]
         ) if user.profile_image else ''
         try:
-            user_head = user.employee.added_by
-            response_data['hr_id'] = user_head.id
-            response_data['hr_name'] = user_head.first_name
-            response_data['hr_profile_image'] = ''.join(
-                ['http://', get_current_site(request).domain, user_head.profile_image.url]
-            ) if user_head.profile_image else ''
+            _creator_hr = user.get_creator
+            if _creator_hr['hr_profile_image']:
+                _creator_hr['hr_profile_image'] = ''.join(
+                    ['http://', get_current_site(request).domain, _creator_hr['hr_profile_image']]
+                )
+            response_data.update(_creator_hr)
             return Response(response_data)
         except Exception as e:
             print("Auth Exception {} for user".format(e))

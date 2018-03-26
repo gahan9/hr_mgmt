@@ -9,19 +9,14 @@ from employee.viewsets import *
 
 # register api with default router
 router = routers.DefaultRouter()
-# router.register(r'custom-auth', views.CustomAuthentication)
-router.register(r'users', views.UserViewSet)
-router.register(r'employee', EmployeeViewSet)
-router.register(r'plans', views.PlanViewSet)
-router.register(r'company', views.CompanyViewSet)
-router.register(r'question_database', QuestionViewSet)
-# router.register(r'answers/mcq', MCQAnswerViewSet)
-# router.register(r'answers/rating', RatingAnswerViewSet)
-# router.register(r'answers/text', TextAnswerViewSet)
-router.register(r'survey/response', SurveyResponseViewSet)
-router.register(r'survey', SurveyViewSet)
-router.register(r'news_feed', NewsFeedViewSet)
-# router.register(r'survey/{pk}/question/$', QuestionSet)
+router.register(r'users', views.UserViewSet, base_name='usermodel')
+router.register(r'employee', EmployeeViewSet, base_name='employee')
+router.register(r'plans', views.PlanViewSet, base_name='plans')
+router.register(r'company', views.CompanyViewSet, base_name='company')
+router.register(r'question_database', QuestionViewSet, base_name='questiondb')
+router.register(r'survey/response', SurveyResponseViewSet, base_name='surveyresponse')
+router.register(r'survey', SurveyViewSet, base_name='survey')
+router.register(r'news_feed', NewsFeedViewSet, base_name='newsfeed')
 
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
