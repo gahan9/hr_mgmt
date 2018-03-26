@@ -6,17 +6,16 @@ def custom_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
     try:
-        errors = ["{} : {}".format(field, ", ".join(value)) for field, value in response.data.items()]
+        errors = ["{} : {}".format(field, value) for field, value in response.data.items()]
         error_string = ", ".join(errors)
-        # response_dict = {'detail': ", ".join(errors)}
-        # print("--------------------", response_dict)
     except Exception as e:
         error_string = "Unknown Exception: {}".format(e)
-    # Now add the HTTP status code to the response.
 
     if response is not None:
+        # add the HTTP status code to the response.
         response.data['status'] = response.status_code
         if "non_field_errors" in response.data:
+            # merge any non_field_errors in response
             response.data['detail'] = ", ".join(response.data['non_field_errors'])
         else:
             response.data['detail'] = error_string

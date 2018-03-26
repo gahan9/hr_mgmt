@@ -25,6 +25,15 @@ User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    API ViewSet to get list of user, modify and update their profile
+    ---
+
+    get user detail
+    root: all user
+    hr: all user within it's company
+    employee: only self profile
+    """
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by('employee__company_name', 'role')
 
@@ -32,16 +41,18 @@ class UserViewSet(viewsets.ModelViewSet):
         current_user = self.request.user
         if not current_user.is_superuser:
             if current_user.role == 3:
+                # return detail of only itself if user role is employee
                 queryset = UserModel.objects.filter(id=current_user.id)
                 return queryset
             elif current_user.role < 3:
+                # return detail of all user within its company if user role is hr
                 queryset = UserModel.objects.filter(
                     employee__company_name=get_user_company(current_user))
                 # print(queryset)
                 return queryset
         else:
-            queryset = UserModel.objects.all()
-            return queryset
+            # return list of all user if superuser is logged in
+            return self.queryset
 
 
 class PlanViewSet(viewsets.ModelViewSet):
@@ -52,6 +63,7 @@ class PlanViewSet(viewsets.ModelViewSet):
 class CompanyViewSet(viewsets.ModelViewSet):
     serializer_class = CompanySerializer
     queryset = Company.objects.all()
+    permission_classes = [IsAdminUser]
 
 
 class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
@@ -74,7 +86,6 @@ class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
                                              country=form_data['country'])
         messages.success(self.request, "HR {} with contact_number {} created successfully.".format(hr.first_name, hr.contact_number))
         return HttpResponseRedirect(reverse_lazy('create_company'))
-        # return super(CreateCompanyView, self).form_valid(form)
 
 
 class PlanSelector(APIView):
