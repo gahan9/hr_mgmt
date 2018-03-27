@@ -5,18 +5,21 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.test import TestCase
+from selenium import webdriver
 
 from employee.models import Employee
 from main.models import Company, ActivityMonitor
 from main.utility import set_password_hash
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.webdriver.firefox.webdriver import WebDriver
+# from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 User = get_user_model()
 
 
 class DashboardTest(TestCase):
     fixtures = ['dump.json']
+
     def setUpTestData(self):
         self.number = random.randint(1000000000, 9999999999)
         self.name = self.random_name()
@@ -66,16 +69,14 @@ class DashboardTest(TestCase):
 
 
 class MySeleniumTests(StaticLiveServerTestCase):
-    fixtures = ['auth.json']
-
-    def setUp(self):
-        settings.DEBUG = True
+    fixtures = ['main.json']
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        settings.DEBUG = True
         cls.selenium = WebDriver()
-        cls.selenium.implicitly_wait(10)
+        cls.selenium.implicitly_wait(15)
 
     @classmethod
     def tearDownClass(cls):
@@ -85,8 +86,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
     def test_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/login/'))
         username_input = self.selenium.find_element_by_name("username")
-        username_input.send_keys('8888888802')
+        username_input.send_keys('9999999901')
         password_input = self.selenium.find_element_by_name("password")
         password_input.send_keys('1')
         self.selenium.find_element_by_id('login').click()
-        time.sleep(30)
+        time.sleep(5)

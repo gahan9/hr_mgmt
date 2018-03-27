@@ -31,8 +31,8 @@ urlpatterns += [
 ]
 # survey section
 urlpatterns += [
-    url(r'^add_survey/$', views.AddSurvey.as_view(), name="add_survey"),
-    url(r'^add_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.AddSurvey.as_view(), name="add_survey"),
+    # url(r'^add_survey/$', views.AddSurvey.as_view(), name="add_survey"),
+    # url(r'^add_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.AddSurvey.as_view(), name="add_survey"),
     url(r'^add_survey/add_new_question/', views.AddQuestion.as_view(), name="add_new_question"),
     url(r'^create_survey/$', views.CreateSurvey.as_view(), name="create_survey"),
     url(r'^create_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.CreateSurvey.as_view(), name="create_survey"),

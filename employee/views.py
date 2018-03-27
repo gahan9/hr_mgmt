@@ -147,8 +147,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
                         writer.writeheader()
                     count += 1
                     print("duplicate_error-----> {}".format(duplicate_error))
-                    row[
-                        'error_reason'] = "Unable to add company because User with the same email already exist more-detail:{}".format(
+                    row['error_reason'] = "Unable to add company because User with the same detail already exist more-detail:{}".format(
                         duplicate_error)
                     writer.writerow(row)
                     csv_file.close()
@@ -163,7 +162,8 @@ class FileUploadView(LoginRequiredMixin, FormView):
                     row['error_reason'] = unknown_exception
                     writer.writerow(row)
             if failed_user > 0:
-                messages.error(request, "Error: {} user(s) failed to create from {}".format(failed_user, user_file))
+                msg = "Error: {} user(s) failed to create from {}".format(failed_user, user_file)
+                messages.error(request, msg)
                 response = HttpResponse(open(failure_store_location, "rb"), content_type='text/csv')
                 response['Content-Disposition'] = "attachment; filename={filename}".format(
                     filename=file_name
@@ -173,11 +173,12 @@ class FileUploadView(LoginRequiredMixin, FormView):
                 return response
         except Exception as file_error:
             print("File-Error-----> {}".format(file_error))
-            messages.error(request,
-                           "Error: Invalid file type or header : '{}' . Please upload valid csv file".format(user_file))
+            msg = "Error: Invalid file type or header : '{}' . Please upload valid csv file".format(user_file)
+            messages.error(request, msg)
             # return HttpResponseRedirect("")
         if no_of_user > 0:
-            messages.success(request, "{} user(s) created successfully".format(no_of_user))
+            msg = "{} user(s) created successfully".format(no_of_user)
+            messages.success(request, msg)
         return super(FileUploadView, self).post(request, *args, **kwargs)
 
 
@@ -243,13 +244,13 @@ class EmployeeDataList(LoginRequiredMixin, AddFormMixin, SingleTableView):
 
     def get_queryset(self):
         current_user = self.request.user
-        try:
-            company_id = Company.objects.get(id=Employee.objects.get(user=current_user).company_name.id)
-        except Exception as e:
+        if hasattr(current_user, 'employee'):
+            company_id = Company.objects.get(company_user=current_user.employee.added_by)
+        else:
             # if user in this exception means user itself a company-owner
-            print(e)
             company_id = Company.objects.get(company_user=current_user)
         if self.queryset is None:
+            # returns queryset for user list with equal or lower role
             self.queryset = Employee.objects.filter(company_name=company_id, user__role__gte=current_user.role)
         return super(EmployeeDataList, self).get_queryset()
 
@@ -306,20 +307,27 @@ class AddQuestion(APIView, LoginRequiredMixin):
         if serializer.is_valid():
             que_obj = serializer.save()
             que_obj.asked_by.add(current_user)  # add user created in field
+            """
+            # Below block is disabled.. it is for choosing various answer type of question
             if content_object:
                 que_obj.content_object = content_object
+            """
             que_obj.save()
             message = "question created"
             messages.success(request, message=message)
         else:
+            """
+            # Below block is disabled.. it is for choosing various answer type of question
             if content_object:
                 print("deleting object....")
                 content_object.delete()
+            """
             messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
         return Response({'serializer': serializer, 'style': self.style})
 
 
 class AddSurvey(LoginRequiredMixin, APIView):
+    # NOTE: depricated method.... to be removed soon.....
     login_url = reverse_lazy('login')
     # template_name = 'company/add_survey.html'
     template_name = 'company/_add_survey.html'
@@ -327,30 +335,35 @@ class AddSurvey(LoginRequiredMixin, APIView):
     style = {'template_pack': 'rest_framework/vertical/'}
 
     def get(self, request, **kwargs):
-        step = int(kwargs['step']) if 'step' in kwargs else 0
-        survey_id = int(kwargs['survey_id']) if 'survey_id' in kwargs else None
+        _current_user = request.user  # current logged in user
+        _user_company = get_user_company(_current_user)  # get current user's company
+        step = int(kwargs.get('step', 0))  # get current step to proceed
+        survey_id = int(kwargs.get('survey_id', 0))
+        # filter question set for created by own and benchmark question
         question_set = QuestionDB.objects.filter(
-            asked_by__rel_company_user=get_user_company(request.user)) | QuestionDB.objects.filter(benchmark=True)
+            Q(asked_by__rel_company_user=_user_company) | Q(benchmark=True))
         question_id = [i.id for i in question_set] if question_set else None
+
         if survey_id:
             instance = Survey.objects.get(id=survey_id)
             serializer = SurveySerializer(instance, context={'request': request})
         else:
             serializer = SurveySerializer()
+
+        # set up default response
+        _response_data = {'serializer'  : serializer, 'style': self.style, 'step': step,
+                          'survey_id'   : survey_id, 'step_range': range(step),
+                          'question_set': question_set, 'que_id': question_id
+                          }
         if not step:  # initialize survey
-            return Response({'serializer': serializer, 'style': self.style, 'step': step,
-                             'survey_id': survey_id, 'step_range': range(step),
-                             'question_set': question_set, 'que_id': question_id
-                             })
+            return Response(_response_data)
         elif step == 2:  # handle employee group entry
-            return Response({'serializer': serializer, 'style': self.style,
-                             'step': step, 'survey_id': survey_id, 'question_set': question_set,
-                             'que_id': question_id, 'step_range': range(step)})
+            return Response(_response_data)
         elif step == 3:  # handle question entry
             serializer = QuestionSerializer()
-            flag = "add_new" if 'add_new' in kwargs else None
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
-                             'question_set': question_set, 'flag': flag, 'que_id': question_id, 'step_range': range(step)})
+            _response_data['serializer'] = serializer
+            _response_data['flag'] = "add_new" if 'add_new' in kwargs else None
+            return Response(_response_data)
         elif step == 4:
             try:
                 instance.start_date = default_start_time()
@@ -358,10 +371,9 @@ class AddSurvey(LoginRequiredMixin, APIView):
                 serializer = SurveySerializer(instance, context={'request': request})
             except NameError:
                 return HttpResponse("Don't be over smart...")
-            return Response({'serializer': serializer, 'style': self.style, 'step': step, 'survey_id': survey_id,
-                             'step_range': range(step), 'question_set': question_set, 'que_id': question_id})
-        return Response({'serializer': serializer, 'style': self.style, 'question_set': question_set, 'que_id': question_id,
-                         'step': step, 'survey_id': survey_id, 'step_range': range(step)})
+            _response_data['serializer'] = serializer
+            return Response(_response_data)
+        return Response(_response_data)
 
     def post(self, request, **kwargs):
         print(kwargs)
@@ -437,13 +449,13 @@ class CreateUserView(LoginRequiredMixin, CreateView):
                                 city=form_data['city'], country=form_data['country'],
                                 added_by=current_user
                                 )
-        messages.success(self.request,
-                         "HR {} {} created successfully.".format(user_obj.first_name, user_obj.last_name))
+        _msg = "User {} created successfully.".format(user_obj.get_full_name())
+        messages.success(self.request, _msg)
         return HttpResponseRedirect(reverse_lazy('create_user'))
 
     def form_invalid(self, form):
-        msg = "Error: invalid data... {}".format(form.errors)
-        messages.error(self.request, msg)
+        _msg = "Error: invalid data... {}".format(form.errors)
+        messages.error(self.request, _msg)
         return HttpResponseRedirect(reverse_lazy('create_user'))
 
 
@@ -470,8 +482,8 @@ class EditEmployeeView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         user_object = Employee.objects.get(id=self.kwargs['pk']).user
         company_id = get_user_company(self.request.user).id
         ActivityMonitor.objects.create(activity_type=1, company_id=company_id, status=False,
-                                       performed_by=self.request.user.get_detail(),
-                                       affected_user=user_object.get_detail())
+                                       performed_by=self.request.user.detail,
+                                       affected_user=user_object.detail)
         return super(EditEmployeeView, self).form_invalid(form)
 
 
@@ -494,11 +506,11 @@ class EditUserView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def form_valid(self, form, **kwargs):
         current_user = self.request.user
         user_object = UserModel.objects.get(id=self.kwargs['pk'])
-        company_id = get_user_company(current_user).id
+        company = get_user_company(current_user)
         activity_obj = ActivityMonitor.objects.create(activity_type=1,
-                                                      company_id=company_id,
-                                                      performed_by=current_user.get_detail(),
-                                                      affected_user=user_object.get_detail())
+                                                      company_id=company.id,
+                                                      performed_by=current_user.detail,
+                                                      affected_user=user_object.detail)
         return super(EditUserView, self).form_valid(form)
 
 
@@ -519,10 +531,9 @@ class EmployeeDeleteView(LoginRequiredMixin, DeleteView):
         del_msg = "{}".format(value_user)
         activity_obj = ActivityMonitor.objects.create(remarks=del_msg, activity_type=2,
                                                       company_id=company_id,
-                                                      performed_by=request.user.get_detail(),
-                                                      affected_user=user_object.get_detail())
-        print(activity_obj)
-        message = 'User: {} (M: {}) deleted successfully'.format(user_object.first_name, user_object.contact_number)
+                                                      performed_by=request.user.detail,
+                                                      affected_user=user_object.detail)
+        message = 'User: {} (M: {}) deleted successfully'.format(user_object.get_full_name(), user_object.contact_number)
         messages.success(request, message)
         return super(EmployeeDeleteView, self).delete(request, *args, **kwargs)
 
@@ -545,17 +556,6 @@ class ActivityMonitorView(LoginRequiredMixin, SingleTableView):
         return super(ActivityMonitorView, self).get_queryset()
 
 
-class QuestionAutocomplete(object):
-    def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated():
-            return QuestionDB.objects.none()
-        qs = QuestionDB.objects.all()
-        if self.q:
-            qs = qs.filter(question__istartswith=self.q)
-        return qs
-
-
 class PasswordResetView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     login_url = reverse_lazy('login')
     template_name = 'company/edit_user.html'
@@ -570,8 +570,8 @@ class PasswordResetView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         company_id = get_user_company(current_user).id
         activity_obj = ActivityMonitor.objects.create(activity_type=1, remarks="Password Changed",
                                                       company_id=company_id,
-                                                      performed_by=self.request.user.get_detail(),
-                                                      affected_user=user_object.get_detail())
+                                                      performed_by=self.request.user.detail,
+                                                      affected_user=user_object.detail)
         return super(PasswordResetView, self).form_valid(form)
 
 
@@ -585,8 +585,9 @@ class NewsFeedManager(LoginRequiredMixin, AddFormMixin, SingleTableView):
     ordering = ['-date_created']
 
     def get_queryset(self):
-        if not self.request.user.is_superuser:
-            self.queryset = self.model.objects.filter(created_by=self.request.user)
+        _current_user = self.request.user
+        if not _current_user.is_superuser:
+            self.queryset = self.model.objects.filter(created_by=_current_user)
         else:
             self.queryset = self.model.objects.all()
         return super(NewsFeedManager, self).get_queryset()
@@ -622,7 +623,6 @@ class NewsFeedDeleteView(LoginRequiredMixin, DeleteView):
     """
     login_url = reverse_lazy('login')
     model = NewsFeed
-    success_message = "'%(title)s'  deleted..."
     success_url = reverse_lazy("manage_news_feed")
 
     def delete(self, request, *args, **kwargs):
@@ -646,7 +646,6 @@ class SurveyDeleteView(LoginRequiredMixin, DeleteView):
     """
     login_url = reverse_lazy('login')
     model = Survey
-    success_message = "'%(name)s'  deleted..."
     success_url = reverse_lazy("survey_manage")
 
     def delete(self, request, *args, **kwargs):

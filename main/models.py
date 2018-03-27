@@ -166,6 +166,13 @@ class UserModel(AbstractUser):
         """
         return {'id': self.id, 'contact_number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
 
+    @property
+    def detail(self):
+        """
+        :return: details of current user model
+        """
+        return {'id': self.id, 'contact_number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
+
     def __str__(self):
         return "{}- {}".format(self.contact_number, self.first_name)
 

@@ -9,13 +9,13 @@ from main.utility import *
 
 class LoginForm(AuthenticationForm):
     """Form to allow user to log in to system"""
-    username = forms.CharField(label="Contact Number", max_length=30,
+    username = forms.CharField(label="Contact Number", max_length=254,
                                widget=forms.TextInput(
                                    attrs={'class': 'form-control', 'type': 'text',
                                           'aria-describedby': "emailHelp",
                                           'id': 'email', 'name': 'email',
                                           'placeholder': 'Enter Contact Number'}))
-    password = forms.CharField(label="Password", max_length=30,
+    password = forms.CharField(label="Password", max_length=254,
                                widget=forms.TextInput(
                                    attrs={'class': 'form-control',
                                           'name': 'password', 'id': 'password',
