@@ -102,6 +102,39 @@ class UserModel(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
     @property
+    def has_profile_image(self):
+        return bool(self.profile_image)
+
+    @property
+    def has_subscription(self):
+        return bool(self.has_plan)
+
+    @property
+    def subscribed_since(self):
+        _now = timezone.now()
+        if self.is_hr:
+            return _now - self.registration_date
+        elif hasattr(self, 'employee'):
+            return _now - self.employee.added_by.registration_date
+        else:
+            return False
+
+    @property
+    def get_plan_validity(self):
+        return self.has_plan
+
+    @property
+    def has_active_subscription(self):
+        if self.has_subscription:
+            if self.is_hr or hasattr(self, 'employee'):
+                if self.subscribed_since:
+                    return bool(self.has_plan.plan_validity >= self.subscribed_since)
+            else:
+                return False
+        else:
+            return False
+
+    @property
     def is_hr(self):
         return bool(self.role >= 2)
 
