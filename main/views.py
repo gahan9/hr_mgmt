@@ -3,6 +3,7 @@ from braces.views._access import SuperuserRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q
 from django.http.response import HttpResponseRedirect, Http404
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
@@ -38,20 +39,19 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         current_user = self.request.user
-        if not current_user.is_superuser:
-            if current_user.role == 3:
-                # return detail of only itself if user role is employee
-                queryset = UserModel.objects.filter(id=current_user.id)
-                return queryset
-            elif current_user.role < 3:
-                # return detail of all user within its company if user role is hr
-                queryset = UserModel.objects.filter(
-                    employee__company_name=get_user_company(current_user))
-                # print(queryset)
-                return queryset
-        else:
+        _pk = self.kwargs.get('pk', None)
+        if hasattr(current_user, 'employee'):
+            queryset = self.queryset.filter(id=current_user.id)
+        elif current_user.is_hr:
+            # get list of all user under hr including hr itself
+            queryset = self.queryset.filter(Q(employee__company_name__company_user=current_user)
+                                            | Q(id=current_user.id))
+            if _pk:
+                queryset = queryset.filter(pk=_pk)
+        elif current_user.is_superuser:
             # return list of all user if superuser is logged in
-            return self.queryset
+            queryset = self.queryset.filter(pk=_pk) if _pk else self.queryset
+        return queryset
 
 
 class PlanViewSet(viewsets.ModelViewSet):
