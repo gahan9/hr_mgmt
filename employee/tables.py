@@ -24,7 +24,7 @@ class EmployeeTable(tables.Table):
     delete = tables.TemplateColumn(
         template_code="""<form action="{% url 'delete_user' pk=record.user.pk %}" method="POST"> {% csrf_token %}
                             <input class="btn btn-default btn-danger" type="submit" value="Delete"/>
-                        </form>""")
+                        </form>""", orderable=False)
 
     class Meta:
         model = Employee
@@ -71,7 +71,7 @@ class SurveyTable(tables.Table):
     delete = tables.TemplateColumn("""{% load static %}
         <form action="{% url 'delete_survey' pk=record.id %}" method="POST"> {% csrf_token %}
             <input class="btn btn-default btn-danger" type="submit" value="Delete">            </input>
-        </form>""")
+        </form>""", orderable=False)
 
     class Meta:
         model = Survey
@@ -88,7 +88,7 @@ class NewsFeedTable(tables.Table):
     delete = tables.TemplateColumn("""{% load static %}
             <form action="{% url 'delete_news_feed' pk=record.id %}" method="POST"> {% csrf_token %}
                 <input class="btn btn-default btn-danger" type="submit" value="Delete">            </input>
-            </form>""")
+            </form>""", orderable=False)
 
     class Meta:
         model = NewsFeed
