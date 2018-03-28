@@ -1,6 +1,8 @@
 import ast
+from calendar import timegm
 from datetime import datetime, timedelta
 
+import time
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -123,15 +125,66 @@ class Survey(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
+    @property
     def next_step(self):
         return self.steps + 1
 
+    @property
+    def start_time(self):
+        return timegm(self.start_date.utctimetuple())
+
+    @property
+    def end_time(self):
+        return timegm(self.end_date.utctimetuple())
+
+    @property
+    def is_active(self):
+        return bool(self.start_time <= time.time() <= self.end_time)
+
+    @property
+    def get_response(self):
+        return SurveyResponse.objects.filter(related_survey=self)
+
+    @property
+    def get_flat_answers(self):
+        return self.get_response.values_list('answers', flat=True)
+
+    @property
+    def score_response(self):
+        _temp_dict = {}
+        for _response in self.get_flat_answers:
+            for _question in _response:
+                # question_instance = QuestionDB.objects.get(id=_question)
+                if _question in _temp_dict:
+                    _temp_dict[_question]['rating'] += _response[_question]['r']
+                    _temp_dict[_question]['total_responses'] += 1
+                else:
+                    _temp_dict[_question] = {} if _question not in _temp_dict else _temp_dict[_question]
+                    # print(_response[_question])
+                    _temp_dict[_question]['rating'] = _response[_question]['r']
+                    _temp_dict[_question]['total_responses'] = 1
+        return _temp_dict
+
+    @property
+    def benchmark(self):
+        _response_dict = {}
+        for i, j in self.score_response.items():
+            question_instance = QuestionDB.objects.get(id=int(i))
+            j.update({
+                'average_rating': j['rating'] / j['total_responses'],
+                'question_title': question_instance.question,
+                'rate_scale': question_instance.options,
+            })
+            _response_dict[int(i)] = j
+        return _response_dict
+
+    @property
     def get_question(self):
         return [p.question for p in self.question.all()]
 
     @property
     def total_question(self):
-        return len(self.get_question())
+        return len(self.question.all())
 
     def __str__(self):
         return "{1}- {0}".format(self.name, self.id)
@@ -144,6 +197,12 @@ class SurveyResponse(models.Model):
     complete = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "{} - {}".format(self.related_survey, self.answers)
+
+    class Meta:
+        verbose_name_plural = "Survey Response"
 
 
 class FileUpload(models.Model):

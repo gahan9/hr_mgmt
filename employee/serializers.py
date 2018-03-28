@@ -128,8 +128,15 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     current_time = serializers.SerializerMethodField(read_only=True)
     total_question = serializers.SerializerMethodField(read_only=True)
     responded = serializers.SerializerMethodField(required=False)
-    start_time = serializers.SerializerMethodField(read_only=True)
-    end_time = serializers.SerializerMethodField(read_only=True)
+    benchmark = serializers.SerializerMethodField(required=False, read_only=True)
+
+    def get_benchmark(self, obj):
+        current_user = self.context['request'].user
+        response_data = {}
+        if current_user.is_hr:
+            return obj.benchmark
+        else:
+            return response_data
 
     def get_responded(self, obj):
         """ Get if user has already responded for this survey object or not """
@@ -141,17 +148,11 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         else:
             return False
 
-    def get_start_time(self, obj):
-        return timegm(obj.start_date.utctimetuple())
-
-    def get_end_time(self, obj):
-        return timegm(obj.end_date.utctimetuple())
-
     def get_current_time(self, obj):
         return time.time()
 
     def get_total_question(self, obj):
-        return len(obj.question.all())
+        return obj.total_question
 
     def create(self, validated_data):
         """
@@ -161,12 +162,6 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         """
         requested_by = self.context['request'].user
         validated_data['created_by'] = requested_by
-        # print(validated_data)
-        # steps = 1
-        # steps = 2 if 'employee_group' in validated_data and validated_data['employee_group'] else 1
-        # steps = 3 if 'question' in validated_data and validated_data['question'] else 2
-        # if 'start_date' in validated_data and 'end_date' in validated_data:
-        #     steps = 4 if validated_data['start_date'] and validated_data['end_date'] else 3
         que_lis = validated_data.pop('question') if 'question' in validated_data else []
         existing_survey_instance = Survey.objects.filter(**validated_data)
         if existing_survey_instance:
@@ -185,8 +180,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             if existing_question:
                 question_instance = existing_question[0]
             else:
-                question_instance = QuestionDB(**item)
-                question_instance.save()
+                question_instance, created = QuestionDB.objects.get_or_create(**item)
             question_instance.asked_by.add(requested_by)
             survey_instance.question.add(question_instance)
         return survey_instance
@@ -202,18 +196,13 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
             if not attr == "question":
                 setattr(instance, attr, value)
         instance.save()
-        # steps = 1
-        # steps = 2 if instance.employee_group else steps
-        # steps = 3 if steps == 2 and instance.question else steps
-        # steps = 4 if steps == 3 and instance.start_date and instance.end_date else steps
-        # instance.steps = steps
         return instance
 
     class Meta:
         model = Survey
         fields = ["url", "id", "name", "responded", "employee_group", "question", "steps", "complete",
-                  "start_date", "end_date", "created_by",
-                  "start_time", "end_time",
+                  "start_date", "end_date", "created_by", "benchmark",
+                  "start_time", "end_time", "is_active",
                   "current_time", "total_question",
                   ]
 

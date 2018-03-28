@@ -91,15 +91,17 @@ class SurveyViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         current_user = self.request.user
-        if not current_user.is_superuser:
-            if current_user.role in [1, 2]:
-                queryset = Survey.objects.filter(created_by=current_user)
-            else:
-                queryset = Survey.objects.filter(created_by__rel_company_user=current_user.employee.company_name, complete=True)
-            return queryset
+        survey_id = self.request.query_params.get('survey_id', None)
+        if current_user.is_superuser:
+            queryset = self.queryset
         else:
-            queryset = Survey.objects.all()
+            if hasattr(current_user, 'employee'):
+                queryset = self.queryset.filter(created_by__rel_company_user=current_user.employee.company_name,
+                                                complete=True)
+            else:
+                queryset = self.queryset.filter(created_by=current_user)
             return queryset
+        return queryset
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -113,11 +115,6 @@ class SurveyViewSet(viewsets.ModelViewSet):
             instance.save()
         else:
             return super(SurveyViewSet, self).update(request, *args, **kwargs)
-        # print(data)
-        # serializer = self.get_serializer(instance, data=data, partial=partial)
-        # print(serializer)
-        # serializer.is_valid(raise_exception=True)
-        # self.perform_update(serializer)
 
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
@@ -134,12 +131,16 @@ class SurveyResponseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         _current_user = self.request.user
+        survey_id = self.request.query_params.get('survey_id', None)
         if _current_user.is_superuser:
-            return self.queryset
+            queryset = self.queryset
         elif _current_user.is_hr:
-            return self.queryset.filter(related_user__employee__added_by=_current_user)
+            queryset = self.queryset.filter(related_user__employee__added_by=_current_user)
         else:
-            return self.queryset.filter(related_user=_current_user)
+            queryset = self.queryset.filter(related_user=_current_user)
+        if survey_id:
+            queryset = queryset.filter(related_survey__id=survey_id)
+        return queryset
 
 
 class NewsFeedViewSet(viewsets.ModelViewSet):
