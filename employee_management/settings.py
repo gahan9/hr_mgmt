@@ -87,6 +87,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main.context_processors.site_detail',
             ],
         },
     },
@@ -169,6 +170,11 @@ COUNTRIES_ONLY = ['AU', 'IN', 'NZ', 'US']
 
 # Custom User Model
 AUTH_USER_MODEL = 'main.UserModel'
+
+# Site Detail
+SITE_NAME = "Field Rate"
+DOMAIN = "192.168.5.47:8889"
+API_URL = "/api/v1/survey/"
 
 # Firebase Credential
 FIREBASE_CREDENTIAL_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'serviceAccountKey.json')

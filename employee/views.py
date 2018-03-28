@@ -53,7 +53,6 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        context['users'] = UserModel.objects.all()
         return context
 
 

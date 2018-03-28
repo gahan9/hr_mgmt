@@ -2,13 +2,16 @@
 {% load i18n %}
 
 {% block branding %}
-    <a class="navbar-brand" rel="nofollow" href="/api/">
+    <a class="navbar-brand" rel="nofollow" href="{% url 'api-root' %}">
+        {{ SITE_NAME }}
+    </a>
+    <a class="navbar-brand" rel="nofollow" href="{% url 'api-root' %}">
         {% trans 'Api-Home' %}
     </a>
     <a class="navbar-brand" rel="nofollow" href="/">
         {% trans 'View-site' %}
     </a>
-    <a class="navbar-brand" rel="nofollow" href="/admin/">
+    <a class="navbar-brand" rel="nofollow" href="{% url 'admin:index' %}">
         {% trans 'Admin' %}
     </a>
 {% endblock %}

@@ -227,7 +227,7 @@ class JSONSerializerField(serializers.Field):
         return value
 
 
-class SurveyResponseSerializer(serializers.ModelSerializer):
+class SurveyResponseSerializer(serializers.HyperlinkedModelSerializer):
     """ Serializer to take response of Survey """
     answers = serializers.JSONField()
     survey_id = serializers.PrimaryKeyRelatedField(source='related_survey', queryset=Survey.objects.filter(complete=True))
@@ -275,3 +275,4 @@ class NewsFeedSerializer(serializers.ModelSerializer):
         fields = ["url", "id", "title", "feed", "priority", "created_by", "date_created", "date_updated",
                   "date_created_epoch", "date_updated_epoch"]
         read_only_fields = ('created_by', 'priority')
+

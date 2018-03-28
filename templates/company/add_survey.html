@@ -11,7 +11,7 @@
 {% block content %}
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">FieldRate</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">{{ SITE_NAME }}</a></li>
         <li class="breadcrumb-item"><a href="{% url 'survey_manage' %}">Manage Surveys</a></li>
         <li class="breadcrumb-item active">({{ survey_id }}: {{ step }})</li>
     </ol>
@@ -165,7 +165,7 @@
         console.log(tabCounter);
         var csrftoken = Cookies.get('csrftoken');
         var user_token = '{{ user.auth_token.key }}';
-        var default_api_url = '/api/v1/survey/';
+        var default_api_url = '{{ API_URL }}';
         var wizard_url = "";
 
         function DivChanger(flag) {
@@ -230,13 +230,13 @@
                 beforeSend: setCSRF,
                 success: function (responseObj) {
                     {#var responseData = JSON.parse(responseObj);#}
-                    console.log("Saved! It worked.");
-                    console.log(responseObj);
-                    console.log(wizard_url);
+                    {#console.log("Saved! It worked.");#}
+                    {#console.log(responseObj);#}
+                    {#console.log(wizard_url);#}
                     wizard_url = responseObj.url;
-                    console.log(responseObj.id);
-                    console.log(responseObj.name);
-                    console.log(wizard_url);
+                    {#console.log(responseObj.id);#}
+                    {#console.log(responseObj.name);#}
+                    {#console.log(wizard_url);#}
                     localStorage.setItem("obj", responseObj);
                     localStorage.setItem("wizard_url", responseObj.url);
                     localStorage.setItem("survey_id", responseObj.id);

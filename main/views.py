@@ -51,6 +51,8 @@ class UserViewSet(viewsets.ModelViewSet):
         elif current_user.is_superuser:
             # return list of all user if superuser is logged in
             queryset = self.queryset.filter(pk=_pk) if _pk else self.queryset
+        else:
+            queryset = self.queryset.filter(id=current_user.id)
         return queryset
 
 
@@ -180,7 +182,7 @@ class CustomAuthentication(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        response_data = user.get_detail()
+        response_data = user.detail
         response_data['token'] = token.key
         response_data['profile_image'] = ''.join(
             ['http://', get_current_site(request).domain, user.profile_image.url]

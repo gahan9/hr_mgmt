@@ -19,7 +19,8 @@ class Base64ImageField(serializers.ImageField):
             # base64 encoded image - decode
             format, imgstr = data.split(';base64,')  # format ~= data:image/X,
             ext = format.split('/')[-1]  # guess file extension
-
+            with open('file.txt', 'w') as f:
+                f.write(data)
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
         return super(Base64ImageField, self).to_internal_value(data)
 

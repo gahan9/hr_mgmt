@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
     url(r'^api/', RedirectView.as_view(url='/api/v1/')),
     url(r'^login/', django_login, {'template_name': 'common/login.html', 'authentication_form': LoginForm}, name='login'),
-    url(r'^logout/', django_logout, {'next_page': '/login/'}, name='logout'),
+    url(r'^logout/', django_logout, {'next_page': reverse_lazy('login')}, name='logout'),
     url(r'^create-company', views.CreateCompanyView.as_view(), name="create_company"),
     url(r'^select-plan/(?P<stage>\d+)/$', views.PlanSelector.as_view(), name="select_plan"),
     # custom implemented api
