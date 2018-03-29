@@ -274,7 +274,9 @@ class SurveyManager(LoginRequiredMixin, AddFormMixin, SingleTableView):
 
 
 class AddQuestion(APIView, LoginRequiredMixin):
-    """    Add Question pop up    """
+    """Add New Question to Database
+
+    """
     login_url = reverse_lazy('login')
     serializer_class = QuestionSerializer
     template_name = 'company/add_question.html'

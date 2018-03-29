@@ -28,7 +28,7 @@ class Base64ImageField(serializers.ImageField):
 class PlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plan
-        fields = "__all__"
+        fields = ['id', 'url', 'get_plan_name_display', 'get_price', 'plan_validity']
 
 
 class UserSerializer(serializers.ModelSerializer):

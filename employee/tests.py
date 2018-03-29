@@ -1,11 +1,33 @@
 from django.test import TestCase
+from rest_framework import status
+from rest_framework.reverse import reverse_lazy
+from rest_framework.test import APITestCase
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-from employee.models import Employee, Company
-from main.models import ActivityMonitor
+from employee.models import *
+from main.models import *
 import random
 
 from main.utility import computeMD5hash
+
+
+class DRFTest(APITestCase):
+    fixtures = ['main.json']
+
+    def test_create_question(self):
+        """
+        Ensure we can create a new question object.
+        """
+        url = reverse_lazy('questiondb-list')
+        data = {'question': 'How is this...?'}
+        token = Token.objects.get(user__contact_number=1111111111)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(QuestionDB.objects.count(), 28)  # 27 question already exist
+        self.assertEqual(QuestionDB.objects.last().question, data.get('question'))
+
 
 UserModel = get_user_model()
 

@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.forms import model_to_dict
 from django.utils import timezone
-
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
 
 from djmoney.models.fields import MoneyField
@@ -181,12 +181,21 @@ class Company(models.Model):
     """
     Company Model created by Super User
     """
-    company_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rel_company_user')
-    name = models.CharField(max_length=100, verbose_name="Company Name", blank=True, null=True)
+    company_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                        related_name='rel_company_user',
+                                        help_text=_("Foreign Key to User(HR) who purchased Plan"))
+    name = models.CharField(max_length=100, blank=True, null=True,
+                            verbose_name=_("Company Name"),
+                            help_text=_("Name of Company"))
     alternate_contact_no = models.CharField(max_length=15, blank=True, null=True,
-                                            verbose_name="Alternate Contact Number")
-    alternate_email = models.EmailField(blank=True, null=True, verbose_name="Alternate Email")
-    country = models.CharField(max_length=50, verbose_name="Country", blank=True, null=True)
+                                            verbose_name=_("Alternate Contact Number"),
+                                            help_text=_("Alternate Contact Number"))
+    alternate_email = models.EmailField(blank=True, null=True,
+                                        verbose_name=_("Alternate Email"),
+                                        help_text=_("Alternate Email Address"))
+    country = models.CharField(max_length=50, blank=True, null=True,
+                               verbose_name=_("Country"),
+                               help_text=_("Country"))
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     subscription_expired = models.BooleanField(default=False)

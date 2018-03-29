@@ -11,7 +11,7 @@ from employee.viewsets import *
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet, base_name='usermodel')
 router.register(r'employee', EmployeeViewSet, base_name='employee')
-router.register(r'plans', views.PlanViewSet, base_name='plans')
+router.register(r'plans', views.PlanViewSet, base_name='plan')
 router.register(r'company', views.CompanyViewSet, base_name='company')
 router.register(r'question_database', QuestionViewSet, base_name='questiondb')
 router.register(r'survey/response', SurveyResponseViewSet, base_name='surveyresponse')
@@ -20,7 +20,7 @@ router.register(r'news_feed', NewsFeedViewSet, base_name='newsfeed')
 
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
-    url(r'^api/', RedirectView.as_view(url='/api/v1/')),
+    # url(r'^api/', RedirectView.as_view(url='/api/v1/')),
     url(r'^login/', django_login, {'template_name': 'common/login.html', 'authentication_form': LoginForm}, name='login'),
     url(r'^logout/', django_logout, {'next_page': reverse_lazy('login')}, name='logout'),
     url(r'^create-company', views.CreateCompanyView.as_view(), name="create_company"),

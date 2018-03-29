@@ -28,11 +28,16 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API ViewSet to get list of user, modify and update their profile
     ---
+    `/api/v1/users/`
+    get user detail if logged in user is
 
-    get user detail
-    root: all user
-    hr: all user within it's company
-    employee: only self profile
+    - `super user`: access to all user
+    - `hr`: access to all user within it's company
+    - `employee`: access to only self profile
+
+    `/api/v1/users/{pk}/`
+
+    - retrieves profile of user for given `pk` if user is itself or fall within it's domain
     """
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by('employee__company_name', 'role')
@@ -41,12 +46,14 @@ class UserViewSet(viewsets.ModelViewSet):
         current_user = self.request.user
         _pk = self.kwargs.get('pk', None)
         if hasattr(current_user, 'employee'):
+            # if user is employee then only provide it'sown information
             queryset = self.queryset.filter(id=current_user.id)
         elif current_user.is_hr:
             # get list of all user under hr including hr itself
             queryset = self.queryset.filter(Q(employee__company_name__company_user=current_user)
                                             | Q(id=current_user.id))
             if _pk:
+                # filter queryset if kwarg pk is passed
                 queryset = queryset.filter(pk=_pk)
         elif current_user.is_superuser:
             # return list of all user if superuser is logged in
@@ -57,11 +64,18 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class PlanViewSet(viewsets.ModelViewSet):
+    """manage purchase plan package for company
+    """
     serializer_class = PlanSerializer
     queryset = Plan.objects.all()
+    permission_classes = [IsAdminUser]
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
+    """only superuser is allowed to access this data
+
+    retrieve details of company HR
+    """
     serializer_class = CompanySerializer
     queryset = Company.objects.all()
     permission_classes = [IsAdminUser]
@@ -90,6 +104,10 @@ class CreateCompanyView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
 
 
 class PlanSelector(APIView):
+    """Form to auto select plan
+
+    any one can proceed to purchase
+    """
     login_url = reverse_lazy('login')
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
@@ -117,18 +135,16 @@ class PlanSelector(APIView):
         response_data = {'serializer': serializer, 'style': self.style}
         stage = int(kwargs['stage']) if 'stage' in kwargs else 0
         response_data['stage'] = stage
-        print(">> KWARGS === {}".format(kwargs))
-        print(">> Request:POST::DATA === {}".format(request.data.items()))
+        # print(">> KWARGS === {}".format(kwargs))
+        # print(">> Request:POST::DATA === {}".format(request.data.items()))
         for field, value in request.data.items():
             if request.data[field]:
                 if field == "profile_image":
                     print(self.request.FILES)
                     response_data[field] = self.request.FILES[field]
-                # elif field == "password":
-                #     response_data[field] = computeMD5hash(self.request.data[field])
                 else:
                     response_data[field] = self.request.data[field]
-        print(response_data)
+        # print(response_data)
         if stage == 1:
             # plan_obj = Plan.objects.get(pk=response_data['has_plan'])
             # role_level = 1 if plan_obj.plan_name == 2 else 2
@@ -176,6 +192,10 @@ class PlanSelector(APIView):
 
 
 class CustomAuthentication(ObtainAuthToken):
+    """Custom Token Authentication
+
+    provide user detail along with the details of it's creator (HR)  -- for android APP (employee only)
+    """
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
@@ -188,13 +208,13 @@ class CustomAuthentication(ObtainAuthToken):
             ['http://', get_current_site(request).domain, user.profile_image.url]
         ) if user.profile_image else ''
         try:
-            _creator_hr = user.get_creator
-            if _creator_hr['hr_profile_image']:
-                _creator_hr['hr_profile_image'] = ''.join(
-                    ['http://', get_current_site(request).domain, _creator_hr['hr_profile_image']]
-                )
-            response_data.update(_creator_hr)
-            return Response(response_data)
+            if hasattr(user, 'employee'):
+                _creator_hr = user.get_creator
+                if _creator_hr['hr_profile_image']:
+                    _creator_hr['hr_profile_image'] = ''.join(
+                        ['http://', get_current_site(request).domain, _creator_hr['hr_profile_image']]
+                    )
+                response_data.update(_creator_hr)
         except Exception as e:
             print("Auth Exception {} for user".format(e))
-            return Response(response_data)
+        return Response(response_data)

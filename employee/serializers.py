@@ -124,7 +124,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     complete = serializers.BooleanField(style={
         'placeholder': 'Completed??'}, required=False)
     question = QuestionSerializer(partial=True, allow_null=True, many=True, required=False)
-    created_by = UserSerializer(read_only=True)
+    # created_by = UserSerializer(read_only=True)
     current_time = serializers.SerializerMethodField(read_only=True)
     total_question = serializers.SerializerMethodField(read_only=True)
     responded = serializers.SerializerMethodField(required=False)

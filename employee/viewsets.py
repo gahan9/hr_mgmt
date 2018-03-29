@@ -85,22 +85,30 @@ class QuestionSet(generics.ListCreateAPIView):
 
 
 class SurveyViewSet(viewsets.ModelViewSet):
-    """ Survey API to list, add, modify survey """
+    """Survey API to list, add, modify survey
+    -----------------------------------------
+    - **params**: `benchmark=True`  // return list of surveys having benchmark
+    """
     serializer_class = SurveySerializer
     queryset = Survey.objects.all()
 
     def get_queryset(self):
         current_user = self.request.user
-        survey_id = self.request.query_params.get('survey_id', None)
+        benchmark = self.request.query_params.get('benchmark', None)
         if current_user.is_superuser:
+            # super user can see all queryset
             queryset = self.queryset
         else:
             if hasattr(current_user, 'employee'):
+                # filter queryset by company logged in user is employee
                 queryset = self.queryset.filter(created_by__rel_company_user=current_user.employee.company_name,
                                                 complete=True)
             else:
+                # if logged in user is
                 queryset = self.queryset.filter(created_by=current_user)
-            return queryset
+        if benchmark:
+            # return only survey if benchmark available
+            queryset = [i for i in queryset if i.benchmark]
         return queryset
 
     def update(self, request, *args, **kwargs):
@@ -143,7 +151,7 @@ class SurveyResponseViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class NewsFeedViewSet(viewsets.ModelViewSet):
+class NewsFeedViewSet(viewsets.ReadOnlyModelViewSet):
     """ API for creating and listing news feed """
     serializer_class = NewsFeedSerializer
     queryset = NewsFeed.objects.all().order_by('-date_created')
