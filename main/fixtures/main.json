@@ -1,0 +1,1563 @@
+[
+{
+    "model": "main.plan",
+    "pk": 1,
+    "fields": {
+        "plan_name": 1,
+        "plan_price_currency": "USD",
+        "plan_price": "1.99",
+        "plan_validity": 18000
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$1WPuoNqqiYvu$5CEHXmSPRDvWdhSodFhrNfuKdh2wJTKApsZ/XnShxrQ=",
+        "last_login": "2018-03-26T06:52:53.490Z",
+        "is_superuser": true,
+        "first_name": "root",
+        "last_name": "user",
+        "email": "root@quixom.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2018-01-10T05:31:46Z",
+        "contact_number": "0000000000",
+        "profile_image": "media/uploads/156M0g_3DVjjbZ.jpg",
+        "role": 1,
+        "gender": "M",
+        "username": null,
+        "registration_date": "2018-01-10T05:31:46.612Z",
+        "date_updated": "2018-01-10T05:50:12.685Z",
+        "is_blocked": false,
+        "has_plan": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$NVYtS97KM6ze$DqW03ADwqrx12QtUtoOMrf6nTUdSTKosax26D4wazZU=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "staff",
+        "last_name": "user",
+        "email": "staff@quixom.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2018-01-10T05:39:38Z",
+        "contact_number": "0",
+        "profile_image": "media/uploads/heros.gif",
+        "role": 2,
+        "gender": "M",
+        "username": null,
+        "registration_date": "2018-01-10T05:39:38.900Z",
+        "date_updated": "2018-01-10T05:51:23.445Z",
+        "is_blocked": false,
+        "has_plan": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 6,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$9Wa9QsfahxHP$S8OsAK+XUmWsw8LuVeuJKwdy5M2Nnhc36lE/6wh9NCQ=",
+        "last_login": "2018-03-13T07:58:25.900Z",
+        "is_superuser": false,
+        "first_name": "Bruce",
+        "last_name": "Wayne",
+        "email": "bruce.wayne@wayne.enterprise",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-01-10T07:01:30.281Z",
+        "contact_number": "1111111111",
+        "profile_image": "media/uploads/batman_by_mo_stylez09.jpg",
+        "role": 2,
+        "gender": "M",
+        "username": null,
+        "registration_date": "2018-01-10T07:01:30.283Z",
+        "date_updated": "2018-01-10T07:01:30.283Z",
+        "is_blocked": false,
+        "has_plan": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 31,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$9Wa9QsfahxHP$S8OsAK+XUmWsw8LuVeuJKwdy5M2Nnhc36lE/6wh9NCQ=",
+        "last_login": "2018-03-27T05:27:08.128Z",
+        "is_superuser": false,
+        "first_name": "Tony",
+        "last_name": "Stark",
+        "email": "tony.stark@jarvis.tech",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-02-09T07:01:08Z",
+        "contact_number": "9999999901",
+        "profile_image": "media/uploads/iron_man_by_alexiscabo1-da2oe2u.png",
+        "role": 2,
+        "gender": "M",
+        "username": null,
+        "registration_date": "2018-02-09T07:01:08.006Z",
+        "date_updated": "2018-02-21T10:01:43.311Z",
+        "is_blocked": false,
+        "has_plan": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 32,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$ieAE72bGbRuM$C4sfk7clYsm9EG7eqo1zwgdNaONxfLTzU+aACKqTXWY=",
+        "last_login": "2018-03-27T05:35:41.744Z",
+        "is_superuser": false,
+        "first_name": "Stephen",
+        "last_name": "Strange",
+        "email": "stephen.strange@marvel.universe",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-02-09T07:01:39.105Z",
+        "contact_number": "8888888802",
+        "profile_image": "media/uploads/temp_XQPHeiC.jpeg",
+        "role": 3,
+        "gender": "F",
+        "username": null,
+        "registration_date": "2018-02-09T07:01:39.106Z",
+        "date_updated": "2018-03-27T05:35:25.924Z",
+        "is_blocked": false,
+        "has_plan": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 33,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$9Wa9QsfahxHP$S8OsAK+XUmWsw8LuVeuJKwdy5M2Nnhc36lE/6wh9NCQ=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "Bruce",
+        "last_name": "Banner",
+        "email": "banner@marvel.universe",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-02-09T07:01:39.421Z",
+        "contact_number": "8888888803",
+        "profile_image": "media/uploads/temp_cYWZkpo.jpeg",
+        "role": 3,
+        "gender": "M",
+        "username": null,
+        "registration_date": "2018-02-09T07:01:39.421Z",
+        "date_updated": "2018-03-15T10:49:41.261Z",
+        "is_blocked": false,
+        "has_plan": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 34,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$9Wa9QsfahxHP$S8OsAK+XUmWsw8LuVeuJKwdy5M2Nnhc36lE/6wh9NCQ=",
+        "last_login": "2018-02-09T09:38:56.132Z",
+        "is_superuser": false,
+        "first_name": "Black",
+        "last_name": "Widow",
+        "email": "widow@marvel.universe",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-02-09T07:01:39.740Z",
+        "contact_number": "8888888805",
+        "profile_image": "",
+        "role": 3,
+        "gender": "F",
+        "username": null,
+        "registration_date": "2018-02-09T07:01:39.740Z",
+        "date_updated": "2018-02-09T09:38:32.085Z",
+        "is_blocked": false,
+        "has_plan": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 36,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$eilUrUiGvvL5$R7pD5gtikMqZHKOz/O0eMdy+uCWMYiIOEMX0YCeWWp8=",
+        "last_login": "2018-03-27T05:36:41.406Z",
+        "is_superuser": false,
+        "first_name": "Oliver",
+        "last_name": "Holmes",
+        "email": "sh221b@mind.palace",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-02-15T10:11:40.442Z",
+        "contact_number": "8888888808",
+        "profile_image": "media/uploads/temp_CpawIEm.jpeg",
+        "role": 3,
+        "gender": "F",
+        "username": null,
+        "registration_date": "2018-02-15T10:11:40.443Z",
+        "date_updated": "2018-03-26T08:04:18.447Z",
+        "is_blocked": false,
+        "has_plan": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 37,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$9Wa9QsfahxHP$S8OsAK+XUmWsw8LuVeuJKwdy5M2Nnhc36lE/6wh9NCQ=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "Oliver",
+        "last_name": "Queen",
+        "email": "oliver.queen@dc.comics",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-02-21T06:32:21.659Z",
+        "contact_number": "9898989898",
+        "profile_image": "media/uploads/temp_qGpgrCV.jpeg",
+        "role": 3,
+        "gender": "M",
+        "username": null,
+        "registration_date": "2018-02-21T06:32:21.664Z",
+        "date_updated": "2018-02-26T07:42:17.644Z",
+        "is_blocked": false,
+        "has_plan": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.usermodel",
+    "pk": 39,
+    "fields": {
+        "password": "pbkdf2_sha256$100000$4ohV3jSsamPL$XS16dyG454hIXin67g25jvjwBmeO8Ya/F7fVsnYlL5I=",
+        "last_login": "2018-03-26T07:51:13.060Z",
+        "is_superuser": false,
+        "first_name": "11",
+        "last_name": "23",
+        "email": "1@one.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2018-03-26T07:51:09.300Z",
+        "contact_number": "1123",
+        "profile_image": "",
+        "role": 3,
+        "gender": "M",
+        "username": null,
+        "registration_date": "2018-03-26T07:51:09.300Z",
+        "date_updated": "2018-03-26T07:51:09.300Z",
+        "is_blocked": false,
+        "has_plan": 1,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "main.company",
+    "pk": 1,
+    "fields": {
+        "company_user": 1,
+        "name": "Quixom Technology",
+        "alternate_contact_no": null,
+        "alternate_email": null,
+        "country": "India",
+        "date_created": "2018-01-10T05:48:29.646Z",
+        "date_updated": "2018-01-10T05:49:21.143Z",
+        "subscription_expired": false,
+        "region": "India"
+    }
+},
+{
+    "model": "main.company",
+    "pk": 2,
+    "fields": {
+        "company_user": 6,
+        "name": "Bruce Wayne",
+        "alternate_contact_no": null,
+        "alternate_email": null,
+        "country": null,
+        "date_created": "2018-01-10T07:01:35.969Z",
+        "date_updated": "2018-01-10T07:01:35.969Z",
+        "subscription_expired": false,
+        "region": null
+    }
+},
+{
+    "model": "main.company",
+    "pk": 12,
+    "fields": {
+        "company_user": 31,
+        "name": "Tony Stark",
+        "alternate_contact_no": null,
+        "alternate_email": null,
+        "country": null,
+        "date_created": "2018-02-09T07:01:08.125Z",
+        "date_updated": "2018-02-09T07:01:08.125Z",
+        "subscription_expired": false,
+        "region": null
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 1,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'role': 2, 'first_name': 'Bruce', 'last_name': 'Wayne', 'number': '1111111111'}",
+        "affected_user": "{'role': 3, 'first_name': 'clark', 'last_name': 'kent', 'number': '5553332221'}",
+        "bulk_create": true,
+        "time_stamp": "2018-01-10T07:09:02.598Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 2,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'role': 2, 'first_name': 'Bruce', 'last_name': 'Wayne', 'number': '1111111111'}",
+        "affected_user": "{'role': 3, 'first_name': 'oliver', 'last_name': 'queen', 'number': '9898989898'}",
+        "bulk_create": true,
+        "time_stamp": "2018-01-10T07:09:03.850Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 3,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'role': 2, 'first_name': 'Bruce', 'last_name': 'Wayne', 'number': '1111111111'}",
+        "affected_user": "{'role': 3, 'first_name': 'awesome', 'last_name': 'guys', 'number': '1234567899'}",
+        "bulk_create": true,
+        "time_stamp": "2018-01-10T07:09:06.851Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 5,
+    "fields": {
+        "company": 2,
+        "activity_type": 1,
+        "performed_by": "{'role': 2, 'contact_number': '1111111111', 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'role': 3, 'contact_number': '9898989898', 'last_name': 'queen', 'id': 8, 'first_name': 'Oliver'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:49:26.039Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 6,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'role': 2, 'contact_number': '1111111111', 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'role': 3, 'contact_number': '7777777701', 'last_name': 'kent', 'id': 24, 'first_name': 'clark'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T06:51:04.237Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 7,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'role': 2, 'contact_number': '1111111111', 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'role': 3, 'contact_number': '7777777702', 'last_name': 'Allen', 'id': 25, 'first_name': 'Barry'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T06:51:04.634Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 8,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'role': 2, 'contact_number': '1111111111', 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'role': 3, 'contact_number': '7777777703', 'last_name': 'Girl', 'id': 26, 'first_name': 'Bat'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T06:51:04.937Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 9,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777703', 'role': 3, 'last_name': 'Girl', 'id': 26, 'first_name': 'Bat'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:56:49.883Z",
+        "remarks": "['7777777703', 'Bat', 'Girl']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 10,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777702', 'role': 3, 'last_name': 'Allen', 'id': 25, 'first_name': 'Barry'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:56:51.243Z",
+        "remarks": "['7777777702', 'Barry', 'Allen']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 11,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777701', 'role': 3, 'last_name': 'kent', 'id': 24, 'first_name': 'clark'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:56:52.274Z",
+        "remarks": "['7777777701', 'clark', 'kent']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 12,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '9898989898', 'role': 3, 'last_name': 'queen', 'id': 8, 'first_name': 'Oliver'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:56:53.252Z",
+        "remarks": "['9898989898', 'Oliver', 'queen']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 13,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777701', 'role': 3, 'last_name': 'kent', 'id': 27, 'first_name': 'clark'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T06:57:06.711Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 14,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '9898989898', 'role': 3, 'last_name': 'queen', 'id': 28, 'first_name': 'oliver'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T06:57:07.057Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 15,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777702', 'role': 3, 'last_name': 'Allen', 'id': 29, 'first_name': 'Barry'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T06:57:07.363Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 16,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777703', 'role': 3, 'last_name': 'Girl', 'id': 30, 'first_name': 'Bat'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T06:57:07.672Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 17,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777703', 'role': 3, 'last_name': 'Girl', 'id': 30, 'first_name': 'Bat'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:59:16.104Z",
+        "remarks": "['7777777703', 'Bat', 'Girl']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 18,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777702', 'role': 3, 'last_name': 'Allen', 'id': 29, 'first_name': 'Barry'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:59:17.274Z",
+        "remarks": "['7777777702', 'Barry', 'Allen']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 19,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '9898989898', 'role': 3, 'last_name': 'queen', 'id': 28, 'first_name': 'oliver'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:59:18.072Z",
+        "remarks": "['9898989898', 'oliver', 'queen']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 20,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '1111111111', 'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce'}",
+        "affected_user": "{'contact_number': '7777777701', 'role': 3, 'last_name': 'kent', 'id': 27, 'first_name': 'clark'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T06:59:18.862Z",
+        "remarks": "['7777777701', 'clark', 'kent']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 21,
+    "fields": {
+        "company": 12,
+        "activity_type": 0,
+        "performed_by": "{'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'contact_number': '8888888802', 'role': 3, 'last_name': 'Strange', 'id': 32, 'first_name': 'Stephen'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T07:01:39.177Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 22,
+    "fields": {
+        "company": 12,
+        "activity_type": 0,
+        "performed_by": "{'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'contact_number': '8888888803', 'role': 3, 'last_name': 'Banner', 'id': 33, 'first_name': 'Bruce'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T07:01:39.494Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 23,
+    "fields": {
+        "company": 12,
+        "activity_type": 0,
+        "performed_by": "{'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'contact_number': '8888888805', 'role': 3, 'last_name': 'Widow', 'id': 34, 'first_name': 'Black'}",
+        "bulk_create": true,
+        "time_stamp": "2018-02-09T07:01:39.812Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 24,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'contact_number': '8888888802', 'role': 3, 'last_name': 'Strange', 'id': 32, 'first_name': 'Stephen'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:07:04.964Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 25,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'role': 2, 'last_name': 'Stark', 'contact_number': '9999999901', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'role': 3, 'last_name': 'Widow', 'contact_number': '8888888805', 'id': 34, 'first_name': 'Black'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:31:19.209Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 26,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'role': 2, 'last_name': 'Stark', 'contact_number': '9999999901', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'role': 3, 'last_name': 'Strange', 'contact_number': '8888888802', 'id': 32, 'first_name': 'Stephen'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:31:35.770Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 27,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Strange', 'contact_number': '8888888802', 'id': 32, 'role': 3, 'first_name': 'Stephen'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:32:48.863Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 28,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Strange', 'contact_number': '8888888802', 'id': 32, 'role': 3, 'first_name': 'Stephen'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:33:04.043Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 29,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Widow', 'contact_number': '8888888805', 'id': 34, 'role': 3, 'first_name': 'Black'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:33:34.393Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 30,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Banner', 'contact_number': '8888888803', 'id': 33, 'role': 3, 'first_name': 'Bruce'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:33:43.165Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 31,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Strange', 'contact_number': '8888888802', 'id': 32, 'role': 3, 'first_name': 'Stephen'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T07:33:48.564Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 32,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'id': 31, 'last_name': 'Stark', 'role': 2, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "affected_user": "{'id': 34, 'last_name': 'Widow', 'role': 3, 'contact_number': '8888888805', 'first_name': 'Black'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:31:52.030Z",
+        "remarks": "Password Changed",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 33,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Widow', 'role': 3, 'id': 34, 'contact_number': '8888888805', 'first_name': 'Black'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:38:32.020Z",
+        "remarks": "Password Changed",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 34,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:50:26.281Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 35,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:53:21.391Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 36,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:53:28.001Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 37,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:57:37.855Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 38,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "affected_user": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:57:43.946Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 39,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'TONY'}",
+        "affected_user": "{'last_name': 'Stark', 'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'TONY'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T09:57:48.993Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 40,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2, 'id': 31}",
+        "affected_user": "{'first_name': 'Tony', 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2, 'id': 31}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T10:48:29.903Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 41,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:46:34.912Z",
+        "remarks": "['hgkhgkgkjgjk', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 42,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'last_name': 'Wayne', 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:46:51.303Z",
+        "remarks": "['b,b,b,b', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 43,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111', 'last_name': 'Wayne'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:58:53.756Z",
+        "remarks": "['fjhfjgkj', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 44,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111', 'last_name': 'Wayne'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:58:58.886Z",
+        "remarks": "['Feedback 1', 5]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 45,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111', 'last_name': 'Wayne'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:59:01.574Z",
+        "remarks": "['rfg', 5]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 46,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111', 'last_name': 'Wayne'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:59:10.213Z",
+        "remarks": "['Timings', 'All are observed for coming late now-a-days which will not be allowed from now onwards. Strict actions will be taken for sure from now.']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 47,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111', 'last_name': 'Wayne'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:59:12.094Z",
+        "remarks": "['Weekend Outing', 'Our company has planned an outing this weekend.']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 48,
+    "fields": {
+        "company": 2,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 6, 'first_name': 'Bruce', 'contact_number': '1111111111', 'last_name': 'Wayne'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-09T12:59:14.038Z",
+        "remarks": "['Weekend Outing', 'Our company has planned an outing this weekend.']",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 49,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:06:53.634Z",
+        "remarks": "['a', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 50,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:06:54.858Z",
+        "remarks": "['Mk1', 5]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 51,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:06:56.156Z",
+        "remarks": "['Mk2', 5]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 52,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:06:58.906Z",
+        "remarks": "['aa', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 53,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:07:00.715Z",
+        "remarks": "['SAF', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 54,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:07:02.275Z",
+        "remarks": "['saf', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 55,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:07:04.428Z",
+        "remarks": "['Weekend Feedback', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 56,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-12T10:07:07.837Z",
+        "remarks": "['fgfdgfdfg', 3]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 57,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2, 'id': 31}",
+        "affected_user": "{'first_name': 'Bruce', 'last_name': 'Banner', 'contact_number': '8888888803', 'role': 3, 'id': 33}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T07:46:19.618Z",
+        "remarks": "Password Changed",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 58,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:29:56.954Z",
+        "remarks": "['aa', 3]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 59,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:29:59.221Z",
+        "remarks": "['sa', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 60,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:30:01.260Z",
+        "remarks": "['a', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 61,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:30:02.572Z",
+        "remarks": "['QQ', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 62,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:30:03.933Z",
+        "remarks": "['sad', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 63,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:30:05.661Z",
+        "remarks": "['abcd', 2]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 64,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:30:07.528Z",
+        "remarks": "['10 steps', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 65,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'last_name': 'Stark', 'first_name': 'Tony', 'contact_number': '9999999901'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T11:30:10.128Z",
+        "remarks": "['as', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 66,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T12:13:33.921Z",
+        "remarks": "['ss1', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 67,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T12:13:35.635Z",
+        "remarks": "['s4', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 68,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T12:13:37.108Z",
+        "remarks": "['s3', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 69,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T12:13:38.657Z",
+        "remarks": "['s2', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 70,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'contact_number': '9999999901', 'id': 31, 'role': 2, 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-13T12:13:41.507Z",
+        "remarks": "['S1', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 71,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-14T10:06:05.152Z",
+        "remarks": "['z2', 3]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 72,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-14T10:06:07.560Z",
+        "remarks": "['z33', 1]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 73,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-14T10:06:09.442Z",
+        "remarks": "['z5', 2]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 74,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-14T10:06:11.474Z",
+        "remarks": "['z3', 5]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 75,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-14T10:06:14.299Z",
+        "remarks": "['z1', 5]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 76,
+    "fields": {
+        "company": 12,
+        "activity_type": 2,
+        "performed_by": "{'role': 2, 'id': 31, 'contact_number': '9999999901', 'first_name': 'Tony', 'last_name': 'Stark'}",
+        "affected_user": null,
+        "bulk_create": false,
+        "time_stamp": "2018-02-14T10:06:17.643Z",
+        "remarks": "['a', 5]",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 77,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'role': 2, 'last_name': 'Stark', 'first_name': 'Tony', 'id': 31, 'contact_number': '9999999901'}",
+        "affected_user": "{'role': 3, 'last_name': 'Banner', 'first_name': 'Bruce', 'id': 33, 'contact_number': '8888888803'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-15T05:37:50.497Z",
+        "remarks": "Password Changed",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 78,
+    "fields": {
+        "company": 12,
+        "activity_type": 0,
+        "performed_by": "{'last_name': 'Stark', 'first_name': 'Tony', 'id': 31, 'role': 2, 'contact_number': '9999999901'}",
+        "affected_user": "{'last_name': 'Holmes', 'first_name': 'Sherlock', 'id': 36, 'role': 3, 'contact_number': '8888888808'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-15T10:11:40.526Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 79,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'last_name': 'Stark', 'first_name': 'Tony', 'id': 31, 'role': 2, 'contact_number': '9999999901'}",
+        "affected_user": "{'last_name': 'Holmes', 'first_name': 'Sherlock', 'id': 36, 'role': 3, 'contact_number': '8888888808'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-15T10:13:14.715Z",
+        "remarks": "Password Changed",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 80,
+    "fields": {
+        "company": 2,
+        "activity_type": 0,
+        "performed_by": "{'id': 6, 'role': 2, 'first_name': 'Bruce', 'last_name': 'Wayne', 'contact_number': '1111111111'}",
+        "affected_user": "{'id': 37, 'role': 3, 'first_name': 'Oliver', 'last_name': 'Queen', 'contact_number': '9898989898'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T06:32:21.753Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 81,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'last_name': 'Stark', 'role': 2, 'contact_number': '9999999901', 'id': 31}",
+        "affected_user": "{'first_name': 'Tony', 'last_name': 'Stark', 'role': 2, 'contact_number': '9999999901', 'id': 31}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T09:45:51.170Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 82,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": "{'first_name': 'Tony', 'id': 31, 'last_name': 'Stark', 'contact_number': '9999999901', 'role': 2}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T09:48:41.619Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 83,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'last_name': 'Stark', 'id': 31, 'contact_number': '9999999901', 'role': 2}",
+        "affected_user": "{'first_name': 'Tony', 'last_name': 'Stark', 'id': 31, 'contact_number': '9999999901', 'role': 2}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T09:49:26.382Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 84,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'role': 2, 'contact_number': '9999999901', 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'role': 2, 'contact_number': '9999999901', 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T09:54:38.095Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 85,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'role': 2, 'contact_number': '9999999901', 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "affected_user": "{'role': 2, 'contact_number': '9999999901', 'last_name': 'Stark', 'id': 31, 'first_name': 'Tony'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T09:54:56.430Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 86,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'role': 2, 'contact_number': '9999999901', 'last_name': 'Stark', 'id': 31, 'first_name': 'T()ny'}",
+        "affected_user": "{'role': 2, 'contact_number': '9999999901', 'last_name': 'Stark', 'id': 31, 'first_name': 'T()ny'}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T09:55:05.518Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 87,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31}",
+        "affected_user": "{'first_name': 'Tony', 'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T09:57:35.809Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 88,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31}",
+        "affected_user": "{'first_name': 'Tony', 'contact_number': '9999999901', 'role': 2, 'last_name': 'Stark', 'id': 31}",
+        "bulk_create": false,
+        "time_stamp": "2018-02-21T10:01:43.231Z",
+        "remarks": null,
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 89,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'id': 31, 'first_name': 'Tony', 'role': 2, 'contact_number': '9999999901', 'last_name': 'Stark'}",
+        "affected_user": "{'id': 36, 'first_name': 'Oliver', 'role': 3, 'contact_number': '8888888808', 'last_name': 'Holmes'}",
+        "bulk_create": false,
+        "time_stamp": "2018-03-26T08:01:26.773Z",
+        "remarks": "Password Changed",
+        "status": true
+    }
+},
+{
+    "model": "main.activitymonitor",
+    "pk": 90,
+    "fields": {
+        "company": 12,
+        "activity_type": 1,
+        "performed_by": "{'first_name': 'Tony', 'role': 2, 'contact_number': '9999999901', 'id': 31, 'last_name': 'Stark'}",
+        "affected_user": "{'first_name': 'Stephen', 'role': 3, 'contact_number': '8888888802', 'id': 32, 'last_name': 'Strange'}",
+        "bulk_create": false,
+        "time_stamp": "2018-03-27T05:35:25.855Z",
+        "remarks": "Password Changed",
+        "status": true
+    }
+}
+]

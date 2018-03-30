@@ -27,9 +27,9 @@
 {% block includes %}
     {% include 'common/common_nav.html' %}
 {% endblock %}
-{% if user.role < 3 %}
+{% if user.is_hr %}
     {% block content %} <section>Coming soon...</section> {% endblock %}
-{% elif user.role >= 3 %}
+{% elif user.is_employee %}
     {% block employee_content %}
         <section>
             <div class="container-fluid">

@@ -135,12 +135,16 @@ class UserModel(AbstractUser):
             return False
 
     @property
+    def is_employee(self):
+        return bool(self.role <= 3 and hasattr(self, 'employee'))
+
+    @property
     def is_hr(self):
-        return bool(self.role >= 2)
+        return bool(self.role <= 2)
 
     @property
     def is_owner(self):
-        return bool(self.role >= 1)
+        return bool(self.role <= 1)
 
     @property
     def get_creator(self):

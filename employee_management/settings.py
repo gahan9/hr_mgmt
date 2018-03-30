@@ -152,7 +152,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "userfiles")
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # STATIC_ROOT = '/assets/'
 # STATIC_ROOT_DIR = os.path.join(BASE_DIR, 'assets')
@@ -173,6 +173,7 @@ AUTH_USER_MODEL = 'main.UserModel'
 
 # Site Detail
 SITE_NAME = "Field Rate"
+SITE_LOGO = "https://fieldrate.com/wp-content/uploads/2016/12/logo-wigite.png"
 DOMAIN = "192.168.5.47:8889"
 API_URL = "/api/v1/survey/"
 
