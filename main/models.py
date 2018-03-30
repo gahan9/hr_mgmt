@@ -188,10 +188,10 @@ class UserModel(AbstractUser):
         """
         :return: details of current user model
         """
-        return {'id': self.id, 'contact_number': str(self.contact_number), 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
+        return {'id': self.id, 'contact_number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
 
     def __str__(self):
-        return "{}- {}".format(self.email, self.first_name)
+        return "{}- {}".format(self.contact_number, self.first_name)
 
 
 class Company(models.Model):

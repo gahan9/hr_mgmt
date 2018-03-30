@@ -13,7 +13,7 @@ from main.utility import computeMD5hash
 
 
 class DRFTest(APITestCase):
-    fixtures = ['main.json']
+    fixtures = ['data_dump.json']
 
     def test_create_question(self):
         """
@@ -21,7 +21,7 @@ class DRFTest(APITestCase):
         """
         url = reverse_lazy('questiondb-list')
         data = {'question': 'How is this...?'}
-        token = Token.objects.get(user__contact_number=1111111111)
+        token = Token.objects.get(user__contact_number='+917777777701')
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

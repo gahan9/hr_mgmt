@@ -42,7 +42,7 @@ class DashboardTest(TestCase):
     # fixtures = ['dump.json']
 
     def setUpTestData(self):
-        self.number = random.randint(1000000000, 9999999999)
+        self.number = random.randint(7000000000, 9999999999)
         self.first_name, self.last_name = faker.name().split()
         self.email = faker.email()
         self.company_name = faker.company()
@@ -100,7 +100,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
     def test_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/login/'))
         username_input = self.selenium.find_element_by_name("username")
-        username_input.send_keys('9999999901')
+        username_input.send_keys('+919999999901')
         password_input = self.selenium.find_element_by_name("password")
         password_input.send_keys('1')
         self.selenium.find_element_by_id('login').click()
