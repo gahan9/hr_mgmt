@@ -43,9 +43,10 @@ class DashboardTest(TestCase):
 
     def setUpTestData(self):
         self.number = random.randint(1000000000, 9999999999)
-        self.name = self.random_name()
+        self.first_name, self.last_name = faker.name().split()
         self.email = faker.email()
         self.company_name = faker.company()
+        self.country_code = faker.country_code()
         self.name_length = None
         self.company_postfix = ['Co', 'Organization', 'Ltd.', 'Corporation', 'Management']
 
@@ -56,24 +57,24 @@ class DashboardTest(TestCase):
 
     def old_test_create_hr(self):
         _hr = User.objects.create(contact_number=self.number, email=self.email,
-                                  first_name=self.name, last_name=self.name,
+                                  first_name=self.first_name, last_name=self.last_name,
                                   password=set_password_hash(self.number), role=2)
         _activity_instance = ActivityMonitor.objects.create(
-            activity_type=0, performed_by=self.performer, affected_user=_hr)
+            activity_type=0, performed_by=_hr, affected_user=_hr)
         _company_instance = Company.objects.create(company_user=_hr,
                                                    name=self.company_name,
                                                    alternate_contact_no=random.randint(1000000000, 9999999999),
                                                    alternate_email=self.email,
-                                                   country='US')
+                                                   country=self.country_code)
 
     def old_test_create_employee(self):
         _main_profile = User.objects.create(contact_number=self.number, email=self.email,
-                                        first_name=self.name, last_name=self.name,
-                                        password=set_password_hash(self.number), role=3)
+                                            first_name=self.first_name, last_name=self.last_name,
+                                            password=set_password_hash(self.number), role=3)
         _activity_instance = ActivityMonitor.objects.create(
-            activity_type=0, performed_by=self.performer, affected_user=_main_profile)
+            activity_type=0, performed_by=_main_profile, affected_user=_main_profile)
         _employee = Employee.objects.create(user=_main_profile,
-                                            company_name=self.company,
+                                            company_name=self.company_name,
                                             job_title='job_title',
                                             alternate_email=self.email,
                                             alternate_contact_no=self.number, street='street',

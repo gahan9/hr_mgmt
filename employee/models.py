@@ -40,7 +40,7 @@ class Employee(models.Model):
         return self.user.contact_number
 
     def __str__(self):
-        return self.user.contact_number
+        return str(self.user.contact_number)
 
     class Meta:
         verbose_name = "Employee Detail"

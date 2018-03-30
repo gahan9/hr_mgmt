@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'generic_relations',
     'djmoney',
     'jsonfield',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [

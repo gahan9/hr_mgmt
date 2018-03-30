@@ -6,6 +6,8 @@ from django.dispatch.dispatcher import receiver
 from django.forms import model_to_dict
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from phonenumber_field.modelfields import PhoneNumberField
+
 from rest_framework.authtoken.models import Token
 
 from djmoney.models.fields import MoneyField
@@ -86,18 +88,29 @@ class UserModel(AbstractUser):
         ('F', 'Female'),
         # ('O', 'Other')
     )
-    contact_number = models.CharField(max_length=12, unique=True, verbose_name="Contact Number")
-    profile_image = models.ImageField(upload_to='media/uploads/', blank=True, null=True)
-    role = models.IntegerField(choices=ROLE_CHOICES, default=3)
+    # contact_number = models.CharField(max_length=12, unique=True, verbose_name="Contact Number")
+    contact_number = PhoneNumberField(unique=True,
+                                      verbose_name=_("Contact Number"),
+                                      help_text=_("Contact Number"))
+    profile_image = models.ImageField(upload_to='media/uploads/', blank=True, null=True,
+                                      verbose_name=_("Profile Image"),
+                                      help_text=_("Profile Picture"))
+    role = models.IntegerField(choices=ROLE_CHOICES, default=3,
+                               verbose_name=_("Role of user"),
+                               help_text=_("User Role in system(2 - HR; 3 - Employee)"))
     gender = models.CharField(max_length=1, choices=GENDER_CHOICE, default='M')
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
-    registration_date = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
-    is_blocked = models.BooleanField(default=False, verbose_name="Account Suspended", help_text="account is disabled by HR")
+    is_blocked = models.BooleanField(default=False,
+                                     verbose_name=_("Account Suspended"),
+                                     help_text=_("account is disabled by HR"))
     has_plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=True, blank=True)
+    registration_date = models.DateTimeField(auto_now_add=True,
+                                             verbose_name=_("Registration Date of User"),
+                                             help_text=_("Registration Date of User"))
+    date_updated = models.DateTimeField(auto_now=True)
     # remark = models.TextField(blank=True, null=True)
-    objects = MyUserManager()
 
+    objects = MyUserManager()
     USERNAME_FIELD = 'contact_number'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
@@ -175,10 +188,10 @@ class UserModel(AbstractUser):
         """
         :return: details of current user model
         """
-        return {'id': self.id, 'contact_number': self.contact_number, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
+        return {'id': self.id, 'contact_number': str(self.contact_number), 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role}
 
     def __str__(self):
-        return "{}- {}".format(self.contact_number, self.first_name)
+        return "{}- {}".format(self.email, self.first_name)
 
 
 class Company(models.Model):
@@ -202,7 +215,9 @@ class Company(models.Model):
                                help_text=_("Country"))
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    subscription_expired = models.BooleanField(default=False)
+    subscription_expired = models.BooleanField(default=False,
+                                               verbose_name=_("Subscription Expiry Date"),
+                                               help_text=_("Expiry Date of current Subscription"))
     region = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
