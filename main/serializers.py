@@ -3,6 +3,7 @@ import base64
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.files.base import ContentFile
+from phonenumber_field.serializerfields import PhoneNumberField
 from requests.compat import basestring
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -34,8 +35,9 @@ class PlanSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """ User serializer """
     has_plan = PrimaryKeyRelatedField(queryset=Plan.objects.all())
-    contact_number = serializers.IntegerField(
-        style={'placeholder': 'Contact Number', 'hide_label': True})
+    contact_number = PhoneNumberField(style={'placeholder': 'Contact Number', 'hide_label': True})
+    # contact_number = serializers.IntegerField(
+    #     style={'placeholder': 'Contact Number', 'hide_label': True})
     first_name = serializers.CharField(
         style={'placeholder': 'First Name', 'hide_label': True})
     last_name = serializers.CharField(

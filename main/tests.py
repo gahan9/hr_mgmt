@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from selenium import webdriver
 
 from employee.models import Employee
-from main.models import Company, ActivityMonitor
+from main.models import Company, ActivityMonitor, Plan
 from main.utility import set_password_hash, computeMD5hash
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 # from selenium.webdriver.firefox.webdriver import WebDriver
@@ -50,11 +50,6 @@ class DashboardTest(TestCase):
         self.name_length = None
         self.company_postfix = ['Co', 'Organization', 'Ltd.', 'Corporation', 'Management']
 
-    def random_name(self, _name_length=random.randint(3, 20)):
-        name_length = self.name_length if self.name_length else _name_length
-        _name = ''.join([chr(random.choice(range(97, 122))) for i in range(name_length)])
-        return _name
-
     def old_test_create_hr(self):
         _hr = User.objects.create(contact_number=self.number, email=self.email,
                                   first_name=self.first_name, last_name=self.last_name,
@@ -82,8 +77,26 @@ class DashboardTest(TestCase):
                                             city='city', country='US')
 
 
-class MySeleniumTests(StaticLiveServerTestCase):
-    fixtures = ['data_dump.json']
+class LoginTest(StaticLiveServerTestCase):
+    # fixtures = ['data_dump.json']
+
+    def setUp(self):
+        self.credentials = {
+            "username": '+919999999901',
+            "password": '1'
+        }
+        self.number = random.randint(7700000000, 9999999999)
+        self.first_name, self.last_name = faker.name().split()
+        self.email = faker.email()
+        self.company_name = faker.company()
+        self.country_code = faker.country_code()
+        self.password = "r@123456"
+        self.name_length = None
+        self.company_postfix = ['Co', 'Organization', 'Ltd.', 'Corporation', 'Management']
+
+    def _create_plan(self):
+        # test demo create plan by admin
+        Plan.objects.create(plan_name=1, plan_price=49)
 
     @classmethod
     def setUpClass(cls):
@@ -97,11 +110,33 @@ class MySeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def test_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/login/'))
+    def _test_purchase_plan(self):
+        _url = "{}{}".format(self.live_server_url, reverse_lazy('select_plan'))
+        self.selenium.get(_url)
+        contact_number_input = self.selenium.find_element_by_name('contact_number')
+        contact_number_input.send_keys("+91{}".format(self.number))
+        first_name_input = self.selenium.find_element_by_name('first_name')
+        first_name_input.send_keys(self.first_name)
+        last_name_input = self.selenium.find_element_by_name('last_name')
+        last_name_input.send_keys(self.last_name)
+        email_input = self.selenium.find_element_by_name('email')
+        email_input.send_keys(self.email)
+        password_input = self.selenium.find_element_by_name('password')
+        password_input.send_keys(self.password)
+        self.selenium.find_element_by_name('submit').click()
+        time.sleep(3)
+
+    def _test_login(self):
+        _url = "{}{}".format(self.live_server_url, reverse_lazy('login'))
+        self.selenium.get(_url)
         username_input = self.selenium.find_element_by_name("username")
-        username_input.send_keys('+919999999901')
+        username_input.send_keys("+91{}".format(self.number))
         password_input = self.selenium.find_element_by_name("password")
-        password_input.send_keys('1')
+        password_input.send_keys(self.password)
         self.selenium.find_element_by_id('login').click()
         time.sleep(5)
+
+    def test_ordered(self):
+        self._create_plan()
+        self._test_purchase_plan()
+        self._test_login()

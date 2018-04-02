@@ -119,76 +119,45 @@ class PlanSelector(APIView):
     def get(self, request, **kwargs):
         serializer = self.serializer_class(partial=True)
         response_data = {'serializer': serializer, 'style': self.style}
-        stage = int(kwargs['stage']) if 'stage' in kwargs else 0
-        response_data['stage'] = stage
-        if stage == 0:
-            return Response(response_data)
-        elif stage == 1:
-            # uncomment below line to enable entry if company purchase (Enterprise Plan)
-            # response_data['serializer'] = CompanySerializer(partial=True)
-            return Response(response_data)
-        else:
-            return Http404
+        return Response(response_data)
 
     def post(self, request, **kwargs):
         serializer = self.serializer_class(partial=True)
         response_data = {'serializer': serializer, 'style': self.style}
-        stage = int(kwargs['stage']) if 'stage' in kwargs else 0
-        response_data['stage'] = stage
-        # print(">> KWARGS === {}".format(kwargs))
+        print(">> KWARGS === {}".format(kwargs))
         # print(">> Request:POST::DATA === {}".format(request.data.items()))
+        # profile_img = request.data.get("profile_image", None)
+        # if profile_img:
+        #     response_data["profile_image"] = self.request.FILES["profile_image"]
+        print(">>> {}".format(request.data.get('contact_number')))
         for field, value in request.data.items():
-            if request.data[field]:
-                if field == "profile_image":
-                    print(self.request.FILES)
-                    response_data[field] = self.request.FILES[field]
-                else:
-                    response_data[field] = self.request.data[field]
-        # print(response_data)
-        if stage == 1:
-            # plan_obj = Plan.objects.get(pk=response_data['has_plan'])
-            # role_level = 1 if plan_obj.plan_name == 2 else 2
-            serializer = self.serializer_class(data=response_data)
-            serializer.initial_data.update({'role': 2})
-            if serializer.is_valid():
-                print("valid serializer")
-                user_serializer = serializer.save()
-                #  ## settings for (Enterprise Plan) --begin here
-                # uncomment below line(s) to enable entry if company purchase (Enterprise Plan)
-                # response_data['serializer'] = CompanySerializer
-                # comment below line(s)
-                company_serializer = CompanySerializer(
-                    data={'company_user': user_serializer.id,
-                          'name': user_serializer.get_full_name()})
-                if company_serializer.is_valid():
-                    company_serializer.save()
-                else:
-                    msg = "Error: Something bad happened. Reason: {}".format(company_serializer.errors)
-                    messages.error(request, message=msg)
-                    response_data['stage'] -= 1
-                    return Response(response_data)
-                response_data['stage'] = 5
-                # ## settings for (Enterprise Plan) --- Ends here
-                messages.success(request, message="Plan activated Successfully!")
-                return Response(response_data)
+            if field == "profile_image":
+                # print(self.request.FILES)
+                continue
+                response_data[field] = self.request.FILES[field]
             else:
-                msg = "Error: Something bad happened. Reason: {}".format(serializer.errors)
+                response_data[field] = self.request.data[field]
+        serializer = self.serializer_class(data=response_data)
+        serializer.initial_data.update({'role': 2})
+        if serializer.is_valid():
+            print("valid serializer")
+            user_serializer = serializer.save()
+            company_serializer = CompanySerializer(
+                data={'company_user': user_serializer.id,
+                      'name': user_serializer.get_full_name()})
+            if company_serializer.is_valid():
+                print("valid company serializer")
+                company_serializer.save()
+            else:
+                msg = "Error: Something bad happened. Reason: {}".format(company_serializer.errors)
                 messages.error(request, message=msg)
-                response_data['stage'] -= 1
-                return Response(response_data)
-                # return HttpResponseRedirect(reverse_lazy('select_plan', kwargs={'stage': 0}))
-        elif stage == 2:
-            print(request.data)
-            serializer = CompanySerializer(data=response_data, partial=True)
-            serializer.initial_data.update({'company_user': self.request.user.id})
-            if serializer.is_valid():
-                messages.success(request, message="Successfully created company profile.")
-                return Response(response_data)
-            else:
-                messages.error(request, message="Error: Something bad happened. Reason: {}".format(serializer.errors))
-                return Response(response_data)
+            # ## settings for (Enterprise Plan) --- Ends here
+            messages.success(request, message="Plan activated Successfully!")
+            return Response(response_data)
         else:
-            return HttpResponseRedirect(reverse_lazy('select_plan', kwargs={'stage': 0}))
+            msg = "Error: Something bad happened. Reason: {}".format(serializer.errors)
+            messages.error(request, message=msg)
+            return Response(response_data)
 
 
 class CustomAuthentication(ObtainAuthToken):
