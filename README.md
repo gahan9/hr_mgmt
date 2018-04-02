@@ -163,3 +163,16 @@ Survey API Doc
 }
 ```
 
+
+Running Test
+============
+Selenium Test
+-------------
+**Login with fixture**
+```
+python manage.py test main.tests.LoginTestWithFixture
+```
+**Login without fixture**
+```
+python manage.py test main.tests.LoginTestWithoutFixture
+```

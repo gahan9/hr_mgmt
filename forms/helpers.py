@@ -35,6 +35,7 @@ create_user_helper.layout = Layout(
         Field('profile_image', css_class='form-control', placeholder='Company Logo'),
         Field('first_name', css_class='form-control', placeholder='First Name'),
         Field('last_name', css_class='form-control', placeholder='Last Name'),
+        Field('gender', css_class='form-control', placeholder='Gender'),
         Field('email', css_class='form-control', placeholder='Email'),
         Field('password', css_class='form-control', placeholder='Password'),
         Field('alternate_contact_no', css_class='form-control', placeholder='Mobile Number'),

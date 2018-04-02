@@ -124,19 +124,12 @@ class PlanSelector(APIView):
     def post(self, request, **kwargs):
         serializer = self.serializer_class(partial=True)
         response_data = {'serializer': serializer, 'style': self.style}
-        print(">> KWARGS === {}".format(kwargs))
-        # print(">> Request:POST::DATA === {}".format(request.data.items()))
-        # profile_img = request.data.get("profile_image", None)
-        # if profile_img:
-        #     response_data["profile_image"] = self.request.FILES["profile_image"]
-        print(">>> {}".format(request.data.get('contact_number')))
         for field, value in request.data.items():
-            if field == "profile_image":
-                # print(self.request.FILES)
-                continue
-                response_data[field] = self.request.FILES[field]
-            else:
-                response_data[field] = self.request.data[field]
+            if request.data[field]:
+                if field == "profile_image":
+                    response_data[field] = request.FILES[field]
+                else:
+                    response_data[field] = request.data[field]
         serializer = self.serializer_class(data=response_data)
         serializer.initial_data.update({'role': 2})
         if serializer.is_valid():
@@ -148,16 +141,16 @@ class PlanSelector(APIView):
             if company_serializer.is_valid():
                 print("valid company serializer")
                 company_serializer.save()
+                messages.success(request, message="Plan activated Successfully!")
             else:
+                print("invalid company serializer")
                 msg = "Error: Something bad happened. Reason: {}".format(company_serializer.errors)
                 messages.error(request, message=msg)
-            # ## settings for (Enterprise Plan) --- Ends here
-            messages.success(request, message="Plan activated Successfully!")
-            return Response(response_data)
         else:
+            print("invalid user serializer")
             msg = "Error: Something bad happened. Reason: {}".format(serializer.errors)
             messages.error(request, message=msg)
-            return Response(response_data)
+        return Response(response_data)
 
 
 class CustomAuthentication(ObtainAuthToken):

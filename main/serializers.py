@@ -36,8 +36,6 @@ class UserSerializer(serializers.ModelSerializer):
     """ User serializer """
     has_plan = PrimaryKeyRelatedField(queryset=Plan.objects.all())
     contact_number = PhoneNumberField(style={'placeholder': 'Contact Number', 'hide_label': True})
-    # contact_number = serializers.IntegerField(
-    #     style={'placeholder': 'Contact Number', 'hide_label': True})
     first_name = serializers.CharField(
         style={'placeholder': 'First Name', 'hide_label': True})
     last_name = serializers.CharField(

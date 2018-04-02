@@ -91,13 +91,13 @@ class UserModel(AbstractUser):
     # contact_number = models.CharField(max_length=12, unique=True, verbose_name="Contact Number")
     contact_number = PhoneNumberField(unique=True,
                                       verbose_name=_("Contact Number"),
-                                      help_text=_("Contact Number"))
+                                      help_text=_("Contact Number with country code"))
     profile_image = models.ImageField(upload_to='media/uploads/', blank=True, null=True,
                                       verbose_name=_("Profile Image"),
                                       help_text=_("Profile Picture"))
     role = models.IntegerField(choices=ROLE_CHOICES, default=3,
                                verbose_name=_("Role of user"),
-                               help_text=_("User Role in system(2 - HR; 3 - Employee)"))
+                               help_text=_("User Role in system"))  # (2 - HR; 3 - Employee)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICE, default='M')
     username = models.CharField(max_length=10, blank=True, null=True, unique=False)
     is_blocked = models.BooleanField(default=False,

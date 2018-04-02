@@ -1,5 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
+from phonenumber_field.formfields import PhoneNumberField
+
 from forms.helpers import *
 
 from main.models import *
@@ -56,6 +58,7 @@ class CreateCompanyForm(forms.ModelForm):
 
 class CreateUserForm(forms.ModelForm):
     """ Create user """
+    contact_number = PhoneNumberField()
     password = forms.CharField(widget=forms.PasswordInput)
     alternate_email = forms.EmailField(widget=forms.EmailInput)
     job_title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -85,7 +88,7 @@ class CreateUserForm(forms.ModelForm):
 
     class Meta:
         model = UserModel
-        fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'password', 'email', 'role']
+        fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'gender', 'password', 'email', 'role']
 
 
 class EditUserForm(forms.ModelForm):
