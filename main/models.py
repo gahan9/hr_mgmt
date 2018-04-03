@@ -115,6 +115,15 @@ class UserModel(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
     @property
+    def profile_image_url(self):
+        if self.has_profile_image:
+            # returns url of profile image
+            return self.profile_image.url
+        else:
+            # if user didn't set any profile image then return dummy image
+            return "http://lorempixel.com/300/300/"
+
+    @property
     def has_profile_image(self):
         return bool(self.profile_image)
 

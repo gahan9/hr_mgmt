@@ -24,6 +24,6 @@ dj-database-url==0.4.2
 whitenoise==3.3.1
 selenium
 faker
+django-fixture-magic
 firebase_token_generator
 firebase_admin
-

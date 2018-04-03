@@ -25,7 +25,6 @@ class Employee(models.Model):
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="employee", on_delete=models.CASCADE)
     company_name = models.ForeignKey(Company, on_delete=models.CASCADE)
-    registration_date = models.DateTimeField(auto_now=True)
     alternate_email = models.EmailField(blank=True, null=True, verbose_name="Alternate Email")
     alternate_contact_no = models.CharField(max_length=15, blank=True, null=True, verbose_name="Alternate Contact Number")
     job_title = models.CharField(max_length=30, verbose_name="Job Title", blank=True)
@@ -35,6 +34,16 @@ class Employee(models.Model):
     country = models.CharField(max_length=50, verbose_name="Work Country", blank=True)
     category = models.CharField(max_length=30, verbose_name="Category/Region", blank=True, null=True)
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="created_by", blank=True, null=True)
+    date_updated = models.DateTimeField(auto_now=True)
+    registration_date = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def has_alternate_email(self):
+        return bool(self.alternate_email)
+
+    @property
+    def has_alternate_contact_no(self):
+        return bool(self.alternate_contact_no)
 
     def __unicode__(self):
         return self.user.contact_number
@@ -224,8 +233,10 @@ class NewsFeed(models.Model):
     feed = models.TextField()
     priority = models.IntegerField(blank=True, null=True, default=0)
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         verbose_name_plural = "News Feed"

@@ -2,11 +2,18 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
+from employee.models import Employee
 from .models import *
+
+
+class EmployeeInline(admin.StackedInline):
+    model = Employee
+    fk_name = 'user'
 
 
 class UserModelAdmin(UserAdmin):
     """ Model Admin to handle custom user model by Super User"""
+    inlines = [EmployeeInline]
     fieldsets = (
         (None, {'fields': ('contact_number', 'password', 'has_plan')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'profile_image')}),

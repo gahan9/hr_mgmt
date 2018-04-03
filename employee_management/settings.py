@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'djmoney',
     'jsonfield',
     'phonenumber_field',
+    'fixture_magic'
 ]
 
 MIDDLEWARE = [

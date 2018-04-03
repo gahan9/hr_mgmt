@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.test import TestCase
 from django.urls import reverse_lazy
+from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
 
@@ -23,70 +24,59 @@ faker = Faker()
 
 
 def _sleep(seconds=2, flag=True):
-    flag = False
+    # flag = False
     if flag:
         time.sleep(seconds)
 
 
 class LoginTest(TestCase):
     fixtures = ['data_dump.json']
-    hr_credentials = {"contact_number": '9999999901', "password": computeMD5hash('1')}
-    user_credentials = {"contact_number": '8888888808', "password": computeMD5hash('1')}
+    hr_credentials = {"contact_number": '+919999999901', "password": computeMD5hash('1')}
+    user_credentials = {"contact_number": '+919999999902', "password": computeMD5hash('1')}
 
     def test_hr_login(self):
         self.client.login(**self.hr_credentials)  # login to the system
         response = self.client.get(reverse_lazy('home'), follow=True)  # try to access home page
         self.assertFalse(response.context['user'].is_anonymous, "User unable to log in with given credentials")
         self.assertTrue(response.context['user'].is_hr, "Logged in User is not HR")
+        self.client.get(reverse_lazy('logout'))
 
     def test_user_login(self):
         self.client.login(**self.user_credentials)
         response = self.client.get(reverse_lazy('home'), follow=True)
         self.assertFalse(response.context['user'].is_anonymous)
         self.assertTrue(response.context['user'].is_employee)
-
-
-class DashboardTest(TestCase):
-    # fixtures = ['dump.json']
-
-    def setUpTestData(self):
-        self.number = random.randint(7000000000, 9999999999)
-        self.first_name, self.last_name = faker.name().split()
-        self.email = faker.email()
-        self.company_name = faker.company()
-        self.country_code = faker.country_code()
-        self.name_length = None
-        self.company_postfix = ['Co', 'Organization', 'Ltd.', 'Corporation', 'Management']
-
-    def old_test_create_hr(self):
-        _hr = User.objects.create(contact_number=self.number, email=self.email,
-                                  first_name=self.first_name, last_name=self.last_name,
-                                  password=set_password_hash(self.number), role=2)
-        _activity_instance = ActivityMonitor.objects.create(
-            activity_type=0, performed_by=_hr, affected_user=_hr)
-        _company_instance = Company.objects.create(company_user=_hr,
-                                                   name=self.company_name,
-                                                   alternate_contact_no=random.randint(1000000000, 9999999999),
-                                                   alternate_email=self.email,
-                                                   country=self.country_code)
-
-    def old_test_create_employee(self):
-        _main_profile = User.objects.create(contact_number=self.number, email=self.email,
-                                            first_name=self.first_name, last_name=self.last_name,
-                                            password=set_password_hash(self.number), role=3)
-        _activity_instance = ActivityMonitor.objects.create(
-            activity_type=0, performed_by=_main_profile, affected_user=_main_profile)
-        _employee = Employee.objects.create(user=_main_profile,
-                                            company_name=self.company_name,
-                                            job_title='job_title',
-                                            alternate_email=self.email,
-                                            alternate_contact_no=self.number, street='street',
-                                            zip_code=random.randint(10000, 99999),
-                                            city='city', country='US')
+        self.client.get(reverse_lazy('logout'))
 
 
 class BaseLoginTest(StaticLiveServerTestCase):
     fixtures = None
+    user_credentials = {"username": '+919999999902', "password": '1'}
+
+    def take_snapshot(self):
+        _sleep(1)
+        _name = "snapshot_{}.png".format(timezone.now().strftime('%Y-%d-%m_%H.%M.%S'))
+        _path = os.path.join(getattr(settings, 'MEDIA_ROOT'), 'selenium', _name)
+        self.selenium.save_screenshot(_path)
+        print("Snapshot saved at: {}".format(_path))
+
+    def setup_incognito(self):
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--incognito")
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        settings.DEBUG = True
+        cls.selenium = WebDriver()
+        cls.selenium.implicitly_wait(15)
+        # cls.driver.implicitly_wait(15)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
 
     def setUp(self):
         self.credentials = {
@@ -106,6 +96,32 @@ class BaseLoginTest(StaticLiveServerTestCase):
         self.company_postfix = ['Co', 'Organization', 'Ltd.', 'Corporation', 'Management']
         self.path = '/home/quixom/Pictures/Wallpapers/'
 
+    def generate_profile(self, gender="M", role=3):
+        if gender == "F":
+            _first_name, _last_name = faker.name_female().split()
+        else:
+            _first_name, _last_name = faker.name_male().split()
+        return {
+            "contact_number": self.get_phone_number(),
+            "profile_image": self.get_profile_image(),
+            "role": 3,
+            "first_name": _first_name,
+            "last_name": _last_name,
+            "email": faker.email(),
+            "password": faker.password(),
+            "gender": gender,
+        }
+
+    def generate_employee_profile(self):
+        return {
+            "job_title": faker.job(),
+            "street": faker.street_address(),
+            "zip_code": faker.zipcode(),
+            "city": faker.city(),
+            "country": faker.country(),
+            "category": faker.country(),
+        }
+
     def get_profile_image(self):
         if os.path.exists(self.path):
             images = os.listdir(self.path)
@@ -120,18 +136,6 @@ class BaseLoginTest(StaticLiveServerTestCase):
         # test demo create plan by admin
         Plan.objects.create(plan_name=1, plan_price=49)
         Plan.objects.create(plan_name=1, plan_price=4.99)
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        settings.DEBUG = True
-        cls.selenium = WebDriver()
-        cls.selenium.implicitly_wait(15)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.selenium.quit()
-        super().tearDownClass()
 
     def _test_purchase_plan(self):
         # creates dashboard account - HR user creation
@@ -148,6 +152,28 @@ class BaseLoginTest(StaticLiveServerTestCase):
         plan_select.select_by_value("1")
         self.selenium.find_element_by_name('submit').click()
         _sleep(1)
+
+    def _login(self, **kwargs):
+        """
+        login to system with credential created
+        :param kwargs:
+            : credentials: provide credentials for login
+            : driver: provide web driver if not self.selenium used in setup
+        :return:
+        """
+        driver = kwargs.get('driver', self.selenium)
+        credentials = kwargs.get('credentials', self.user_credentials)
+        driver.get(self.login_url)  # /login/
+        _username = credentials['username']
+        _password = credentials['password']
+        username_input = driver.find_element_by_name("username")
+        username_input.send_keys(_username)
+        password_input = driver.find_element_by_name("password")
+        password_input.send_keys(_password)
+        driver.find_element_by_id('login').click()
+
+    def _logout(self):
+        self.selenium.get("{}{}".format(self.live_server_url, reverse_lazy('logout')))
 
     def _test_login(self, **kwargs):
         # login to system with credential created
@@ -208,17 +234,50 @@ class LoginTestWithoutFixture(BaseLoginTest):
         # test method to execute tests in order
         self._create_plan()
         self._test_purchase_plan()
-        self._test_login(flag=False)
+        cred = {"username": self.contact_number, "password": self.password}
+        self._login(credentials=cred)
         self.common_test_after_login()
         _sleep(5)
 
 
 class LoginTestWithFixture(BaseLoginTest):
-    fixtures = ['data_dump.json']
+    fixtures = ['mf.json']
 
     def test_ordered_with_fixtures(self):
         #  load fixtures before running this test
-        self._test_login(flag=True)
+        cred = {"username": self.contact_number, "password": self.password}
+        self._login(credentials=cred)
         self.common_test_after_login()
-        self.selenium.get("{}{}".format(self.live_server_url, reverse_lazy('logout')))
+        self._logout()
         _sleep(5)
+
+    def test_modify_employee_data(self):
+        self._test_login(flag=True)
+        self.take_snapshot()
+        self._click_link('employee_data')
+        self._click_link('view_data')  # reached at view employee data
+        self.take_snapshot()
+        cred = {"username": "+919999999904", "password": "r@123456789"}
+        self.selenium.find_element_by_link_text(cred['username']).click()  # select employee by number
+        _field = self.selenium.find_element_by_name('email')  # select field
+        self.take_snapshot()
+        _field.clear()  # clear field
+        _field.send_keys(faker.company_email())  # enter random email
+        self.take_snapshot()
+        self.selenium.find_element_by_xpath("//input[contains(@type, 'submit')]").click()
+        self.selenium.find_element_by_link_text(cred['username']).click()
+        self.take_snapshot()
+        self.selenium.find_element_by_partial_link_text("Reset Password").click()
+        _password = self.selenium.find_element_by_name('password')  # select password element
+        self.take_snapshot()
+        _password.clear()  # clear password
+        _password.send_keys(cred['password'])  # enter password
+        self.take_snapshot()
+        self.selenium.find_element_by_xpath("//input[contains(@type, 'submit')]").click()
+        self.take_snapshot()
+        self._logout()
+        self.take_snapshot()
+        self._login(credentials=cred)
+        self.take_snapshot()
+        self._logout()
+        # self.incognito_login(flag=True)
