@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from main.models import *
-from jsonfield import JSONField
+from .utils import CustomJSONField as JSONField
 
 
 def default_start_time():

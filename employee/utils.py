@@ -1,4 +1,14 @@
 from rest_framework.views import exception_handler
+from jsonfield import JSONField
+
+
+class CustomJSONField(JSONField):
+    def value_from_object(self, obj):
+        """Return the value of this field in the given model instance."""
+        return getattr(obj, self.attname)
+
+    def value_to_string(self, obj):
+        return str(self.value_from_object(obj))
 
 
 def custom_exception_handler(exc, context):
