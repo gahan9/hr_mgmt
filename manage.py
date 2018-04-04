@@ -9,7 +9,7 @@ if __name__ == "__main__":
             host_name = socket.gethostbyname(socket.gethostname())
         else:
             host_name = os.popen('hostname -I').read().strip()
-            print("Host: {}".format(host_name))
+            # print("Host: {}".format(host_name))
     except Exception as e:
         print("Couldn't get host name due to : {}".format(e))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "employee_management.settings")

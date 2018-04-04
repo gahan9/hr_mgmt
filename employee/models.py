@@ -1,18 +1,19 @@
 import ast
-from calendar import timegm
-from datetime import datetime, timedelta
-
 import time
+from calendar import timegm
+from datetime import timedelta
+
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.translation import ugettext_lazy as _
 
 from main.models import *
 from .utils import CustomJSONField as JSONField
 
 
 def default_start_time():
-    return datetime.now()
+    return timezone.now()
 
 
 def default_end_time():
@@ -25,14 +26,14 @@ class Employee(models.Model):
     """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="employee", on_delete=models.CASCADE)
     company_name = models.ForeignKey(Company, on_delete=models.CASCADE)
-    alternate_email = models.EmailField(blank=True, null=True, verbose_name="Alternate Email")
-    alternate_contact_no = models.CharField(max_length=15, blank=True, null=True, verbose_name="Alternate Contact Number")
-    job_title = models.CharField(max_length=30, verbose_name="Job Title", blank=True)
-    street = models.CharField(max_length=50, verbose_name="Work Street", blank=True)
-    zip_code = models.CharField(max_length=50, verbose_name="Work Zip Code", blank=True)
-    city = models.CharField(max_length=50, verbose_name="Work City", blank=True)
-    country = models.CharField(max_length=50, verbose_name="Work Country", blank=True)
-    category = models.CharField(max_length=30, verbose_name="Category/Region", blank=True, null=True)
+    alternate_email = models.EmailField(_("Alternate Email"), blank=True, null=True)
+    alternate_contact_no = models.CharField(_("Alternate Contact Number"), max_length=15, blank=True, null=True)
+    job_title = models.CharField(_("Job Title"), max_length=30, blank=True)
+    street = models.CharField(_("Work Street"), max_length=50, blank=True)
+    zip_code = models.CharField(_("Work Zip Code"), max_length=50, blank=True)
+    city = models.CharField(_("Work City"), max_length=50, blank=True)
+    country = models.CharField(_("Work Country"), max_length=50, blank=True)
+    category = models.CharField(_("Category/Region"), max_length=30, blank=True, null=True)
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="created_by", blank=True, null=True)
     date_updated = models.DateTimeField(auto_now=True)
     registration_date = models.DateTimeField(auto_now_add=True)
@@ -124,10 +125,10 @@ class Survey(models.Model):
     Survey model, stores survey details
     """
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="survey_owner")
-    name = models.CharField(max_length=50, verbose_name="Survey Name")
-    employee_group = models.CharField(max_length=70, verbose_name="Region", blank=True, null=True)
+    name = models.CharField(_("Survey Name"), max_length=50)
+    employee_group = models.CharField(_("Region"), max_length=70, blank=True, null=True)
     question = models.ManyToManyField(QuestionDB, blank=True, related_name="rel_question")
-    steps = models.SmallIntegerField(default=1, verbose_name="Progress")
+    steps = models.SmallIntegerField(_("Progress"), default=1)
     complete = models.BooleanField(default=False)
     start_date = models.DateTimeField(default=default_start_time, blank=True, null=True)
     end_date = models.DateTimeField(default=default_end_time, blank=True, null=True)
@@ -207,6 +208,29 @@ class SurveyResponse(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def benchmark(self):
+        total_rating = 0
+        total_count = 0
+        total_comments = 0
+        comment_list = []
+        for response in self.answers:
+            _rating = self.answers[response].get("r", 0)
+            _comment = self.answers[response].get("m", "")
+            if _rating:
+                total_rating += _rating  # increment total rating
+                total_count += 1
+            if _comment:
+                comment_list.append(_comment)
+                total_comments += 1
+        return {
+            "total_rating": total_rating,
+            "number_of_ratings": total_count,
+            "average_rating": total_rating/total_count,
+            "comments": comment_list,
+            "total_comments": total_comments
+        }
+
     def __str__(self):
         return "{} - {}".format(self.related_survey, self.answers)
 
@@ -217,7 +241,7 @@ class SurveyResponse(models.Model):
 class FileUpload(models.Model):
     """ File Upload Model """
     uploader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
-    file = models.FileField(upload_to='.', verbose_name="File")
+    file = models.FileField(_("File"), upload_to='.')
     added = models.DateTimeField(auto_now=True)
 
     def __str__(self):
