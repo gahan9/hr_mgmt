@@ -208,29 +208,6 @@ class SurveyResponse(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
-    @property
-    def benchmark(self):
-        total_rating = 0
-        total_count = 0
-        total_comments = 0
-        comment_list = []
-        for response in self.answers:
-            _rating = self.answers[response].get("r", 0)
-            _comment = self.answers[response].get("m", "")
-            if _rating:
-                total_rating += _rating  # increment total rating
-                total_count += 1
-            if _comment:
-                comment_list.append(_comment)
-                total_comments += 1
-        return {
-            "total_rating": total_rating,
-            "number_of_ratings": total_count,
-            "average_rating": total_rating/total_count,
-            "comments": comment_list,
-            "total_comments": total_comments
-        }
-
     def __str__(self):
         return "{} - {}".format(self.related_survey, self.answers)
 

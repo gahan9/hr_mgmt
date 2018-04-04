@@ -13,7 +13,7 @@ from selenium.webdriver.support.select import Select
 
 from employee.models import Employee
 from main.models import Company, ActivityMonitor, Plan
-from main.utility import set_password_hash, computeMD5hash
+from main.utility import set_password_hash, computeMD5hash, generate_dump
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 # from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -269,7 +269,7 @@ class LoginTestWithFixture(BaseLoginTest):
 
 
 class SurveyTest(BaseLoginTest):
-    fixtures = ['mf.json']
+    fixtures = generate_dump()
 
     def test_create_survey(self):
         self._login(credentials=self.credentials)
@@ -284,6 +284,17 @@ class SurveyTest(BaseLoginTest):
         _root_list = "//ul[contains(@id, 'me-select-list')]"
         _ul = self.selenium.find_element_by_xpath(_root_list)
         print(_ul)
-        print(dir(_ul))
-        _sleep(30)
+        _li = _ul.find_elements_by_tag_name("li")
+        print(_li)
+        to_be_select_li = [random.choice(_li) for i in range(random.randint(1, len(_li)-2))]
+        # print(to_be_select_li)
+        # print(len(to_be_select_li))
+        # self.selenium.execute_script()
+        for i in to_be_select_li:
+            # self.selenium.execute_script()
+            print(i)
+            print(dir(i))
+            i.click()
+        _sleep(10)
         self.selenium.find_element_by_id("next").click()
+        _sleep(30)

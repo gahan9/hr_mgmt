@@ -1,4 +1,6 @@
 import hashlib
+import os
+
 from django import forms
 from django.contrib.auth.hashers import make_password
 from django.db.models import FileField
@@ -50,3 +52,23 @@ class ContentTypeRestrictedFileField(FileField):
         except AttributeError:
             pass
         return data
+
+
+def generate_dump():
+    """
+    fixtures : ['employee.json', 'fileupload.json', 'newsfeed.json', 'questiondb.json', 'survey.json', 'surveyresponse.json', 'company.json', 'usermodel.json', 'plan.json', 'activitymonitor.json']
+    :return:
+    """
+    employee_tables = ["employee", "fileupload", "newsfeed", "questiondb", "survey", "surveyresponse"]
+    main_tables = ["company", "usermodel", "plan", "activitymonitor"]
+    base_cmd = "/usr/bin/python3 manage.py dump_object {} '*' > {}.json"
+    db = [("employee." + i, i) for i in employee_tables]
+    db += [("main." + i, i) for i in main_tables]
+    db_lis = []
+    for i in db:
+        _path = os.path.join("/home/quixom/Project/employee_management/employee/fixtures", i[1])
+        db_lis.append(i[1] + ".json")
+        _cmd = base_cmd.format(i[0], _path)
+        os.popen(_cmd)
+    return db_lis
+
