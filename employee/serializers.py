@@ -220,15 +220,6 @@ class SurveyResponseSerializer(serializers.HyperlinkedModelSerializer):
     """ Serializer to take response of Survey """
     answers = serializers.JSONField()
     survey_id = serializers.PrimaryKeyRelatedField(source='related_survey', queryset=Survey.objects.filter(complete=True))
-    benchmark = serializers.SerializerMethodField(required=False, read_only=True)
-
-    def get_benchmark(self, obj):
-        current_user = self.context['request'].user
-        response_data = {}
-        if current_user.is_hr:
-            return obj.benchmark
-        else:
-            return response_data
 
     def validate(self, attrs):
         attrs['related_user'] = self.context['request'].user
@@ -250,7 +241,7 @@ class SurveyResponseSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = SurveyResponse
-        fields = ["url", "id", "survey_id", "related_user", "answers", "complete", "benchmark"]
+        fields = ["url", "id", "survey_id", "related_user", "answers", "complete"]
         read_only_fields = ('related_user', )
 
 
