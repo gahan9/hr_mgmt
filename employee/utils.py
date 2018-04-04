@@ -8,7 +8,7 @@ class CustomJSONField(JSONField):
         return getattr(obj, self.attname)
 
     def value_to_string(self, obj):
-        return str(self.value_from_object(obj))
+        return dict(self.value_from_object(obj))
 
 
 def custom_exception_handler(exc, context):

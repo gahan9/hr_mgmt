@@ -161,6 +161,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
             : driver: provide web driver if not self.selenium used in setup
         :return:
         """
+        self.take_snapshot()
         driver = kwargs.get('driver', self.selenium)
         credentials = kwargs.get('credentials', self.user_credentials)
         driver.get(self.login_url)  # /login/
@@ -171,29 +172,15 @@ class BaseLoginTest(StaticLiveServerTestCase):
         password_input = driver.find_element_by_name("password")
         password_input.send_keys(_password)
         driver.find_element_by_id('login').click()
+        self.take_snapshot()
 
     def _logout(self):
         self.selenium.get("{}{}".format(self.live_server_url, reverse_lazy('logout')))
 
-    def _test_login(self, **kwargs):
-        # login to system with credential created
-        self.selenium.get(self.login_url)  # /login/
-        flag = kwargs.get('flag', True)
-        if flag:
-            _username = self.credentials['username']
-            _password = self.credentials['password']
-        else:
-            _username = self.contact_number
-            _password = self.password
-        username_input = self.selenium.find_element_by_name("username")
-        username_input.send_keys(_username)
-        password_input = self.selenium.find_element_by_name("password")
-        password_input.send_keys(_password)
-        self.selenium.find_element_by_id('login').click()
-
     def _click_link(self, link_href='view_data'):
         self.selenium.find_element_by_xpath("//a[contains(@href,'{}')]".format(link_href)).click()
         _sleep(2)
+        self.take_snapshot()
 
     def _create_user(self, gender="M"):
         self.selenium.find_element_by_name('contact_number').send_keys(self.get_phone_number())
@@ -217,6 +204,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
         Select(self.selenium.find_element_by_name('gender')).select_by_visible_text(_gender)
         self.selenium.find_element_by_xpath("//input[contains(@type, 'submit')]").click()
         _sleep(5)
+        self.take_snapshot()
 
     def common_test_after_login(self):
         self._click_link('employee_data')
@@ -252,11 +240,11 @@ class LoginTestWithFixture(BaseLoginTest):
         _sleep(5)
 
     def test_modify_employee_data(self):
-        self._test_login(flag=True)
+        """selenium test to modify employee information/password and login with new credentials"""
+        self._login(credentials=self.credentials)
         self.take_snapshot()
         self._click_link('employee_data')
         self._click_link('view_data')  # reached at view employee data
-        self.take_snapshot()
         cred = {"username": "+919999999904", "password": "r@123456789"}
         self.selenium.find_element_by_link_text(cred['username']).click()  # select employee by number
         _field = self.selenium.find_element_by_name('email')  # select field
@@ -276,8 +264,26 @@ class LoginTestWithFixture(BaseLoginTest):
         self.selenium.find_element_by_xpath("//input[contains(@type, 'submit')]").click()
         self.take_snapshot()
         self._logout()
-        self.take_snapshot()
         self._login(credentials=cred)
-        self.take_snapshot()
         self._logout()
-        # self.incognito_login(flag=True)
+
+
+class SurveyTest(BaseLoginTest):
+    fixtures = ['mf.json']
+
+    def test_create_survey(self):
+        self._login(credentials=self.credentials)
+        self._click_link(link_href="field_rate")
+        self._click_link(link_href="survey")
+        self._click_link(link_href="create_survey")
+        _sleep(5)
+        self.selenium.find_element_by_id("survey-name").send_keys(faker.word())
+        self.selenium.find_element_by_id("next").click()
+        self.selenium.find_element_by_id("survey-group").send_keys(faker.word())
+        self.selenium.find_element_by_id("next").click()
+        _root_list = "//ul[contains(@id, 'me-select-list')]"
+        _ul = self.selenium.find_element_by_xpath(_root_list)
+        print(_ul)
+        print(dir(_ul))
+        _sleep(30)
+        self.selenium.find_element_by_id("next").click()
