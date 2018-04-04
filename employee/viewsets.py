@@ -84,10 +84,23 @@ class QuestionSet(generics.ListCreateAPIView):
         return queryset
 
 
+class CustomDict(object):
+    def __init__(self, _dict):
+        self.dict = _dict
+
+    @property
+    def pk(self):
+        return self.dict.get('id')
+
+
 class SurveyViewSet(viewsets.ModelViewSet):
     """Survey API to list, add, modify survey
     -----------------------------------------
-    - **params**: `benchmark=True`  // return list of surveys having benchmark
+    - **params**
+
+        :`benchmark=True`  // return list of surveys having benchmark
+
+        :`city=<city-name>`  // return survey list with benchmark filtered by city (exact case insensitive match)
     """
     serializer_class = SurveySerializer
     queryset = Survey.objects.all()
@@ -95,6 +108,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         current_user = self.request.user
         benchmark = self.request.query_params.get('benchmark', None)
+        city = self.request.query_params.get('city', None)
         if current_user.is_superuser:
             # super user can see all queryset
             queryset = self.queryset
@@ -108,7 +122,18 @@ class SurveyViewSet(viewsets.ModelViewSet):
                 queryset = self.queryset.filter(created_by=current_user)
         if benchmark:
             # return only survey if benchmark available
-            queryset = [i for i in queryset if i.benchmark]
+            queryset = queryset.filter(rel_survey__isnull=False)  # has survey response (including partial)
+            # queryset = queryset.filter(rel_survey__complete=True)  # has completed survey response
+        if city:
+            temp_queryset = []
+            # for i in queryset:
+            #     _dict = model_to_dict(i)
+            #     _dict['benchmark'] = i.filter_benchmark(city=city)
+            #     _object = CustomDict(_dict)
+            #     for key, val in _dict.items():
+            #         setattr(_object, key, _dict[val])
+            #     temp_queryset.append(_object)
+            queryset = temp_queryset
         return queryset
 
     def update(self, request, *args, **kwargs):
@@ -133,7 +158,9 @@ class SurveyViewSet(viewsets.ModelViewSet):
 
 
 class SurveyResponseViewSet(viewsets.ModelViewSet):
-    """ API for saving response of survey """
+    """ API for saving response of survey
+    TODO: Restrict survey response for user with 'employee' attribute only.
+    """
     serializer_class = SurveyResponseSerializer
     queryset = SurveyResponse.objects.all()
 

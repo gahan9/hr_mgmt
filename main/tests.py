@@ -286,15 +286,43 @@ class SurveyTest(BaseLoginTest):
         print(_ul)
         _li = _ul.find_elements_by_tag_name("li")
         print(_li)
-        to_be_select_li = [random.choice(_li) for i in range(random.randint(1, len(_li)-2))]
+        to_be_select_li = [_li[random.randint(1, len(_li)-1)] for i in range(random.randint(1, len(_li)-2))]
         # print(to_be_select_li)
         # print(len(to_be_select_li))
         # self.selenium.execute_script()
-        for i in to_be_select_li:
+        for i in set(to_be_select_li):
             # self.selenium.execute_script()
-            print(i)
-            print(dir(i))
             i.click()
         _sleep(10)
         self.selenium.find_element_by_id("next").click()
         _sleep(30)
+
+
+def shell_setup():
+    global driver
+    global _username
+    global _password
+    driver = WebDriver()
+    driver.implicitly_wait(20)
+    driver.get('http://192.168.5.47:8889/login/')
+    _username = "+919999999901"
+    _password = "1"
+    username_input = driver.find_element_by_name("username")
+    username_input.send_keys(_username)
+    password_input = driver.find_element_by_name("password")
+    password_input.send_keys(_password)
+    driver.find_element_by_id('login').click()
+    driver.get('http://192.168.5.47:8889/create_survey/')
+    # add survey name
+    driver.find_element_by_id("survey-name").send_keys(faker.word())
+    driver.find_element_by_id("next").click()
+    # add survey group
+    driver.find_element_by_id("survey-group").send_keys(faker.word())
+    driver.find_element_by_id("next").click()
+    # select question
+    _ul = driver.find_element_by_xpath("//ul[contains(@id, 'me-select-list')]")
+    _li = _ul.find_elements_by_tag_name("li")
+    to_be_select_li = [_li[random.randint(1, len(_li) - 1)] for i in range(random.randint(1, len(_li) - 2))]
+    [i.click() for i in set(to_be_select_li)]
+    driver.find_element_by_id("next").click()
+    # select date

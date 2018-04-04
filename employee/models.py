@@ -157,12 +157,16 @@ class Survey(models.Model):
 
     @property
     def get_flat_answers(self):
-        return self.get_response.values_list('answers', flat=True)
+        return self.get_response.values_list('answers', 'related_user__employee__city')
 
     @property
-    def score_response(self):
+    def get_responded_city(self):
+        return self.get_response.values_list('related_user__employee__city', flat=True).distinct()
+
+    def filter_score_response(self, city=None):
+        _answers = [i for i in self.get_flat_answers if i[1].lower() == city.lower()] if city else self.get_flat_answers
         _temp_dict = {}
-        for _response in self.get_flat_answers:
+        for _response, _city in _answers:
             for _question in _response:
                 # question_instance = QuestionDB.objects.get(id=_question)
                 if _question in _temp_dict:
@@ -175,18 +179,27 @@ class Survey(models.Model):
                     _temp_dict[_question]['total_responses'] = 1
         return _temp_dict
 
-    @property
-    def benchmark(self):
+    def filter_benchmark(self, city=None):
+        _raw_dict = self.filter_score_response(city)
         _response_dict = {}
-        for i, j in self.score_response.items():
+        for i, j in _raw_dict.items():
             question_instance = QuestionDB.objects.get(id=int(i))
             j.update({
                 'average_rating': j['rating'] / j['total_responses'],
                 'question_title': question_instance.question,
                 'rate_scale': question_instance.options,
+                'cities': self.get_responded_city
             })
             _response_dict[int(i)] = j
         return _response_dict
+
+    @property
+    def score_response(self):
+        return self.filter_score_response()
+
+    @property
+    def benchmark(self):
+        return self.filter_benchmark()
 
     @property
     def get_question(self):
@@ -201,12 +214,21 @@ class Survey(models.Model):
 
 
 class SurveyResponse(models.Model):
-    related_survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="rel_survey", verbose_name="related_survey_id")
-    related_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="rel_employee", verbose_name="related_user_id", blank=True, null=True)
+    related_survey = models.ForeignKey(Survey, on_delete=models.CASCADE, verbose_name=_("related_survey_id"),
+                                       related_name="rel_survey")
+    related_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_("related_user_id"),
+                                     related_name="rel_employee", blank=True, null=True)
     answers = JSONField()
     complete = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def get_city(self):
+        if hasattr(self.related_user, "employee"):
+            return self.related_user.employee.city
+        else:
+            return ""
 
     def __str__(self):
         return "{} - {}".format(self.related_survey, self.answers)
