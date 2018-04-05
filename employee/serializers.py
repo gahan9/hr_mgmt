@@ -262,7 +262,7 @@ class NewsFeedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NewsFeed
-        fields = ["url", "id", "title", "feed", "priority", "created_by", "date_created", "date_updated",
+        fields = ["url", "id", "title", "feed", "priority", "created_by", "date_created",
                   "date_created_epoch"]
         read_only_fields = ('created_by', 'priority')
 
