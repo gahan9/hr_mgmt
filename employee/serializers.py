@@ -124,7 +124,7 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     complete = serializers.BooleanField(style={
         'placeholder': 'Completed??'}, required=False)
     question = QuestionSerializer(partial=True, allow_null=True, many=True, required=False)
-    # created_by = UserSerializer(read_only=True)
+    created_by = UserSerializer(required=False)  # keeping this won't require to add creator of survey to be pass in API
     current_time = serializers.SerializerMethodField(read_only=True)
     total_question = serializers.SerializerMethodField(read_only=True)
     responded = serializers.SerializerMethodField(required=False)
@@ -168,13 +168,8 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         requested_by = self.context['request'].user
         validated_data['created_by'] = requested_by
         que_lis = validated_data.pop('question') if 'question' in validated_data else []
-        existing_survey_instance = Survey.objects.filter(**validated_data)
-        if existing_survey_instance:
-            survey_instance = existing_survey_instance[0]
-            # print("existing survey: {}".format(survey_instance))
-        else:
-            survey_instance = Survey(**validated_data)
-            survey_instance.save()
+        survey_instance = Survey.objects.create(**validated_data)
+        print(survey_instance)
         # print(que_lis)
         for item in que_lis:
             item.pop('asked_by') if 'asked_by' in item else []

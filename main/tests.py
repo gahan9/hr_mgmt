@@ -9,7 +9,11 @@ from django.test import TestCase
 from django.urls import reverse_lazy
 from django.utils import timezone
 from selenium import webdriver
+from selenium.common.exceptions import ElementNotVisibleException
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from employee.models import Employee
 from main.models import Company, ActivityMonitor, Plan
@@ -273,28 +277,43 @@ class SurveyTest(BaseLoginTest):
 
     def test_create_survey(self):
         self._login(credentials=self.credentials)
+        self.take_snapshot()
         self._click_link(link_href="field_rate")
+        self.take_snapshot()
         self._click_link(link_href="survey")
+        self.take_snapshot()
         self._click_link(link_href="create_survey")
-        _sleep(5)
+        self.take_snapshot()
         self.selenium.find_element_by_id("survey-name").send_keys(faker.word())
+        self.take_snapshot()
         self.selenium.find_element_by_id("next").click()
         self.selenium.find_element_by_id("survey-group").send_keys(faker.word())
+        self.take_snapshot()
         self.selenium.find_element_by_id("next").click()
-        _root_list = "//ul[contains(@id, 'me-select-list')]"
-        _ul = self.selenium.find_element_by_xpath(_root_list)
-        print(_ul)
+        # select question
+        _ul = self.selenium.find_element_by_xpath("//ul[contains(@id, 'me-select-list')]")
         _li = _ul.find_elements_by_tag_name("li")
-        print(_li)
-        to_be_select_li = [_li[random.randint(1, len(_li)-1)] for i in range(random.randint(1, len(_li)-2))]
-        # print(to_be_select_li)
-        # print(len(to_be_select_li))
-        # self.selenium.execute_script()
-        for i in set(to_be_select_li):
-            # self.selenium.execute_script()
-            i.click()
-        _sleep(10)
+        to_be_select_li = [_li[random.randint(1, len(_li) - 1)] for i in range(random.randint(1, len(_li) - 2))]
+        self.take_snapshot()
+        [i.click() for i in set(to_be_select_li)]
+        self.take_snapshot()
         self.selenium.find_element_by_id("next").click()
+        # enter date
+        start_date = faker.date_between(start_date='-1m', end_date='+1w').strftime('%d/%m/00%Y')
+        end_date = faker.date_between(start_date='+2w', end_date='+1y').strftime('%d/%m/00%Y')
+        self.take_snapshot()
+        _element_start = self.selenium.find_element_by_id("survey-start-time")
+        _element_start.send_keys("{} 00:59".format(start_date))
+        # _element_start.send_keys(start_date)
+        _element_end = self.selenium.find_element_by_id("survey-end-time")
+        _element_end.send_keys("{} 00:59".format(start_date))
+        # _element_end.send_keys(end_date)
+        self.take_snapshot()
+        self.selenium.find_element_by_id("next").click()
+        self.take_snapshot()
+        self.selenium.find_element_by_id("next").click()
+        self.take_snapshot()
+        # self.selenium.find_element_by_id("next").click()
         _sleep(30)
 
 
@@ -323,6 +342,22 @@ def shell_setup():
     _ul = driver.find_element_by_xpath("//ul[contains(@id, 'me-select-list')]")
     _li = _ul.find_elements_by_tag_name("li")
     to_be_select_li = [_li[random.randint(1, len(_li) - 1)] for i in range(random.randint(1, len(_li) - 2))]
+    # for i in set(to_be_select_li):
+    #     WebDriverWait(driver, 3).until(EC.visibility_of(i))
+    #     # WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, xpaths['your_xpath_path'])))
+    #     try:
+    #         i.click()
+    #     except ElementNotVisibleException:
+    #         _sleep(2)
+    #         i.click()
+    _sleep(2)
     [i.click() for i in set(to_be_select_li)]
     driver.find_element_by_id("next").click()
     # select date
+    start_date = faker.date_between(start_date='-1m', end_date='+1w').strftime('%d/%m/%Y')
+    end_date = faker.date_between(start_date='+2w', end_date='+1y').strftime('%d/%m/%Y')
+    driver.find_element_by_id("survey-start-time").send_keys("{} 00:59".format(start_date))
+    driver.find_element_by_id("survey-start-time").send_keys(start_date)
+    driver.find_element_by_id("survey-end-time").send_keys("{} 00:59".format(start_date))
+    driver.find_element_by_id("survey-end-time").send_keys(end_date)
+

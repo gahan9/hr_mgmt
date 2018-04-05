@@ -163,6 +163,7 @@ class CustomAuthentication(ObtainAuthToken):
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        print(user)
         token, created = Token.objects.get_or_create(user=user)
         response_data = user.detail
         response_data['token'] = token.key
@@ -179,4 +180,5 @@ class CustomAuthentication(ObtainAuthToken):
                 response_data.update(_creator_hr)
         except Exception as e:
             print("Auth Exception {} for user".format(e))
+        print(response_data)
         return Response(response_data)
