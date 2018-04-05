@@ -26,6 +26,11 @@ User = get_user_model()
 
 faker = Faker()
 
+STORAGE_ROOT = os.path.join(getattr(settings, 'MEDIA_ROOT'), 'selenium')
+SNAPSHOT_STORAGE_LOCATION = os.path.join(STORAGE_ROOT, timezone.now().strftime('%Y-%d-%m_%H.%M'))
+if not os.path.exists(SNAPSHOT_STORAGE_LOCATION):
+    os.makedirs(SNAPSHOT_STORAGE_LOCATION)
+
 
 def _sleep(seconds=2, flag=True):
     # flag = False
@@ -60,7 +65,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
     def take_snapshot(self):
         _sleep(1)
         _name = "snapshot_{}.png".format(timezone.now().strftime('%Y-%d-%m_%H.%M.%S'))
-        _path = os.path.join(getattr(settings, 'MEDIA_ROOT'), 'selenium', _name)
+        _path = os.path.join(SNAPSHOT_STORAGE_LOCATION, _name)
         self.selenium.save_screenshot(_path)
         print("Snapshot saved at: {}".format(_path))
 
@@ -91,7 +96,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
         self.country_code = "+91"
         self.number = random.randint(7700000000, 9999999999)
         self.contact_number = "{}{}".format(self.country_code, self.number)
-        self.first_name, self.last_name = faker.name().split()
+        self.first_name, self.last_name = faker.first_name(), faker.last_name()
         self.email = faker.email()
         self.company_name = faker.company()
         self.country_code = faker.country_code()
@@ -303,17 +308,14 @@ class SurveyTest(BaseLoginTest):
         end_date = faker.date_between(start_date='+2w', end_date='+1y').strftime('%d/%m/00%Y')
         self.take_snapshot()
         _element_start = self.selenium.find_element_by_id("survey-start-time")
-        _element_start.send_keys("{} 00:59".format(start_date))
-        # _element_start.send_keys(start_date)
+        _element_start.send_keys("{} 00:00".format(start_date))
         _element_end = self.selenium.find_element_by_id("survey-end-time")
-        _element_end.send_keys("{} 00:59".format(start_date))
-        # _element_end.send_keys(end_date)
+        _element_end.send_keys("{} 23:59".format(end_date))
         self.take_snapshot()
         self.selenium.find_element_by_id("next").click()
         self.take_snapshot()
         self.selenium.find_element_by_id("next").click()
         self.take_snapshot()
-        # self.selenium.find_element_by_id("next").click()
         _sleep(30)
 
 
@@ -342,14 +344,6 @@ def shell_setup():
     _ul = driver.find_element_by_xpath("//ul[contains(@id, 'me-select-list')]")
     _li = _ul.find_elements_by_tag_name("li")
     to_be_select_li = [_li[random.randint(1, len(_li) - 1)] for i in range(random.randint(1, len(_li) - 2))]
-    # for i in set(to_be_select_li):
-    #     WebDriverWait(driver, 3).until(EC.visibility_of(i))
-    #     # WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, xpaths['your_xpath_path'])))
-    #     try:
-    #         i.click()
-    #     except ElementNotVisibleException:
-    #         _sleep(2)
-    #         i.click()
     _sleep(2)
     [i.click() for i in set(to_be_select_li)]
     driver.find_element_by_id("next").click()
