@@ -108,7 +108,6 @@ class SurveyViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         current_user = self.request.user
         benchmark = self.request.query_params.get('benchmark', None)
-        city = self.request.query_params.get('city', None)
         if current_user.is_superuser:
             # super user can see all queryset
             queryset = self.queryset
@@ -124,16 +123,6 @@ class SurveyViewSet(viewsets.ModelViewSet):
             # return only survey if benchmark available
             queryset = queryset.filter(rel_survey__isnull=False)  # has survey response (including partial)
             # queryset = queryset.filter(rel_survey__complete=True)  # has completed survey response
-        if city:
-            temp_queryset = []
-            # for i in queryset:
-            #     _dict = model_to_dict(i)
-            #     _dict['benchmark'] = i.filter_benchmark(city=city)
-            #     _object = CustomDict(_dict)
-            #     for key, val in _dict.items():
-            #         setattr(_object, key, _dict[val])
-            #     temp_queryset.append(_object)
-            queryset = temp_queryset
         return queryset
 
     def update(self, request, *args, **kwargs):
@@ -167,6 +156,7 @@ class SurveyResponseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         _current_user = self.request.user
         survey_id = self.request.query_params.get('survey_id', None)
+        city = self.request.query_params.get('city', None)
         if _current_user.is_superuser:
             queryset = self.queryset
         elif _current_user.is_hr:
@@ -175,6 +165,9 @@ class SurveyResponseViewSet(viewsets.ModelViewSet):
             queryset = self.queryset.filter(related_user=_current_user)
         if survey_id:
             queryset = queryset.filter(related_survey__id=survey_id)
+        if city:
+            queryset = queryset.filter(related_user__employee__city__iexact=city)
+
         return queryset
 
 

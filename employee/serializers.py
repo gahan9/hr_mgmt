@@ -131,10 +131,15 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
     benchmark = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_benchmark(self, obj):
-        current_user = self.context['request'].user
+        _request = self.context['request']
+        current_user = _request.user
+        city = _request.query_params.get('city', None)
         response_data = {}
         if current_user.is_hr:
-            return obj.benchmark
+            if city:
+                return obj.filter_benchmark(city=city)
+            else:
+                return obj.benchmark
         else:
             return response_data
 
@@ -220,6 +225,11 @@ class SurveyResponseSerializer(serializers.HyperlinkedModelSerializer):
     """ Serializer to take response of Survey """
     answers = serializers.JSONField()
     survey_id = serializers.PrimaryKeyRelatedField(source='related_survey', queryset=Survey.objects.filter(complete=True))
+    city = serializers.SerializerMethodField(read_only=True)
+
+    @staticmethod
+    def get_city(obj):
+        return obj.get_city
 
     def validate(self, attrs):
         attrs['related_user'] = self.context['request'].user
@@ -227,10 +237,9 @@ class SurveyResponseSerializer(serializers.HyperlinkedModelSerializer):
         answers = attrs['answers']
         result = {
             str(question_response.pop("q")): question_response
-            for question_response in answers if "q" in question_response}
-        print(result)
+            for question_response in answers if "q" in question_response
+        }
         attrs['answers'] = result
-        print(attrs)
         return attrs
 
     def create(self, validated_data):
@@ -241,7 +250,7 @@ class SurveyResponseSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = SurveyResponse
-        fields = ["url", "id", "survey_id", "related_user", "answers", "complete"]
+        fields = ["url", "id", "survey_id", "related_user", "answers", "complete", "city"]
         read_only_fields = ('related_user', )
 
 
@@ -253,10 +262,12 @@ class NewsFeedSerializer(serializers.ModelSerializer):
         attrs['created_by'] = self.context['request'].user
         return attrs
 
-    def get_date_created_epoch(self, obj):
+    @staticmethod
+    def get_date_created_epoch(obj):
         return timegm(obj.date_created.utctimetuple())
 
-    def get_date_updated_epoch(self, obj):
+    @staticmethod
+    def get_date_updated_epoch(obj):
         return timegm(obj.date_updated.utctimetuple())
 
     class Meta:
