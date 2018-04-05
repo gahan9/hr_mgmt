@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 
 from .views import *
 
@@ -148,10 +148,21 @@ class SurveyViewSet(viewsets.ModelViewSet):
 
 class SurveyResponseViewSet(viewsets.ModelViewSet):
     """ API for saving response of survey
-    TODO: Restrict survey response for user with 'employee' attribute only.
+
+    Only Employee can fill the survey
+
+    : If HR has employee profile then HR can also eligible to fill survey
     """
     serializer_class = SurveyResponseSerializer
     queryset = SurveyResponse.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        _request = self.request
+        if _request.user.is_employee:
+            return super(SurveyResponseViewSet, self).create(request, *args, **kwargs)
+        else:
+            response_data = {"detail": "Only Employee Can Response to the survey"}
+            return Response(response_data, status=status.HTTP_403_FORBIDDEN)
 
     def get_queryset(self):
         _current_user = self.request.user
