@@ -12,7 +12,7 @@ if __name__ == "__main__":
             # print("Host: {}".format(host_name))
     except Exception as e:
         print("Couldn't get host name due to : {}".format(e))
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "employee_management.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "employee_management")
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
