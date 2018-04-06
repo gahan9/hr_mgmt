@@ -108,6 +108,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         current_user = self.request.user
         benchmark = self.request.query_params.get('benchmark', None)
+        city = self.request.query_params.get('city', None)
         if current_user.is_superuser:
             # super user can see all queryset
             queryset = self.queryset
@@ -123,6 +124,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
             # return only survey if benchmark available
             queryset = queryset.filter(rel_survey__isnull=False)  # has survey response (including partial)
             # queryset = queryset.filter(rel_survey__complete=True)  # has completed survey response
+        if city:
+            queryset = queryset.filter(rel_survey__related_user__employee__city__iexact=city)
         return queryset
 
     def update(self, request, *args, **kwargs):
