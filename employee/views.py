@@ -422,6 +422,11 @@ class CreateSurvey(AddSurvey):
     template_name = 'company/add_survey.html'
 
 
+class SurveyBenchmark(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    template_name = 'company/benchmark.html'
+
+
 class CreateUserView(LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
     form_class = CreateUserForm

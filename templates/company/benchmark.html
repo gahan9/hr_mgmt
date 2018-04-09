@@ -1,0 +1,105 @@
+{% extends 'common/common.html' %}
+{% load static %}
+{% load i18n %}
+{% load rest_framework %}
+{% block content %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">{{ SITE_NAME }}</a></li>
+        <li class="breadcrumb-item active">benchmark</li>
+    </ol>
+    <!-- Content -->
+    <div class="main-sub-container">
+        <div class="table-container">
+            <table class="table survey-table table-responsive">
+                <thead class="thead-inverse">
+                    <tr>
+                        <td>id</td>
+                        <td>Survey Title</td>
+                        <td>Total Response</td>
+                    </tr>
+                </thead>
+                <tbody id="table-data">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+{% block extrajs %}
+    <script type="text/javascript">
+        var csrftoken = Cookies.get('csrftoken');
+        var user_token = '{{ user.auth_token.key }}';
+        var api_url = '/api/v1/survey/?benchmark=true';
+        var results = null;
+
+        function setCSRF(xhr, settings) {
+            xhr.setRequestHeader("Authorization", "Token " + user_token);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+
+        $(document).ready(function () {
+            GetRequest(api_url);
+        });
+
+        function AddData(content) {
+            var tr_html = '';
+            $.each(content, function (i, item) {
+                var $tr = $('<tr>').append(
+                    $('<td>').text(item.id),
+                    $('<td>').text(item.name),
+                    $('<td>').html(
+                        `
+                            <a href="#">
+                                <span class="badge badge-pill badge-info">as</span>
+                            </a>
+                        `
+                    )
+                ).appendTo("#table-data");
+            })
+                /*
+                tr_html += '<tr><td>' + item.id +
+                    '</td><td>' + item.name +
+                    '</td><td>' + item.benchmark.count +
+                    '</td><td>' +
+                    '</td></tr>'
+             });
+            $("#table-data").append(tr_html);
+            */
+            }
+
+        function GetRequest(url) {
+            $.ajax({
+                url: url,
+                method: "GET",
+                contentType: "application/json;charset=utf-8",
+                beforeSend: setCSRF,
+                success: function (responseObj) {
+                    console.log("Saved! It worked.");
+                    results = responseObj.results;
+                    AddData(results);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+                }
+            });
+        }
+        function CustomRequest(content) {
+            $.ajax({
+                url: content.url,
+                method: content.method,
+                data: JSON.stringify(content.data),
+                contentType: "application/json;charset=utf-8",
+                beforeSend: setCSRF,
+                success: function (responseObj) {
+                    console.log("Saved! It worked.");
+                    console.log(responseObj);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
+                }
+            });
+        }
+
+    </script>
+{% endblock %}

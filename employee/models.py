@@ -191,6 +191,7 @@ class Survey(models.Model):
                 'cities': self.get_responded_city
             })
             _response_dict[int(i)] = j
+        _response_dict['count'] = len(_response_dict)
         return _response_dict
 
     @property
