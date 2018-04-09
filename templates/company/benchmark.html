@@ -10,18 +10,7 @@
     </ol>
     <!-- Content -->
     <div class="main-sub-container">
-        <div class="table-container">
-            <table class="table survey-table table-responsive">
-                <thead class="thead-inverse">
-                    <tr>
-                        <td>id</td>
-                        <td>Survey Title</td>
-                        <td>Total Response</td>
-                    </tr>
-                </thead>
-                <tbody id="table-data">
-                </tbody>
-            </table>
+        <div class="container" id="accordion">
         </div>
     </div>
 
@@ -42,30 +31,42 @@
             GetRequest(api_url);
         });
 
+        function QuestionFetch(content, item_id) {
+            var que = '<div class="col">';
+            $.each(content, function(i, item) {
+                if (i !== "count"){
+                que += '<div class="col">' +
+                    '<div class="row h5"> &nbsp;&nbsp;<strong>'+ item.question_title +
+                        '&nbsp;&nbsp;&nbsp; <i class="fa fa-caret-square-o-right"></i></strong></div>'+
+                        '<div class=row> <strong>Average Rating: &nbsp;&nbsp;</strong>'+ item.average_rating +' out of '+ item.rate_scale +'</div>'+
+                        '<div class=row> <strong>Total Rating: &nbsp;&nbsp;</strong>'+ item.rating +'</div>'+
+                        '<div class=row> <strong>Total Responses: &nbsp;&nbsp;</strong>'+ item.total_responses +'</div>'+
+                        '<div class=row> <strong>Cities: &nbsp;&nbsp;</strong>'+ item.cities +'</div>'+
+                        '&nbsp;&nbsp; </div>';
+                }
+            });
+            que += '</div>';
+            return que
+        }
+
         function AddData(content) {
-            var tr_html = '';
             $.each(content, function (i, item) {
-                var $tr = $('<tr>').append(
-                    $('<td>').text(item.id),
-                    $('<td>').text(item.name),
-                    $('<td>').html(
-                        `
-                            <a href="#">
-                                <span class="badge badge-pill badge-info">as</span>
-                            </a>
-                        `
+                var item_id = item.id;
+                var $block = $('<div class="card">').append(
+                    $('<div class="card-header">').append(
+                        $('<h5 class="mb-0">').html(`
+                            <button class="btn btn-link collapsed" data-toggle="collapse"
+                                data-target="#`+ item_id +`" aria-expanded="false"
+                                aria-controls="`+ item_id +`">` +
+                            '<span>' + item.name + '</span></button>'
+                        )
+                    ),
+                    $('<div id="'+ item_id +'" class="collapse" aria-labelledby="headingOne" ' +
+                        'data-parent="#accordion">').append('<div class="card-body">').html(
+                            QuestionFetch(item.benchmark, item_id)
                     )
-                ).appendTo("#table-data");
+                ).appendTo("#accordion")
             })
-                /*
-                tr_html += '<tr><td>' + item.id +
-                    '</td><td>' + item.name +
-                    '</td><td>' + item.benchmark.count +
-                    '</td><td>' +
-                    '</td></tr>'
-             });
-            $("#table-data").append(tr_html);
-            */
             }
 
         function GetRequest(url) {

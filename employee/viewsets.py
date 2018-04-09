@@ -103,7 +103,7 @@ class SurveyViewSet(viewsets.ModelViewSet):
         :`city=<city-name>`  // return survey list with benchmark filtered by city (exact case insensitive match)
     """
     serializer_class = SurveySerializer
-    queryset = Survey.objects.all()
+    queryset = Survey.objects.all().distinct()
 
     def get_queryset(self):
         current_user = self.request.user
