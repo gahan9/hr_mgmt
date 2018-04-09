@@ -116,12 +116,12 @@
                                 <div class="form-row">
                                     <div class="col">
                                         <input id="survey-start-time" type="text" placeholder="Start Time"
-                                               onfocus="(this.type='datetime-local')" class="form-control"/>
+                                                class="form-control"/>
                                     </div>
                                     <div class="col">
                                         {#                                        {% render_field serializer.end_date style=style %}#}
                                         <input id="survey-end-time" type="text" placeholder="End Time"
-                                               onfocus="(this.type='datetime-local')" class="form-control"/>
+                                               class="form-control"/>
                                     </div>
                                 </div>
                             </form>
@@ -402,6 +402,24 @@
                     el.parentNode.className = el.checked ? 'selected' : '';
                 }
             });
+
+            <!-- Date time picker -->
+            $('#survey-start-time').datetimepicker({
+                onChangeDateTime: function (dp, elemnt) {
+                    $('#survey-end-time').datetimepicker({
+                        minDateTime: elemnt.val()
+                    });
+                }
+            });
+
+            $('#survey-end-time').datetimepicker({
+                onChangeDateTime: function (dp, elemnt) {
+                    $('#survey-start-time').datetimepicker({
+                        maxDateTime: elemnt.val()
+                    });
+                }
+            });
+            <!-- Date time picker ends -->
 
         })();
     </script>

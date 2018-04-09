@@ -2,6 +2,65 @@
 {% load static %}
 {% block extracss %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+	<style>
+		/* Chat containers */
+		.containerChat {
+			border: 2px solid #dedede;
+			background-color: #f1f1f1;
+			border-radius: 5px;
+			padding: 5px;
+			margin: 5px 0;
+		}
+
+		/* Darker chat container */
+		.darker {
+			border-color: #ccc;
+			background-color: #bc8e76;
+		}
+
+		/* Clear floats */
+		.containerChat::after {
+			content: "";
+			clear: both;
+			display: table;
+		}
+
+		/* Style images */
+		.containerChat img {
+			float: left;
+			max-width: 60px;
+			width: 100%;
+			margin-right: 20px;
+			border-radius: 50%;
+			max-height:60px;
+		}
+
+		/* Style the right image */
+		.containerChat img.right {
+			float: right;
+			margin-left: 20px;
+			margin-right:0;
+		}
+
+		/* Style time text */
+		.time-right {
+			float: right;
+			color: #aaa;
+		}
+
+		/* Style time text */
+		.time-left {
+			float: left;
+			color: #999;
+		}
+		.main-sub-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 0px;
+			height: auto;
+		}
+	</style>
 {% endblock %}
 {% block content %}
     <!-- Content -->
@@ -12,7 +71,7 @@
     </ol>
     <div class="main-sub-container">
         <div class="container-fluid">
-            <div class="row">
+            <!--<div class="row">
                 <div class="col" style="display: flex;">
                     <div class="fieldrate-icon">
                         <a href="{% url 'field_rate' %}">
@@ -25,7 +84,7 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="chat-container">
                 <div class="row">
                     <!--<div class="col col-12 hidden-xs-down col-lg-3 col-md-3 no-padding">
@@ -81,11 +140,16 @@
                             <li id="current-chat-session">Name</li>
                         </ul>
                         <div class="chat-message-container">
+							<div style="max-height:350px;height:350px;overflow-y:scroll;" id="parentChatWindow">
+								<div class="col-md-12" id="chatWindow">
+
+								</div>
+							</div>
                         </div>
-                        <div class="form-group chat-text-box">
+                        <div class="form-group chat-text-box" style="position:relative;">
                             <input type="text" class="form-control" id="new_message_area"/>
                             <ul>
-                                <li><img src="{% static '/assets/images/attachment.png' %}"/></li>
+{#                                <li><img src="{% static '/assets/images/attachment.png' %}"/></li>#}
                                 <li id="send_message">Send</li>
                             </ul>
                         </div>
@@ -183,6 +247,7 @@
         var currentUserName = '{{ user.first_name }}';  // current logged in user ID
         var chatRecord = {};
         var receiverId = '';
+		var userProfile;
         // Initialize Firebase
         //  Replace with your project's customized code snippet
         var config = {
@@ -194,7 +259,11 @@
         firebase.initializeApp(config);
 
         var database = firebase.database();
-
+        $("#new_message_area").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#send_message").click();
+            }
+        });
         function openNav() {
             document.getElementById("mySidenav").style.width = "250px";
         }
@@ -237,12 +306,53 @@
             $('#new_message_area').val('');
             toastr["success"]("message sent successfully", "Message Sent");
         }
-
+        function convertEpochToSpecificTimezone(offset,time){
+			var d = new Date(time);
+			var utc = d.getTime() + (d.getTimezoneOffset() * 60000);  //This converts to UTC 00:00
+			var nd = new Date(utc + (3600000*offset));
+			return nd.toLocaleString();
+		}
         function retrieveMessage(senderId, receiverId) {
             var ref = firebase.database().ref('Messages/' + receiverId + "_" + senderId);
             ref.on("value", function (snapshot) {
                 chatRecord = snapshot.val();
-                console.log(chatRecord);
+				console.log(chatRecord);
+				//console.log(chatRecord.Chat);
+				var createDiv = "";
+				$("#chatWindow").html("");
+				if(chatRecord != null){
+					for(i in chatRecord.Chat){
+						//console.log(chatRecord.Chat[i]["message"]);
+						curTime = convertEpochToSpecificTimezone(5.5,parseInt(chatRecord.Chat[i]["timeStamp"]));
+						//console.log(currentUserId);
+						//console.log(convertEpochToSpecificTimezone(5.5,parseInt(chatRecord.Chat[i]["timeStamp"])));
+						//console.log(chatRecord.Chat[i]["senderId"]);
+						//console.log(chatRecord.Chat[i]["receiverId"]);
+						//createDiv = "<div><p>"+curTime+"</p><p>"+chatRecord.Chat[i]["message"]+"</p></div>";
+						if(chatRecord.Chat[i]["senderId"] == currentUserId){
+							createDiv =  '<div class="containerChat darker">'+
+									  '<img src="{{ user.profile_image.url }}" alt="Me" class="right">'+
+									  '<p style="color:white;">'+chatRecord.Chat[i]["message"]+'</p>'+
+									  '<span class="time-left" style="color:white;">'+curTime+'</span>'+
+									'</div>';
+						}else{
+							createDiv =  '<div class="containerChat">'+
+									  '<img src="'+userProfile+'" alt="You">'+
+									  '<p>'+chatRecord.Chat[i]["message"]+'</p>'+
+									  '<span class="time-right">'+curTime+'</span>'+
+									'</div>';
+						}
+						$("#chatWindow").append(createDiv);
+					}
+				}else{
+					createDiv =  '<div class="containerChat darker">'+
+									  '<img src="{{ user.profile_image.url }}" alt="Me" class="right">'+
+									  '<p>Say your first hello!</p>'+
+									'</div>';
+					$("#chatWindow").html(createDiv);
+				}
+				//Scroll to the bottom of the div
+				$("#parentChatWindow").animate({ scrollTop: $("#chatWindow").height() }, 1000);
             }, function (errorObject) {
                 toastr.warning("Couldn't retrieve data!!!");
                 console.log("The read failed: " + errorObject.code);
@@ -270,7 +380,8 @@
         function initiateChat(event) {
             var userId = event.value;
             var userName = event.dataset['name'];
-            var userProfile = event.dataset["profile"];
+            userProfile = event.dataset["profile"];
+			console.log(userProfile);
             receiverId = JSON.stringify(userId);
             var success_message = "chat successfully initialized with " + userName;
             // toastr["success"](success_message, "Chat Initialized");
