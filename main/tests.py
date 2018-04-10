@@ -304,13 +304,13 @@ class SurveyTest(BaseLoginTest):
         self.take_snapshot()
         self.selenium.find_element_by_id("next").click()
         # enter date
-        start_date = faker.date_between(start_date='-1m', end_date='+1w').strftime('%d/%m/00%Y')
-        end_date = faker.date_between(start_date='+2w', end_date='+1y').strftime('%d/%m/00%Y')
+        start_date = faker.date_time_between(start_date='-2m', end_date='+1w').strftime('%Y/%m/%d %H:%M')
+        end_date = faker.date_time_between(start_date='+2w', end_date='+1y').strftime('%Y/%m/%d %H:%M')
         self.take_snapshot()
         _element_start = self.selenium.find_element_by_id("survey-start-time")
-        _element_start.send_keys("{} 00:00".format(start_date))
+        _element_start.send_keys(start_date)
         _element_end = self.selenium.find_element_by_id("survey-end-time")
-        _element_end.send_keys("{} 23:59".format(end_date))
+        _element_end.send_keys(end_date)
         self.take_snapshot()
         self.selenium.find_element_by_id("next").click()
         self.take_snapshot()
@@ -348,8 +348,8 @@ def shell_setup():
     [i.click() for i in set(to_be_select_li)]
     driver.find_element_by_id("next").click()
     # select date
-    start_date = faker.date_between(start_date='-1m', end_date='+1w').strftime('%d/%m/%Y')
-    end_date = faker.date_between(start_date='+2w', end_date='+1y').strftime('%d/%m/%Y')
+    start_date = faker.date_between(start_date='-1m', end_date='+1w').strftime('%Y/%m/%d')
+    end_date = faker.date_between(start_date='+2w', end_date='+1y').strftime('%Y/%m/%d')
     driver.find_element_by_id("survey-start-time").send_keys("{} 00:59".format(start_date))
     driver.find_element_by_id("survey-start-time").send_keys(start_date)
     driver.find_element_by_id("survey-end-time").send_keys("{} 00:59".format(start_date))
