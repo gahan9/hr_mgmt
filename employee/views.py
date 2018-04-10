@@ -1,4 +1,6 @@
 import os
+import plotly.offline as opy
+import plotly.graph_objs as go
 import codecs
 import csv
 from collections import OrderedDict
@@ -679,3 +681,34 @@ class SampleView(JSONResponseMixin, BaseDetailView):
         with open(os.path.join(settings.MEDIA_ROOT, 'structure.json'), 'r') as fp:
             content = json.load(fp)
         return self.render_json_response(content)
+
+
+class Graph(TemplateView):
+    template_name = 'graph.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(Graph, self).get_context_data(**kwargs)
+        survey_id = int(kwargs.get('survey_id', 89))
+        question_id = int(kwargs.get('survey_id', 1))
+        _survey_instance = Survey.objects.get(pk=survey_id)
+        _question = _survey_instance.benchmark.get(question_id, None)
+        cities = _question.get('cities', None)
+        x = []
+        y = []
+        for i in cities:
+            x.append(i)
+            y.append(_survey_instance.filter_benchmark(city=i).get('count'))
+        print(x, y)
+        # x = [-2, 0, 4, 6, 7]
+        # y = [q ** 2 - q + 3 for q in x]
+        trace1 = go.Scatter(x=x, y=y, marker={'color': 'red', 'symbol': 104, 'size': "10"},
+                            mode="lines", name='1st Trace')
+
+        data = go.Data([trace1])
+        layout = go.Layout(title="Analysis of Response", xaxis={'title': 'x1'}, yaxis={'title': 'x2'})
+        figure = go.Figure(data=data, layout=layout)
+        div = opy.plot(figure, auto_open=False, output_type='div')
+
+        context['graph'] = div
+
+        return context

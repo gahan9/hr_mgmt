@@ -1,0 +1,12 @@
+{% extends 'common/common.html' %}
+{% block content %}
+{% if graph %}
+    <div style="width:600;height:500">
+        {{ graph|safe }}
+    </div>
+{% else %}
+    <div>
+        <span class="display-4"> Wait for graph...</span>
+    </div>
+{% endif %}
+{% endblock %}
