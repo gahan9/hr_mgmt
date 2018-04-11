@@ -1,12 +1,17 @@
 {% extends 'common/common.html' %}
 {% block content %}
-{% if graph %}
-    <div style="width:600;height:500">
-        {{ graph|safe }}
+    <div class="main-container">
+        {% if graph %}
+            {{ graph|safe }}
+        {% else %}
+            <span class="display-4">Requested Graph Does not exist</span>
+        {% endif %}
     </div>
-{% else %}
-    <div>
-        <span class="display-4"> Wait for graph...</span>
-    </div>
-{% endif %}
+{% endblock %}
+{% block extrajs %}
+    <script>
+        $(document).ready(function () {
+            $(".js-plot-link-container").remove()
+        });
+    </script>
 {% endblock %}

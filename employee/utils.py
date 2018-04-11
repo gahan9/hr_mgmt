@@ -1,5 +1,7 @@
 from rest_framework.views import exception_handler
 from jsonfield import JSONField
+import plotly.offline as opy
+import plotly.graph_objs as go
 
 
 class CustomJSONField(JSONField):
@@ -9,6 +11,18 @@ class CustomJSONField(JSONField):
 
     def value_to_string(self, obj):
         return dict(self.value_from_object(obj))
+
+
+def plot_graph(x, y, marker=None, mode="lines+markers", name='Question Response Trace', **kwargs):
+    marker = marker if marker else {'color': '#bc8e76', 'size': "10"}
+    title = kwargs.get("title", "Analysis of Response")
+    x_title = kwargs.get("x_title", "X axis")
+    y_title = kwargs.get("y_title", "Y axis")
+    data = go.Data([go.Scatter(x=x, y=y, marker=marker, mode=mode, name=name)])
+    layout = go.Layout(title=title, xaxis={'title': x_title}, yaxis={'title': y_title})
+    figure = go.Figure(data=data, layout=layout)
+    div = opy.plot(figure, auto_open=False, output_type='div')
+    return div
 
 
 def custom_exception_handler(exc, context):

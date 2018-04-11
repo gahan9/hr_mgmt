@@ -1,6 +1,3 @@
-import os
-import plotly.offline as opy
-import plotly.graph_objs as go
 import codecs
 import csv
 from collections import OrderedDict
@@ -24,6 +21,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from employee.utils import plot_graph
 from employee_management.settings import BASE_DIR
 from employee.tables import *
 from employee.serializers import *
@@ -684,30 +682,33 @@ class SampleView(JSONResponseMixin, BaseDetailView):
         return self.render_json_response(content)
 
 
-class Graph(TemplateView):
+class QuestionGraph(TemplateView):
     template_name = 'graph.html'
 
     def get_context_data(self, **kwargs):
-        context = super(Graph, self).get_context_data(**kwargs)
-        survey_id = int(kwargs.get('survey_id', 89))
-        question_id = int(kwargs.get('question_id', 1))
-        _survey_instance = Survey.objects.get(pk=survey_id)
-        _question = _survey_instance.benchmark.get(question_id, None)
-        cities = _question.get('cities', None)
-        x = []
-        y = []
-        for i in cities:
-            x.append(i)
-            y.append(_survey_instance.filter_benchmark(city=i).get('count'))
-        print(x, y)
-        trace1 = go.Scatter(x=x, y=y, marker={'color': 'red', 'symbol': 104, 'size': "10"},
-                            mode="lines", name='1st Trace')
-
-        data = go.Data([trace1])
-        layout = go.Layout(title="Analysis of Response", xaxis={'title': 'x1'}, yaxis={'title': 'x2'})
-        figure = go.Figure(data=data, layout=layout)
-        div = opy.plot(figure, auto_open=False, output_type='div')
-
-        context['graph'] = div
-
+        context = super(QuestionGraph, self).get_context_data(**kwargs)
+        _query_params = kwargs
+        survey_id = int(_query_params.get('survey_id', 0))
+        question_id = int(_query_params.get('question_id', 0))
+        x, y = [], []
+        if survey_id and question_id:
+            try:
+                _survey_instance = Survey.objects.get(pk=survey_id)
+                # considering survey might be optional this method to be used
+                _question = _survey_instance.benchmark.get(question_id, None)
+                if _question:
+                    x = _question.get('cities', None)
+                    y = []
+                    for i in x:
+                        y.append(_survey_instance.filter_benchmark(city=i).get(question_id).get('total_responses'))
+                else:
+                    # messages.error(self.request, "Invalid survey question")
+                    city_dict = list(_survey_instance.get_city_response_count)
+                    for i in city_dict:
+                        x.append(i.get('city'))
+                        y.append(i.get('responses'))
+                # plotting graph
+                context['graph'] = plot_graph(x=list(x), y=y, x_title="City", y_title="Total Response")
+            except Survey.DoesNotExist:
+                messages.error(self.request, "Invalid survey id")
         return context

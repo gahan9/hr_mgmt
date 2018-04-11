@@ -34,14 +34,19 @@
         function QuestionFetch(content, item_id) {
             var que = '<div class="col">';
             $.each(content, function(i, item) {
-                if (i !== "count"){
-                que += '<div class="col">' +
-                    '<div class="row h5"> &nbsp;&nbsp;<strong>'+ item.question_title +
-                        '&nbsp;&nbsp;&nbsp; <i class="fa fa-caret-square-o-right"></i></strong></div>'+
-                        '<div class=row> <strong>Average Rating: &nbsp;&nbsp;</strong>'+ item.average_rating +' out of '+ item.rate_scale +'</div>'+
-                        '<div class=row> <strong>Total Rating: &nbsp;&nbsp;</strong>'+ item.rating +'</div>'+
-                        '<div class=row> <strong>Total Responses: &nbsp;&nbsp;</strong>'+ item.total_responses +'</div>'+
-                        '<div class=row> <strong>Cities: &nbsp;&nbsp;</strong>'+ item.cities +'</div>'+
+                console.log(i, item_id);
+                if (i !== "count")
+                {
+                    var href = "{% url 'question_graph' survey_id=item_id question_id=1 %}";
+                    {#var href = "{% url 'benchmark' %}" + item_id + "/" + i;#}
+                    console.log(href);
+                    que += '<div class="col">' +
+                        '<div class="row h5"> &nbsp;&nbsp;<a href="' + href + '"><strong>' + item.question_title +
+                        '&nbsp;&nbsp;&nbsp; <i class="fa fa-caret-square-o-right"></i></a></strong></div>' +
+                        '<div class=row> <strong>Average Rating: &nbsp;&nbsp;</strong>' + item.average_rating + ' out of ' + item.rate_scale + '</div>' +
+                        '<div class=row> <strong>Total Rating: &nbsp;&nbsp;</strong>' + item.rating + '</div>' +
+                        '<div class=row> <strong>Total Responses: &nbsp;&nbsp;</strong>' + item.total_responses + '</div>' +
+                        '<div class=row> <strong>Cities: &nbsp;&nbsp;</strong>' + item.cities + '</div>' +
                         '&nbsp;&nbsp; </div>';
                 }
             });

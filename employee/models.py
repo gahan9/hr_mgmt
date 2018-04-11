@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import Count, F
 from django.utils.translation import ugettext_lazy as _
 
 from main.models import *
@@ -153,11 +154,15 @@ class Survey(models.Model):
 
     @property
     def get_response(self):
-        return SurveyResponse.objects.filter(related_survey=self)
+        return SurveyResponse.objects.filter(related_survey=self).order_by('related_user__employee__city')
 
     @property
     def get_flat_answers(self):
         return self.get_response.values_list('answers', 'related_user__employee__city')
+
+    @property
+    def get_city_response_count(self):
+        return self.get_response.annotate(city=F('related_user__employee__city')).values('city').annotate(responses=Count('city')).order_by('city')
 
     @property
     def get_responded_city(self):
@@ -188,7 +193,8 @@ class Survey(models.Model):
                 'average_rating': j['rating'] / j['total_responses'],
                 'question_title': question_instance.question,
                 'rate_scale': question_instance.options,
-                'cities': self.get_responded_city
+                'cities': self.get_responded_city,
+                'city_response': self.get_city_response_count
             })
             _response_dict[int(i)] = j
         _response_dict['count'] = len(_response_dict)

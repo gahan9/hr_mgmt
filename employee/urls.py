@@ -33,12 +33,12 @@ urlpatterns += [
 urlpatterns += [
     # url(r'^add_survey/$', views.AddSurvey.as_view(), name="add_survey"),
     # url(r'^add_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.AddSurvey.as_view(), name="add_survey"),
-    url(r'^add_survey/add_new_question/', views.AddQuestion.as_view(), name="add_new_question"),
+    url(r'^add_survey/add_new_question/$', views.AddQuestion.as_view(), name="add_new_question"),
     url(r'^create_survey/$', views.CreateSurvey.as_view(), name="create_survey"),
     url(r'^create_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.CreateSurvey.as_view(), name="create_survey"),
-    url(r'^create_survey/add_new_question/', views.AddQuestion.as_view(), name="create_new_question"),
-    url(r'^benchmark', views.SurveyBenchmark.as_view(), name="benchmark"),
-    url(r'^graph', views.Graph.as_view(), name="graph"),
+    url(r'^create_survey/add_new_question/$', views.AddQuestion.as_view(), name="create_new_question"),
+    url(r'^benchmark/$', views.SurveyBenchmark.as_view(), name="benchmark"),
+    url(r'^benchmark/(?P<survey_id>\d+)/(?P<question_id>\d+)/$', views.QuestionGraph.as_view(), name="question_graph"),
 ]
 
 # Dashboard settings  /settings
