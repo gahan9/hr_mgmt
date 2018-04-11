@@ -6,11 +6,11 @@
     {% block head %}
     {% block meta %}
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0,  user-scalable=no"/>
         <meta name="description" content=""/>
         <meta name="author" content=""/>
     {% endblock %}
-    {% block title %}<title>Field Rate</title> {% endblock %}
+    {% block title %}<title>{{ SITE_NAME }}</title> {% endblock %}
 
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon-white.png' %}"/>
     {% block css %}

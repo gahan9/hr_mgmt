@@ -37,9 +37,8 @@
                 console.log(i, item_id);
                 if (i !== "count")
                 {
-                    var href = "{% url 'question_graph' survey_id=item_id question_id=1 %}";
-                    {#var href = "{% url 'benchmark' %}" + item_id + "/" + i;#}
-                    console.log(href);
+                    {#var href = "{% url 'question_graph' survey_id=item_id question_id=i %}";#}
+                    var href = "{% url 'benchmark' %}" + item_id + "/" + i + "/map/";
                     que += '<div class="col">' +
                         '<div class="row h5"> &nbsp;&nbsp;<a href="' + href + '"><strong>' + item.question_title +
                         '&nbsp;&nbsp;&nbsp; <i class="fa fa-caret-square-o-right"></i></a></strong></div>' +

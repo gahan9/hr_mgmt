@@ -424,7 +424,7 @@ class CreateSurvey(AddSurvey):
 
 class SurveyBenchmark(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('login')
-    template_name = 'company/benchmark.html'
+    template_name = 'benchmark.html'
 
 
 class CreateUserView(LoginRequiredMixin, CreateView):
@@ -680,6 +680,17 @@ class SampleView(JSONResponseMixin, BaseDetailView):
         with open(os.path.join(settings.MEDIA_ROOT, 'structure.json'), 'r') as fp:
             content = json.load(fp)
         return self.render_json_response(content)
+
+
+class BenchmarkMap(TemplateView):
+    template_name = 'map.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(BenchmarkMap, self).get_context_data(**kwargs)
+        _query_params = kwargs
+        survey_id = int(_query_params.get('survey_id', 0))
+        question_id = int(_query_params.get('question_id', 0))
+        return context
 
 
 class QuestionGraph(TemplateView):

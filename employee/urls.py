@@ -38,7 +38,8 @@ urlpatterns += [
     url(r'^create_survey/(?P<survey_id>\d+)/(?P<step>\d+)/$', views.CreateSurvey.as_view(), name="create_survey"),
     url(r'^create_survey/add_new_question/$', views.AddQuestion.as_view(), name="create_new_question"),
     url(r'^benchmark/$', views.SurveyBenchmark.as_view(), name="benchmark"),
-    url(r'^benchmark/(?P<survey_id>\d+)/(?P<question_id>\d+)/$', views.QuestionGraph.as_view(), name="question_graph"),
+    url(r'^benchmark/(?P<survey_id>\d+)/(?P<question_id>\d+)/map/$', views.BenchmarkMap.as_view(), name="benchmark_map"),
+    url(r'^benchmark/(?P<survey_id>\d+)/(?P<question_id>\d+)/graph/$', views.QuestionGraph.as_view(), name="question_graph"),
 ]
 
 # Dashboard settings  /settings

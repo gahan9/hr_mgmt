@@ -6,5 +6,6 @@ def site_detail(request):
         "SITE_NAME": SITE_NAME,
         "SITE_LOGO": SITE_LOGO,
         "API_URL": API_URL,
+        "API_KEY": "AIzaSyD-SS5IKnLvUilOCyUv5TogdQzGPQEexcw",
         "DOMAIN": DOMAIN
     }
