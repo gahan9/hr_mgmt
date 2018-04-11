@@ -86,7 +86,7 @@ class FileUploadView(LoginRequiredMixin, FormView):
         dump_dir = os.path.join(BASE_DIR, "server_dump")  # BASE_DIR imported from settings
         if not os.path.exists(dump_dir):
             os.mkdir(dump_dir)
-        timestamp = datetime.utcnow().strftime("%Y_%m_%d_%H:%M:%S")
+        timestamp = timezone.now().strftime("%Y_%m_%d_%H:%M:%S")
         file_name = "failure_{}.csv".format(timestamp)
         file_location = os.path.join(dump_dir, file_name)
         return file_location, file_name
@@ -130,8 +130,8 @@ class FileUploadView(LoginRequiredMixin, FormView):
                         role=3  # employee
                     )
                     ActivityMonitor.objects.create(activity_type=0, company_id=current_user_company.id,
-                                                   performed_by=current_user.get_detail(),
-                                                   affected_user=user_obj.get_detail(), bulk_create=True)
+                                                   performed_by=current_user.detail,
+                                                   affected_user=user_obj.detail, bulk_create=True)
                     Employee.objects.create(user=user_obj, company_name=current_user_company,
                                             alternate_contact_no=row['alternate_contact_no'],
                                             alternate_email=row['alternate_email'],
@@ -446,9 +446,9 @@ class CreateUserView(LoginRequiredMixin, CreateView):
                                             profile_image=self.request.FILES['profile_image'],
                                             role=set_role, has_plan=current_user.has_plan
                                             )
-        activity_obj = ActivityMonitor.objects.create(activity_type=0, performed_by=current_user.get_detail(),
+        activity_obj = ActivityMonitor.objects.create(activity_type=0, performed_by=current_user.detail,
                                                       company_id=current_user_company.id,
-                                                      affected_user=user_obj.get_detail())
+                                                      affected_user=user_obj.detail)
         Employee.objects.create(user=user_obj, company_name=current_user_company,
                                 job_title=form_data['job_title'],
                                 alternate_email=form_data['alternate_email'],
@@ -479,18 +479,19 @@ class EditEmployeeView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Details updated successfully."
 
     def form_valid(self, form, **kwargs):
+        current_user = self.request.user
         user_object = Employee.objects.get(id=self.kwargs['pk']).user
-        company_id = get_user_company(self.request.user).id
-        ActivityMonitor.objects.create(activity_type=1, company_id=company_id,
-                                       performed_by=self.request.user.get_detail(),
-                                       affected_user=user_object.get_detail())
+        ActivityMonitor.objects.create(activity_type=1, company=current_user.get_company,
+                                       performed_by=self.request.user.detail,
+                                       affected_user=user_object.detail)
         return super(EditEmployeeView, self).form_valid(form)
 
     def form_invalid(self, form):
+        current_user = self.request.user
         user_object = Employee.objects.get(id=self.kwargs['pk']).user
-        company_id = get_user_company(self.request.user).id
-        ActivityMonitor.objects.create(activity_type=1, company_id=company_id, status=False,
-                                       performed_by=self.request.user.detail,
+        ActivityMonitor.objects.create(activity_type=1, company=current_user.get_company,
+                                       status=False,
+                                       performed_by=current_user.detail,
                                        affected_user=user_object.detail)
         return super(EditEmployeeView, self).form_invalid(form)
 
@@ -641,7 +642,7 @@ class NewsFeedDeleteView(LoginRequiredMixin, DeleteView):
         del_msg = "{}".format(value_set)
         activity_obj = ActivityMonitor.objects.create(remarks=del_msg, activity_type=2,
                                                       company_id=company_id,
-                                                      performed_by=request.user.get_detail())
+                                                      performed_by=request.user.detail)
         print(activity_obj)
         message = 'NewsFeed: {} (Feed: {}) deleted successfully'.format(selected_object.title, selected_object.feed)
         messages.success(request, message)
@@ -664,7 +665,7 @@ class SurveyDeleteView(LoginRequiredMixin, DeleteView):
         del_msg = "{}".format(value_set)
         activity_obj = ActivityMonitor.objects.create(remarks=del_msg, activity_type=2,
                                                       company_id=company_id,
-                                                      performed_by=request.user.get_detail())
+                                                      performed_by=request.user.detail)
         print(activity_obj)
         message = 'Survey: {} deleted successfully'.format(selected_object.name)
         messages.success(request, message)
@@ -689,7 +690,7 @@ class Graph(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Graph, self).get_context_data(**kwargs)
         survey_id = int(kwargs.get('survey_id', 89))
-        question_id = int(kwargs.get('survey_id', 1))
+        question_id = int(kwargs.get('question_id', 1))
         _survey_instance = Survey.objects.get(pk=survey_id)
         _question = _survey_instance.benchmark.get(question_id, None)
         cities = _question.get('cities', None)
@@ -699,8 +700,6 @@ class Graph(TemplateView):
             x.append(i)
             y.append(_survey_instance.filter_benchmark(city=i).get('count'))
         print(x, y)
-        # x = [-2, 0, 4, 6, 7]
-        # y = [q ** 2 - q + 3 for q in x]
         trace1 = go.Scatter(x=x, y=y, marker={'color': 'red', 'symbol': 104, 'size': "10"},
                             mode="lines", name='1st Trace')
 

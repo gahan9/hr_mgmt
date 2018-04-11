@@ -108,8 +108,8 @@ edit_employee_data_helper.form_class = ''
 edit_employee_data_helper.form_method = 'POST'
 edit_employee_data_helper.layout = Layout(
     Div(
-        Field('user', css_class='form-control', placeholder='user', disabled=True),
-        Field('company_name', css_class='form-control', placeholder='company', disabled=True),
+        Field('user', css_class='form-control', placeholder='user', readonly=True),
+        Field('company_name', css_class='form-control', placeholder='company', type="hidden"),
         Field('alternate_contact_no', css_class='form-control', placeholder='Mobile Number'),
         Field('alternate_email', css_class='form-control', placeholder='Alternate Email'),
         Field('job_title', css_class='form-control', placeholder='Job Title'),

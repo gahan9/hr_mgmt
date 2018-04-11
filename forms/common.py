@@ -127,15 +127,20 @@ class ResetPasswordForm(forms.ModelForm):
 
 class EditEmployeeForm(forms.ModelForm):
     """ Edit associated employee profile data of user """
-    user_gender = forms.CharField()
 
     def __init__(self, *args, **kwargs):
         super(EditEmployeeForm, self).__init__(*args, **kwargs)
         self.helper = edit_employee_data_helper
+        self.fields['company_name'].required = False
+
+    def clean(self):
+        print(self.cleaned_data)
+        self.cleaned_data['company_name'] = self.cleaned_data.get('user').get_company
+        return super(EditEmployeeForm, self).clean()
 
     class Meta:
         model = Employee
-        fields = ['user', 'user_gender',
+        fields = ['user', 'company_name',
                   'alternate_contact_no', 'alternate_email', 'job_title', 'street', 'zip_code', 'city', 'country']
 
 

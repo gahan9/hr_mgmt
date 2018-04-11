@@ -172,7 +172,7 @@ class CustomAuthentication(ObtainAuthToken):
         ) if user.profile_image else ''
         try:
             if hasattr(user, 'employee'):
-                _creator_hr = user.get_creator
+                _creator_hr = user.get_creator_detail
                 if _creator_hr['hr_profile_image']:
                     _creator_hr['hr_profile_image'] = ''.join(
                         ['http://', get_current_site(request).domain, _creator_hr['hr_profile_image']]

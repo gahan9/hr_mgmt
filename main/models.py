@@ -124,6 +124,15 @@ class UserModel(AbstractUser):
             return "http://lorempixel.com/300/300/"
 
     @property
+    def get_company(self):
+        if self.is_hr:
+            return self.rel_company_user
+        elif self.is_employee:
+            return self.get_creator.rel_company_user
+        else:
+            return "Unauthorized attempt detected"
+
+    @property
     def has_profile_image(self):
         return bool(self.profile_image)
 
@@ -171,8 +180,15 @@ class UserModel(AbstractUser):
     @property
     def get_creator(self):
         if hasattr(self, 'employee'):
+            return self.employee.added_by
+        else:
+            return self
+
+    @property
+    def get_creator_detail(self):
+        if hasattr(self, 'employee'):
             # get details of creator (HR) if user is employee
-            _record_creator = self.employee.added_by
+            _record_creator = self.get_creator
             return {
                 'hr_id': _record_creator.id,
                 'hr_name': _record_creator.first_name,
