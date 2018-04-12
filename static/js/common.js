@@ -6,7 +6,7 @@ function failureCallback(jqXHR, textStatus, errorThrown) {
 }
 
 function doAjax(method, url, data, headers, successCallback, failureCallback, setCSRF) {
-    console.log("doAjax...", method, url, data, headers);
+    // console.log("doAjax...", method, url, data, headers);
     $.ajax({
         type: method,
         url: url,
