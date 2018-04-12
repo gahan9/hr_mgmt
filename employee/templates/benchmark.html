@@ -16,25 +16,17 @@
 
 {% endblock %}
 {% block extrajs %}
+    <script src="{% static 'js/common.js' %}"></script>
     <script type="text/javascript">
         var csrftoken = Cookies.get('csrftoken');
         var user_token = '{{ user.auth_token.key }}';
         var api_url = '/api/v1/survey/?benchmark=true';
         var results = null;
 
-        function setCSRF(xhr, settings) {
-            xhr.setRequestHeader("Authorization", "Token " + user_token);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-
-        $(document).ready(function () {
-            GetRequest(api_url);
-        });
-
         function QuestionFetch(content, item_id) {
             var que = '<div class="col">';
             $.each(content, function(i, item) {
-                console.log(i, item_id);
+                // console.log(i, item_id);
                 if (i !== "count")
                 {
                     {#var href = "{% url 'question_graph' survey_id=item_id question_id=i %}";#}
@@ -73,38 +65,18 @@
             })
             }
 
-        function GetRequest(url) {
-            $.ajax({
-                url: url,
-                method: "GET",
-                contentType: "application/json;charset=utf-8",
-                beforeSend: setCSRF,
-                success: function (responseObj) {
-                    console.log("Saved! It worked.");
-                    results = responseObj.results;
-                    AddData(results);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    console.log("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
-                }
-            });
+        function OnLoadSuccessCallback(response) {
+            console.log('success', response);
+            results = response.results;
+            AddData(results);
         }
-        function CustomRequest(content) {
-            $.ajax({
-                url: content.url,
-                method: content.method,
-                data: JSON.stringify(content.data),
-                contentType: "application/json;charset=utf-8",
-                beforeSend: setCSRF,
-                success: function (responseObj) {
-                    console.log("Saved! It worked.");
-                    console.log(responseObj);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    console.log("some error " + String(errorThrown) + String(textStatus) + String(XMLHttpRequest.responseText));
-                }
-            });
-        }
+
+        $(document).ready(function () {
+            var method = 'GET';
+            var data = '';
+            var headers = {'Authorization': 'Token' + ' ' + user_token};
+            doAjax(method, api_url, data, headers, OnLoadSuccessCallback, failureCallback);
+        });
 
     </script>
 {% endblock %}

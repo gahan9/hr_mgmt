@@ -150,10 +150,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
     <script src="{% static 'MultiElementSelection/js/magicselection.js' %}"></script>
     <script src="{% static 'MultiElementSelection/js/modernizr.custom.js' %}"></script>
+    <script src="{% static 'js/common.js' %}"></script>
     <script type="text/javascript">
         var context_survey_id = '{{ survey_id }}';
         var context_steps = {{ step }};
-        console.log(context_survey_id);
+        // console.log(context_survey_id);
         var tabCounter = {{ step }} +1;
         if (tabCounter === 0) {
             tabCounter = 1;
@@ -162,23 +163,11 @@
         if (step_number > tabCounter) {
             tabCounter = step_number;
         }
-        console.log(tabCounter);
+        // console.log(tabCounter);
         var csrftoken = Cookies.get('csrftoken');
         var user_token = '{{ user.auth_token.key }}';
         var default_api_url = '{{ API_URL }}';
         var wizard_url = "";
-
-        function DivChanger(flag) {
-            if (flag === "reset") {
-                var decide = document.getElementById("variable-div").classList.contains('col-lg-12');
-                if (decide === true) {
-                    document.getElementById("variable-div").className = "col col-12 col-lg-6 col-md-6 text-center";
-                }
-            }
-            else {
-                document.getElementById("variable-div").className = "col col-12 col-lg-12 col-md-12 text-center";
-            }
-        }
 
         $('#step-wizard a').on('click', function (e) {
             e.preventDefault();
@@ -210,18 +199,38 @@
             $("#" + $(element).val()).removeClass("hidden");
         }
 
-        function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
-
         function setCSRF(xhr, settings) {
             xhr.setRequestHeader("Authorization", "Token " + user_token);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
         }
 
-        function CustomRequest(content) {
+        function SurveyProgressSuccessCallback(responseObj) {
+            {#var responseData = JSON.parse(responseObj);#}
+            console.log("Saved! It worked.");
+            {#console.log(responseObj);#}
+            {#console.log(wizard_url);#}
+            wizard_url = responseObj.url;
+            {#console.log(responseObj.id);#}
+            {#console.log(responseObj.name);#}
+            {#console.log(wizard_url);#}
+            localStorage.setItem("obj", responseObj);
+            localStorage.setItem("wizard_url", responseObj.url);
+            localStorage.setItem("survey_id", responseObj.id);
+            localStorage.setItem("name", responseObj.name);
+            localStorage.setItem("employee_group", responseObj.employee_group);
+            localStorage.setItem("start_date", responseObj.start_date);
+            localStorage.setItem("end_date", responseObj.end_date);
+            localStorage.setItem("steps_completed", responseObj.steps);
+        }
 
+        function CustomRequest(content) {
+            var method = content.method;
+            var url = content.url;
+            var data = JSON.stringify(content.data);
+            var headers = {'Authorization': 'Token' + ' ' + user_token};
+            {#console.log(data, headers);#}
+            doAjax(method, url, data, headers, SurveyProgressSuccessCallback, failureCallback, setCSRF);
+            /* Ajax Start
             $.ajax({
                 url: content.url,
                 method: content.method,
@@ -251,12 +260,14 @@
                     {#window.location.href = "{% url 'add_survey' %}"#}
                 }
             });
+            /* Ajax complete */
         }
 
         $('#survey-step1').submit(function (e) {
             e.preventDefault();
             console.log('submitted');
         });
+
         $('#next').click(function () {
             event.preventDefault();
             console.log(default_api_url);
@@ -331,32 +342,8 @@
             localStorage.setItem('step_number', tabCounter);
         });
 
-        function value_setter(value, location) {
-            if (localStorage.getItem(value)) {
-                if (localStorage.getItem(value) !== "undefined") {
-                    $(location).val(localStorage.getItem(value));
-                }
-            }
-        }
-
         $(function () {
             var steps_completed = '';
-            /*
-            if (wizard_url === "") {
-                steps_completed = '{ step }}';
-            }
-            else {
-                steps_completed = parseInt(localStorage.getItem('steps_completed'), 10);
-            }
-            if (steps_completed >= 1) {
-                value_setter('name', '#survey-name');
-                value_setter('start_date', '#survey-start-time');
-                value_setter('end_date', '#survey-end-time');
-            }
-            if (steps_completed >= 2) {
-                value_setter('employee_group', '#survey-group');
-            }
-            */
             if (wizard_url === "" && context_survey_id !== "None") {
                 wizard_url = default_api_url + context_survey_id + '/';
                 console.log(wizard_url);

@@ -419,7 +419,7 @@ class AddSurvey(LoginRequiredMixin, APIView):
 
 class CreateSurvey(AddSurvey):
     login_url = reverse_lazy('login')
-    template_name = 'company/add_survey.html'
+    template_name = 'add_survey.html'
 
 
 class SurveyBenchmark(LoginRequiredMixin, TemplateView):
