@@ -2,10 +2,12 @@ import codecs
 import csv
 from collections import OrderedDict
 
+import requests
 from braces.views import JSONResponseMixin
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.serializers import serialize
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
@@ -684,12 +686,41 @@ class SampleView(JSONResponseMixin, BaseDetailView):
 
 class BenchmarkMap(TemplateView):
     template_name = 'map.html'
+    GEOCODE_API_KEY = "AIzaSyBn2U40eWRFJtdcbBuA_ckU0CAb3CcqO8Y"
+    GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
+
+    def _request(self, **kwargs):
+        address = kwargs.get("address", "")
+        payload = {"key": self.GEOCODE_API_KEY, "address": address}
+        response = requests.get(self.GEOCODE_BASE_URL, params=payload)
+        result = response.json().get("results", None)
+        return result
 
     def get_context_data(self, **kwargs):
         context = super(BenchmarkMap, self).get_context_data(**kwargs)
         _query_params = kwargs
         survey_id = int(_query_params.get('survey_id', 0))
         question_id = int(_query_params.get('question_id', 0))
+        if survey_id and question_id:
+            _response_data = {"survey_id": survey_id, "question_id": question_id}
+            _survey_instance = Survey.objects.get(pk=survey_id)
+            _question = _survey_instance.benchmark.get(question_id, None)
+            if _question:
+                city_data = []
+                for i in _question.get('city_response'):
+                    city = i['city']
+                    result = self._request(address=city)
+                    if result:
+                        response = result[0].get('geometry').get('location')
+                    city_info = {'city': city, 'responses': i['responses'],
+                                 'lat': response.get('lat', None),
+                                 'lng': response.get('lng', None)}
+                    city_data.append(city_info)
+                # _response_data['cities'] = {'results': city_data}
+                _response_data['cities'] = json.dumps(city_data)
+                _response_data['city_response'] = _question.get('city_response')
+                # print(_response_data)
+            context.update(_response_data)
         return context
 
 

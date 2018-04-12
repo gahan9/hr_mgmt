@@ -1,7 +1,23 @@
+from geopy.exc import GeocoderTimedOut
+from geopy.geocoders import Nominatim
 from rest_framework.views import exception_handler
 from jsonfield import JSONField
 import plotly.offline as opy
 import plotly.graph_objs as go
+
+geo_code_obj = Nominatim()
+
+
+def get_lat_long(city_name=None):
+    if city_name:
+        try:
+            geo_location = geo_code_obj.geocode(city_name)
+            return {
+                'lat': geo_location.latitude,
+                'long': geo_location.longitude
+            }
+        except GeocoderTimedOut:
+            return get_lat_long(city_name)
 
 
 class CustomJSONField(JSONField):

@@ -5,6 +5,7 @@ from calendar import timegm
 from rest_framework import serializers
 
 from employee.models import *
+from employee.utils import get_lat_long
 from main.serializers import UserSerializer, CompanySerializer
 
 
@@ -137,11 +138,10 @@ class SurveySerializer(serializers.HyperlinkedModelSerializer):
         response_data = {}
         if current_user.is_hr:
             if city:
-                return obj.filter_benchmark(city=city)
+                response_data = obj.filter_benchmark(city=city)
             else:
-                return obj.benchmark
-        else:
-            return response_data
+                response_data = obj.benchmark
+        return response_data
 
     def get_responded(self, obj):
         """ Get if user has already responded for this survey object or not """

@@ -1,3 +1,4 @@
+import requests
 from rest_framework import viewsets, generics, status
 
 from .views import *
@@ -84,15 +85,6 @@ class QuestionSet(generics.ListCreateAPIView):
         return queryset
 
 
-class CustomDict(object):
-    def __init__(self, _dict):
-        self.dict = _dict
-
-    @property
-    def pk(self):
-        return self.dict.get('id')
-
-
 class SurveyViewSet(viewsets.ModelViewSet):
     """Survey API to list, add, modify survey
     -----------------------------------------
@@ -120,6 +112,8 @@ class SurveyViewSet(viewsets.ModelViewSet):
             else:
                 # if logged in user is
                 queryset = self.queryset.filter(created_by=current_user)
+        if self.kwargs:
+            queryset = queryset.filter(pk=self.kwargs.get('pk'))
         if benchmark:
             # return only survey if benchmark available
             queryset = queryset.filter(rel_survey__isnull=False)  # has survey response (including partial)
@@ -200,3 +194,33 @@ class NewsFeedViewSet(viewsets.ReadOnlyModelViewSet):
             else:
                 queryset = self.queryset.filter(created_by=current_user)
         return queryset
+
+
+class GoogleMapAPIWrapper(APIView):
+    """
+    :get
+    `address` : address/location
+
+    geocoder:
+    `https://maps.googleapis.com/maps/api/geocode/json?address=<address>&key=<API-KEY>`
+    """
+    GEOCODE_API_KEY = "AIzaSyBn2U40eWRFJtdcbBuA_ckU0CAb3CcqO8Y"
+    GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
+
+    def _request(self, **kwargs):
+        address = kwargs.get("address", "")
+        payload = {"key": self.GEOCODE_API_KEY, "address": address}
+        response = requests.get(self.GEOCODE_BASE_URL, params=payload)
+        result = response.json().get("results", None)
+        return result
+
+    def get(self, request):
+        city = self.request.query_params.get('city', '')
+        address = self.request.query_params.get('address', '')
+        response = {}
+        result = self._request(address=address)
+        if result:
+            response.update(result[0].get('geometry').get('location'))
+        else:
+            response.update(result)
+        return Response(response)

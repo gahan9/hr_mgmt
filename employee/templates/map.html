@@ -5,33 +5,63 @@
 {% endblock %}
 {% block content %}
     {% include 'common/message.html' %}
+    <form>
+    <input type="hidden">
+    </form>
         <div id="map" style="height: 74.7%"></div>
-        <div id="content">
-            Hello world!
-        </div>
+        {% for city in city_response %}
+            <div id="{{ city.city }}">
+                <span>{{ city.responses }} Response</span>
+            </div>
+        {% endfor %}
 {% endblock %}
 {% block extrajs %}
     <script src="{% static 'js/common.js' %}"></script>
     <script>
-        var map, popup, Popup;
+        var map, popup, Popup, results;
+        var cities = JSON.parse('{{ cities|escapejs }}');
+        var survey_id = '{{ survey_id }}';
+        var question_id = '{{ question_id }}';
         var csrftoken = Cookies.get('csrftoken');
         var user_token = '{{ user.auth_token.key }}';
-        var api_url = '/api/v1/survey/?benchmark=true';
-        var results = null;
+        var api_url = '/api/v1/survey/'+ survey_id +'/?benchmark=true';
+        var geo_location_api_url = '/api/v1/geo_location/?address=';
+        /** Load data from API */
+        function setCSRF(xhr, settings) {
+            xhr.setRequestHeader("Authorization", "Token " + user_token);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+
+        function OnLoadSuccessCallback(response) {
+            console.log('success', response);
+            results = response.benchmark[question_id];
+            // cities = results.cities;
+        }
+
+        function RequestAPI() {
+            var headers = {'Authorization': 'Token' + ' ' + user_token};
+            doAjax('GET', api_url, '', headers, OnLoadSuccessCallback, failureCallback, setCSRF);
+        }
+
+        $(document).ready(RequestAPI());
 
         /** Initializes the map and the custom popup. */
         function initMap() {
             definePopupClass();
 
             map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: -33.9, lng: 151.1},
-                zoom: 10,
+                center: {lat: 0, lng: 0},
+                zoom: 2,
             });
 
-            popup = new Popup(
-                new google.maps.LatLng(-33.866, 151.196),
-                document.getElementById('content'));
-            popup.setMap(map);
+            $.each(cities, function (i, item)
+            {
+                console.log('popup', i, item);
+                popup = new Popup(
+                    new google.maps.LatLng(item.lat, item.lng),
+                    document.getElementById(item.city));
+                popup.setMap(map);
+            })
         }
 
         /** Defines the Popup class. */

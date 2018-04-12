@@ -1,3 +1,4 @@
+requests
 plotly
 Django==2.0.3
 djangorestframework==3.7.7
