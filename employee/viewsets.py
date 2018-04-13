@@ -197,8 +197,10 @@ class NewsFeedViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class GoogleMapAPIWrapper(APIView):
-    """
+    """Get Latitude and Longitude of address
+
     :get
+
     `address` : address/location
 
     geocoder:
@@ -215,7 +217,6 @@ class GoogleMapAPIWrapper(APIView):
         return result
 
     def get(self, request):
-        city = self.request.query_params.get('city', '')
         address = self.request.query_params.get('address', '')
         response = {}
         result = self._request(address=address)

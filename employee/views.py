@@ -696,6 +696,18 @@ class BenchmarkMap(TemplateView):
         result = response.json().get("results", None)
         return result
 
+    def update_geo_location(self, address):
+        geo_instance, created = GeoLocations.objects.get_or_create(address=address)
+        if created:
+            result = self._request(address=address)
+            if result:
+                response = result[0].get('geometry').get('location')
+                lat, lng = response.get('lat', None), response.get('lng', None)
+                geo_instance.lat = lat
+                geo_instance.lng = lng
+                geo_instance.save()
+        return geo_instance
+
     def get_context_data(self, **kwargs):
         context = super(BenchmarkMap, self).get_context_data(**kwargs)
         _query_params = kwargs
@@ -709,12 +721,11 @@ class BenchmarkMap(TemplateView):
                 city_data = []
                 for i in _question.get('city_response'):
                     city = i['city']
-                    result = self._request(address=city)
-                    if result:
-                        response = result[0].get('geometry').get('location')
+                    geo_instance = self.update_geo_location(address=city)
+                    lat, lng = geo_instance.lat, geo_instance.lng
                     city_info = {'city': city, 'responses': i['responses'],
-                                 'lat': response.get('lat', None),
-                                 'lng': response.get('lng', None)}
+                                 'lat' : lat,
+                                 'lng' : lng}
                     city_data.append(city_info)
                 # _response_data['cities'] = {'results': city_data}
                 _response_data['cities'] = json.dumps(city_data)

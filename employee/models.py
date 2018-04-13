@@ -270,3 +270,20 @@ class NewsFeed(models.Model):
 
     class Meta:
         verbose_name_plural = "News Feed"
+
+
+class GeoLocations(models.Model):
+    address = models.CharField(_("City or address"), max_length=254, unique=True)
+    lat = models.FloatField(_("Latitude"), null=True, blank=True)
+    lng = models.FloatField(_("Longitude"), null=True, blank=True)
+
+    @property
+    def has_geolocation(self):
+        return bool(self.lat and self.lng)
+
+    @property
+    def get_lat_long(self):
+        lat_lng = {}
+        if self.has_geolocation:
+            lat_lng.update({'lat' : self.lat, 'long': self.lng})
+        return lat_lng
