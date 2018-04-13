@@ -29,14 +29,28 @@ class CustomJSONField(JSONField):
         return dict(self.value_from_object(obj))
 
 
-def plot_graph(x, y, marker=None, mode="lines+markers", name='Question Response Trace', **kwargs):
+def plot_graph(x=None, y=None, marker=None, mode="lines+markers", name='Trace', **kwargs):
     marker = marker if marker else {'color': '#bc8e76', 'size': "10"}
     title = kwargs.get("title", "Analysis of Response")
+    graph_type = kwargs.get("graph_type", "bar")
+    _traces = kwargs.get("traces", None)
+    print(_traces)
+    _layout = kwargs.get("layout", None)
     x_title = kwargs.get("x_title", "X axis")
     y_title = kwargs.get("y_title", "Y axis")
-    data = go.Data([go.Scatter(x=x, y=y, marker=marker, mode=mode, name=name)])
-    layout = go.Layout(title=title, xaxis={'title': x_title}, yaxis={'title': y_title})
-    figure = go.Figure(data=data, layout=layout)
+    if not _traces or not _layout:
+        if graph_type == "bar":
+            _traces = _traces if _traces else [go.Bar(x=x, y=y, name=name)]
+            _layout = go.Layout(title=title, barmode='group',
+                                xaxis={'title': x_title, 'tickformat': ',d'},
+                                yaxis={'title': y_title, 'tickformat': ',d'})
+        else:  # if graph_type == "scatter"
+            _traces = _traces if _traces else [go.Scatter(x=x, y=y, marker=marker, mode=mode, name=name)]
+            _layout = go.Layout(title=title, xaxis={'title': x_title}, yaxis={'title': y_title})
+    data = go.Data(_traces)
+    print(_traces)
+    layout = _layout
+    figure = go.Figure(data=_traces, layout=layout)
     div = opy.plot(figure, auto_open=False, output_type='div')
     return div
 

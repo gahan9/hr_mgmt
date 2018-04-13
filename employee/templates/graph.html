@@ -1,5 +1,11 @@
 {% extends 'common/common.html' %}
 {% block content %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">{{ SITE_NAME }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'benchmark' %}">Benchmark</a></li>
+        <li class="breadcrumb-item active">Graph ({{ question_title }})</li>
+    </ol>
     <div class="main-container">
         {% if graph %}
             {{ graph|safe }}

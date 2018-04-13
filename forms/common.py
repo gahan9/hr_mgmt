@@ -67,7 +67,7 @@ class CreateUserForm(forms.ModelForm):
     city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     country = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     alternate_contact_no = forms.CharField(widget=forms.NumberInput)
-    profile_image = forms.ImageField()
+    profile_image = forms.ImageField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)

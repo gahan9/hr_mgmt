@@ -440,10 +440,12 @@ class CreateUserView(LoginRequiredMixin, CreateView):
         current_user_company = Company.objects.get(company_user=current_user)
         form_data = form.cleaned_data
         set_role = 3 if form_data['role'] < current_user.role else form_data['role']
+        print(self.request.FILES)
+        _profile_img = self.request.FILES.get('profile_image', '')
         user_obj = UserModel.objects.create(contact_number=form_data['contact_number'], email=form_data['email'],
                                             first_name=form_data['first_name'], last_name=form_data['last_name'],
                                             password=set_password_hash(form_data['password']),
-                                            profile_image=self.request.FILES['profile_image'],
+                                            profile_image=_profile_img,
                                             role=set_role, has_plan=current_user.has_plan
                                             )
         activity_obj = ActivityMonitor.objects.create(activity_type=0, performed_by=current_user.detail,
@@ -723,13 +725,17 @@ class BenchmarkMap(TemplateView):
                     city = i['city']
                     geo_instance = self.update_geo_location(address=city)
                     lat, lng = geo_instance.lat, geo_instance.lng
-                    city_info = {'city': city, 'responses': i['responses'],
-                                 'lat' : lat,
-                                 'lng' : lng}
+                    city_score = _survey_instance.filter_benchmark(city=city).get(question_id)
+
+                    city_info = {'city': city,
+                                 'average_rating': city_score['average_rating'],
+                                 'total_responses': i['responses'],
+                                 'lat' : lat, 'lng' : lng}
                     city_data.append(city_info)
                 # _response_data['cities'] = {'results': city_data}
                 _response_data['cities'] = json.dumps(city_data)
                 _response_data['city_response'] = _question.get('city_response')
+                _response_data['city_response'] = city_data
                 # print(_response_data)
             context.update(_response_data)
         return context
@@ -740,28 +746,56 @@ class QuestionGraph(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(QuestionGraph, self).get_context_data(**kwargs)
-        _query_params = kwargs
-        survey_id = int(_query_params.get('survey_id', 0))
-        question_id = int(_query_params.get('question_id', 0))
+        _query_params = self.request.GET
+        survey_id = int(kwargs.get('survey_id', 0))
+        question_id = int(kwargs.get('question_id', 0))
+        city = _query_params.get('city', None)
+        graph_mode = _query_params.get('graph_mode', 'city_response')
         x, y = [], []
+        x_title, y_title, graph_type, traces = "X", "Y", "bar", None
         if survey_id and question_id:
             try:
                 _survey_instance = Survey.objects.get(pk=survey_id)
-                # considering survey might be optional this method to be used
-                _question = _survey_instance.benchmark.get(question_id, None)
-                if _question:
-                    x = _question.get('cities', None)
-                    y = []
-                    for i in x:
-                        y.append(_survey_instance.filter_benchmark(city=i).get(question_id).get('total_responses'))
+                if city:
+
+                    import plotly.graph_objs as go
+                    if graph_mode == "city_response":
+                        graph_type = "bar"
+                        x_title = "Ratings from {}".format(city)
+                        y_title = "Number of Ratings"
+                        y1 = []
+                        survey_response = _survey_instance.benchmark.get(question_id)
+                        ratings_count = survey_response.get('rates')
+                        filtered_survey_responses = _survey_instance.filter_benchmark(city=city).get(question_id)
+                        filtered_ratings_count = filtered_survey_responses.get('rates')
+                        rate_scale = filtered_survey_responses.get('rate_scale')
+                        for i in range(1, rate_scale+1):
+                            x.append(i)
+                            y.append(filtered_ratings_count.get(i, 0))
+                            y1.append(ratings_count.get(i, 0))
+                        t1 = go.Bar(x=x, y=y, name=x_title,
+                                    marker=dict(color='rgb(204,204,204)',))
+                        t2 = go.Bar(x=x, y=y1, name="Ratings from all city",
+                                    marker=dict(color='#bc8e76',))
+                        traces = [t1, t2]
                 else:
-                    # messages.error(self.request, "Invalid survey question")
-                    city_dict = list(_survey_instance.get_city_response_count)
-                    for i in city_dict:
-                        x.append(i.get('city'))
-                        y.append(i.get('responses'))
+                    x_title, y_title = "City", "Total Response"
+                    _question = _survey_instance.benchmark.get(question_id, None)
+                    if _question:
+                        x = _question.get('cities', None)
+                        y = []
+                        for i in x:
+                            y.append(_survey_instance.filter_benchmark(city=i).get(question_id).get('total_responses'))
+                    else:
+                        # messages.error(self.request, "Invalid survey question")
+                        city_dict = list(_survey_instance.get_city_response_count)
+                        for i in city_dict:
+                            x.append(i.get('city'))
+                            y.append(i.get('responses'))
+                        graph_type = "scatter"
                 # plotting graph
-                context['graph'] = plot_graph(x=list(x), y=y, x_title="City", y_title="Total Response")
+                context['graph'] = plot_graph(x=list(x), y=y, x_title=x_title, y_title=y_title, graph_type=graph_type, traces=traces)
+                context['question_title'] = QuestionDB.objects.get(pk=question_id).question
             except Survey.DoesNotExist:
                 messages.error(self.request, "Invalid survey id")
         return context

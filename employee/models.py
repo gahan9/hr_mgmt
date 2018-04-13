@@ -154,7 +154,7 @@ class Survey(models.Model):
 
     @property
     def get_response(self):
-        return SurveyResponse.objects.filter(related_survey=self).order_by('related_user__employee__city')
+        return SurveyResponse.objects.filter(related_survey=self).annotate(city=F('related_user__employee__city')).order_by('related_user__employee__city')
 
     @property
     def get_flat_answers(self):
@@ -169,19 +169,35 @@ class Survey(models.Model):
         return self.get_response.values_list('related_user__employee__city', flat=True).distinct()
 
     def filter_score_response(self, city=None):
+        """
+
+        :param city: optional parameter, filters result for city if argument passed
+        :return: dictionary
+        {
+        '<question-id>' : {
+            'rates': {'<passed-rating>': <count-of-rating>, ....}
+            'rating': <total-rating>
+            'total_responses': <total-responses>
+            }
+        }
+        """
         _answers = [i for i in self.get_flat_answers if i[1].lower() == city.lower()] if city else self.get_flat_answers
         _temp_dict = {}
         for _response, _city in _answers:
             for _question in _response:
-                # question_instance = QuestionDB.objects.get(id=_question)
+                _rating = _response[_question]['r']
+                question_instance = QuestionDB.objects.get(id=_question)
                 if _question in _temp_dict:
-                    _temp_dict[_question]['rating'] += _response[_question]['r']
+                    _temp_dict[_question]['rating'] += _rating
                     _temp_dict[_question]['total_responses'] += 1
                 else:
-                    _temp_dict[_question] = {} if _question not in _temp_dict else _temp_dict[_question]
-                    # print(_response[_question])
-                    _temp_dict[_question]['rating'] = _response[_question]['r']
+                    _temp_dict[_question] = {'rates': {}}
+                    _temp_dict[_question]['rating'] = _rating
                     _temp_dict[_question]['total_responses'] = 1
+                if _rating in _temp_dict[_question]['rates']:
+                    _temp_dict[_question]['rates'][_rating] += 1
+                else:
+                    _temp_dict[_question]['rates'][_rating] = 1
         return _temp_dict
 
     def filter_benchmark(self, city=None):
