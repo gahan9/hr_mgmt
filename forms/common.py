@@ -23,11 +23,11 @@ class LoginForm(AuthenticationForm):
                                           'name': 'password', 'id': 'password',
                                           'type': 'password', 'placeholder': 'Password'}))
 
-    def clean(self):
-        if 'password' in self.cleaned_data:
-            password = computeMD5hash(self.cleaned_data.get('password'))
-            self.cleaned_data['password'] = password
-        return super(LoginForm, self).clean()
+    def clean_password(self):
+        password = self.cleaned_data.get('password', None)
+        if password:
+            password = computeMD5hash(password)
+        return password
 
 
 class CreateCompanyForm(forms.ModelForm):
@@ -80,12 +80,6 @@ class CreateUserForm(forms.ModelForm):
         self.fields['alternate_contact_no'].required = False
         self.fields['profile_image'].required = False
 
-    def clean(self):
-        if 'password' in self.cleaned_data:
-            password = computeMD5hash(self.cleaned_data.get('password'))
-            self.cleaned_data['password'] = password
-        return super(CreateUserForm, self).clean()
-
     class Meta:
         model = UserModel
         fields = ['contact_number', 'first_name', 'last_name', 'profile_image', 'gender', 'password', 'email', 'role']
@@ -97,12 +91,6 @@ class EditUserForm(forms.ModelForm):
         super(EditUserForm, self).__init__(*args, **kwargs)
         self.helper = edit_user_helper
 
-    def clean(self):
-        if 'password' in self.cleaned_data:
-            password = set_password_hash(self.cleaned_data.get('password'))
-            self.cleaned_data['password'] = password
-        return super(EditUserForm, self).clean()
-
     class Meta:
         model = UserModel
         fields = ['contact_number', 'first_name', 'last_name', 'email', 'profile_image']
@@ -110,15 +98,15 @@ class EditUserForm(forms.ModelForm):
 
 class ResetPasswordForm(forms.ModelForm):
     """ Reset Password of user"""
+    password = forms.CharField(widget=forms.PasswordInput)
+
     def __init__(self, *args, **kwargs):
         super(ResetPasswordForm, self).__init__(*args, **kwargs)
         self.helper = password_reset_helper
 
-    def clean(self):
-        if 'password' in self.cleaned_data:
-            password = set_password_hash(self.cleaned_data.get('password'))
-            self.cleaned_data['password'] = password
-        return super(ResetPasswordForm, self).clean()
+    def clean_password(self):
+        password = set_password_hash(self.cleaned_data.get('password', None))
+        return password
 
     class Meta:
         model = UserModel

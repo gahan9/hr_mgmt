@@ -2,10 +2,12 @@ import os
 import random
 
 import time
+from unittest import skipIf
+
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse_lazy
 from django.utils import timezone
 from selenium import webdriver
@@ -92,7 +94,9 @@ class BaseLoginTest(StaticLiveServerTestCase):
             "username": '+919999999901',
             "password": '1'
         }
-        self.login_url = "{}{}".format(self.live_server_url, reverse_lazy('login'))
+        # self.server_url = "http://192.168.5.47:8889"
+        self.server_url = self.live_server_url
+        self.login_url = "{}{}".format(self.server_url, reverse_lazy('login'))
         self.country_code = "+91"
         self.number = random.randint(7700000000, 9999999999)
         self.contact_number = "{}{}".format(self.country_code, self.number)
@@ -117,7 +121,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
             "first_name": _first_name,
             "last_name": _last_name,
             "email": faker.email(),
-            "password": faker.password(),
+            "password": 'r@123456',
             "gender": gender,
         }
 
@@ -128,7 +132,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
             "zip_code": faker.zipcode(),
             "city": faker.city(),
             "country": faker.country(),
-            "category": faker.country(),
+            # "category": faker.country(),
         }
 
     def get_profile_image(self):
@@ -148,7 +152,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
 
     def _test_purchase_plan(self):
         # creates dashboard account - HR user creation
-        _url = "{}{}".format(self.live_server_url, reverse_lazy('select_plan'))
+        _url = "{}{}".format(self.server_url, reverse_lazy('select_plan'))
         self.selenium.get(_url)  # /select-plan/
         # input fields to be fill form
         input_fields = ['contact_number', 'first_name', 'last_name', 'email', 'password']
@@ -174,7 +178,10 @@ class BaseLoginTest(StaticLiveServerTestCase):
         driver = kwargs.get('driver', self.selenium)
         credentials = kwargs.get('credentials', self.user_credentials)
         driver.get(self.login_url)  # /login/
-        _username = credentials['username']
+        try:
+            _username = credentials['username']
+        except KeyError:
+            _username = credentials['contact_number']
         _password = credentials['password']
         username_input = driver.find_element_by_name("username")
         username_input.send_keys(_username)
@@ -184,7 +191,7 @@ class BaseLoginTest(StaticLiveServerTestCase):
         self.take_snapshot()
 
     def _logout(self):
-        self.selenium.get("{}{}".format(self.live_server_url, reverse_lazy('logout')))
+        self.selenium.get("{}{}".format(self.server_url, reverse_lazy('logout')))
 
     def _click_link(self, link_href='view_data'):
         self.selenium.find_element_by_xpath("//a[contains(@href,'{}')]".format(link_href)).click()
@@ -192,28 +199,27 @@ class BaseLoginTest(StaticLiveServerTestCase):
         self.take_snapshot()
 
     def _create_user(self, gender="M"):
-        self.selenium.find_element_by_name('contact_number').send_keys(self.get_phone_number())
-        self.selenium.find_element_by_name('profile_image').send_keys(self.get_profile_image())
+        profile = self.generate_profile()
+        employee_profile = self.generate_employee_profile()
+        for data, val in profile.items():
+            if data == "role":
+                Select(self.selenium.find_element_by_name('role')).select_by_visible_text('Employee')
+            elif data == "gender":
+                continue
+            else:
+                self.selenium.find_element_by_name(data).send_keys(val)
+        gender = profile.get('gender')
         if gender == "F":
-            _first_name, _last_name = faker.name_female().split()
             _gender = "Female"
         else:
-            _first_name, _last_name = faker.name_male().split()
             _gender = "Male"
-        self.selenium.find_element_by_name('first_name').send_keys(_first_name)
-        self.selenium.find_element_by_name('last_name').send_keys(_last_name)
-        self.selenium.find_element_by_name('email').send_keys(faker.email())
-        self.selenium.find_element_by_name('password').send_keys(faker.password())
-        self.selenium.find_element_by_name('job_title').send_keys(faker.job())
-        self.selenium.find_element_by_name('street').send_keys(faker.street_address())
-        self.selenium.find_element_by_name('zip_code').send_keys(faker.zipcode())
-        self.selenium.find_element_by_name('city').send_keys(faker.city())
-        self.selenium.find_element_by_name('country').send_keys(faker.country())
-        Select(self.selenium.find_element_by_name('role')).select_by_visible_text('Employee')
         Select(self.selenium.find_element_by_name('gender')).select_by_visible_text(_gender)
+        for data, val in employee_profile.items():
+            self.selenium.find_element_by_name(data).send_keys(val)
         self.selenium.find_element_by_xpath("//input[contains(@type, 'submit')]").click()
         _sleep(5)
         self.take_snapshot()
+        return profile
 
     def common_test_after_login(self):
         self._click_link('employee_data')
@@ -222,8 +228,12 @@ class BaseLoginTest(StaticLiveServerTestCase):
         self.selenium.back()
         self._click_link('settings')
         self._click_link('create_user')
-        self._create_user()
-        self.selenium.get("{}{}".format(self.live_server_url, reverse_lazy('view_data')))
+        cred = self._create_user()
+        self._logout()
+        self._login(credentials=cred)
+        _sleep(5)
+        self._logout()
+        self.selenium.get("{}{}".format(self.server_url, reverse_lazy('view_data')))
 
 
 class LoginTestWithoutFixture(BaseLoginTest):
@@ -238,16 +248,19 @@ class LoginTestWithoutFixture(BaseLoginTest):
 
 
 class LoginTestWithFixture(BaseLoginTest):
-    fixtures = ['mf.json']
+    fixtures = generate_dump()
 
     def test_ordered_with_fixtures(self):
         #  load fixtures before running this test
         cred = {"username": self.contact_number, "password": self.password}
-        self._login(credentials=cred)
+        self._login(credentials=self.credentials)
+        _sleep(5)
         self.common_test_after_login()
         self._logout()
         _sleep(5)
 
+    @skipIf(True, "I don't want to run this test yet")
+    @tag('slow', 'modify')
     def test_modify_employee_data(self):
         """selenium test to modify employee information/password and login with new credentials"""
         self._login(credentials=self.credentials)
