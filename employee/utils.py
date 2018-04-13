@@ -34,7 +34,6 @@ def plot_graph(x=None, y=None, marker=None, mode="lines+markers", name='Trace', 
     title = kwargs.get("title", "Analysis of Response")
     graph_type = kwargs.get("graph_type", "bar")
     _traces = kwargs.get("traces", None)
-    print(_traces)
     _layout = kwargs.get("layout", None)
     x_title = kwargs.get("x_title", "X axis")
     y_title = kwargs.get("y_title", "Y axis")
@@ -48,9 +47,8 @@ def plot_graph(x=None, y=None, marker=None, mode="lines+markers", name='Trace', 
             _traces = _traces if _traces else [go.Scatter(x=x, y=y, marker=marker, mode=mode, name=name)]
             _layout = go.Layout(title=title, xaxis={'title': x_title}, yaxis={'title': y_title})
     data = go.Data(_traces)
-    print(_traces)
     layout = _layout
-    figure = go.Figure(data=_traces, layout=layout)
+    figure = go.Figure(data=data, layout=layout)
     div = opy.plot(figure, auto_open=False, output_type='div')
     return div
 
