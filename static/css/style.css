@@ -64,6 +64,21 @@ html, body {
     height: auto;
 }
 
+.graph-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*min-height: calc(100% - 229px);*/
+    height: auto;
+}
+.map-marker-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*min-height: calc(100% - 229px);*/
+    height: auto;
+}
+
 video {
     width: 100%;
     height: auto;
@@ -104,6 +119,12 @@ video {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+.comments {
+    /*display: flex;*/
+    flex-direction: column;
+    /*align-items: center;*/
+    /*justify-content: center;*/
 }
 
 .category-img-container {

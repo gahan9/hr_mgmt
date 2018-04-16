@@ -4,13 +4,26 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
         <li class="breadcrumb-item"><a href="{% url 'field_rate' %}">{{ SITE_NAME }}</a></li>
         <li class="breadcrumb-item"><a href="{% url 'benchmark' %}">Benchmark</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'benchmark_map' survey_id question_id %}">Benchmark Map</a></li>
         <li class="breadcrumb-item active">Graph ({{ question_title }})</li>
     </ol>
-    <div class="main-container">
-        {% if graph %}
-            {{ graph|safe }}
-        {% else %}
-            <span class="display-4">Requested Graph Does not exist</span>
+    <div class="graph-container">
+        <div class="{% if comments %}col col-12 col-lg-7 col-md-7 col-sm-7{% endif %}">
+                {% if graph %}
+                    {{ graph|safe }}
+                {% else %}
+                    <span class="display-4">Requested Graph Does not exist</span>
+                {% endif %}
+        </div>
+        {% if comments %}
+            <div class="col col-12 col-lg-3 col-md-3 col-sm-3">
+                    <span class="h5">Comments</span>
+                    <ul>
+                        {% for comment in comments %}
+                            <li>{{ comment }}</li>
+                        {% endfor %}
+                    </ul>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

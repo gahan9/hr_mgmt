@@ -8,13 +8,11 @@
         <div id="map" style="height: 74.7%"></div>
         {% for city in city_response %}
             <div id="{{ city.city }}">
-                <span class="">
-                    <a href="{% url 'question_graph' survey_id question_id %}?city={{ city.city }}" class="no-style-a">
-                        <b>Avg score:</b> {{ city.average_rating }}
-                        <br><b>Total Responses:</b> {{ city.total_responses }}
-                        <br><b>City:</b> {{ city.city|capfirst }}
-                    </a>
-                </span>
+                <a href="{% url 'question_graph' survey_id question_id %}?city={{ city.city }}" class="no-style-a">
+                    <span><b>Avg score:</b> {{ city.average_rating }}</span>
+                    <span><br><b>Total Responses:</b> {{ city.total_responses }}</span>
+                    <span><br><b>City:</b> {{ city.city|capfirst }}</span>
+                </a>
             </div>
         {% endfor %}
 {% endblock %}

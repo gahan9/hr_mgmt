@@ -769,6 +769,7 @@ class QuestionGraph(TemplateView):
                         filtered_survey_responses = _survey_instance.filter_benchmark(city=city).get(question_id)
                         filtered_ratings_count = filtered_survey_responses.get('rates')
                         rate_scale = filtered_survey_responses.get('rate_scale')
+                        context['comments'] = filtered_survey_responses.get('comments')
                         for i in range(1, rate_scale+1):
                             x.append(i)
                             y.append(filtered_ratings_count.get(i, 0))
