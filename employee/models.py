@@ -186,18 +186,12 @@ class Survey(models.Model):
         for _response, _city in _answers:
             for _question in _response:
                 _rating = _response[_question]['r']
-                question_instance = QuestionDB.objects.get(id=_question)
-                if _question in _temp_dict:
-                    _temp_dict[_question]['rating'] += _rating
-                    _temp_dict[_question]['total_responses'] += 1
-                else:
-                    _temp_dict[_question] = {'rates': {}}
-                    _temp_dict[_question]['rating'] = _rating
-                    _temp_dict[_question]['total_responses'] = 1
-                if _rating in _temp_dict[_question]['rates']:
-                    _temp_dict[_question]['rates'][_rating] += 1
-                else:
-                    _temp_dict[_question]['rates'][_rating] = 1
+                comment = _response[_question]['m']
+                _temp_dict[_question]['rating'] = _temp_dict.setdefault(_question, {}).setdefault('rating', 0) + _rating
+                _temp_dict[_question]['total_responses'] = _temp_dict.setdefault(_question, {}).setdefault('total_responses', 1)
+                _temp_dict[_question]['rates'][_rating] = _temp_dict[_question].setdefault('rates', {}).setdefault(_rating, 1) + 1
+                if comment:
+                    _temp_dict[_question].setdefault('comments', []).append(comment)
         return _temp_dict
 
     def filter_benchmark(self, city=None):
